@@ -1,0 +1,98 @@
+{
+  "_version": "1.81.0",
+  "sap.app": {
+    "id": "zfi.payment.management",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.20.1",
+      "toolsId": "86a3e0cc-3c24-48f7-bfd1-5b9203b37209"
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.144.1",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "zfi.payment.management.i18n.i18n"
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "zfi.payment.management.view",
+        "async": true,
+        "viewPath": "zfi.payment.management.view"
+      },
+      "routes": [
+        {
+          "name": "RouteNewDoc",
+          "pattern": ":?query:",
+          "target": [
+            "TargetNewDoc"
+          ]
+        }
+      ],
+      "targets": {
+        "TargetNewDoc": {
+          "id": "NewDoc",
+          "name": "NewDoc"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "zfi.payment.management.view.App",
+      "type": "XML",
+      "id": "App",
+      "async": true
+    }
+  }
+}
