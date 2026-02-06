@@ -2,5 +2,8 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m">
     <Page id="page" title="{i18n>title}">
+    <content>
+    <Text id="_IDGenText" text="Hello commit"></Text>
+    </content>
     </Page>
 </mvc:View>
