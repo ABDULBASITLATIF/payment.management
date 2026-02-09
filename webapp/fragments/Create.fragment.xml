@@ -1,0 +1,65 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns:l="sap.ui.layout"
+>
+    <Dialog
+        id="CreateDialog"
+        title="Select"
+    >
+        <content>
+            <VBox
+                id="tablePostingVBox"
+                class="sapUiMediumMargin"
+            >
+                <!-- Selected Table Info -->
+                <MessageStrip
+                    id="selectedTableInfo"
+                    text="Select Payment way "
+                    type="Information"
+                    showIcon="true"
+                    class="sapUiSmallMarginBottom"
+                />
+                <ComboBox id="_IDGenComboBox1"
+                    selectedKey="{/selectedView}"
+                    selectionChange=".onCountryChange"
+                >
+                    <items>
+                        <core:Item id="_IDGenItem"
+                            key="v1"
+                            text="Not Selected"
+                        />
+                        <core:Item id="_IDGenItem1"
+                            key="v2"
+                            text="View 2"
+                        />
+                        <core:Item id="_IDGenItem3"
+                            key="v3"
+                            text="View 3"
+                        />
+                        <core:Item id="_IDGenItem4"
+                            key="v3"
+                            text="View 4"
+                        />
+                    </items>
+                </ComboBox>
+            </VBox>
+        </content>
+
+        <buttons>
+            <Button
+                id="executeTablePostingBtn"
+                text="Go"
+                type="Emphasized"
+                press=""
+            />
+            <Button
+                id="cancelTablePostingBtn"
+                text="Cancel"
+                press="onCloseCreateDialog"
+            />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>
