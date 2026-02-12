@@ -1,0 +1,180 @@
+<mvc:View
+    controllerName="zfi.payment.management.controller.PostOutgoing"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:l="sap.ui.layout"
+    height="100%">
+    
+    <Page id="_IDGenPage"
+        title="Post Outgoing Payments"
+        showNavButton="true"
+        navButtonPress="onNavBack">
+        
+        <customHeader>
+            <Bar id="_IDGenBar">
+                <contentLeft>
+                    <Button id="_IDGenButton" icon="sap-icon://nav-back" press="onNavBack"/>
+                </contentLeft>
+                <contentMiddle>
+                    <Title id="_IDGenTitle1" text="Post Outgoing Payments"/>
+                </contentMiddle>
+                <!-- <contentRight>
+                    <Button id="_IDGenButton1" icon="sap-icon://search"/>
+                     
+                </contentRight> -->
+            </Bar>
+        </customHeader>
+        
+        <content>
+            <VBox id="_IDGenVBox" class="sapUiSmallMargin">
+                <core:Fragment fragmentName="zfi.payment.management.fragments.PaymentForm" type="XML"/>
+                <!-- Payment Panel -->
+                 
+   <!-- Open Items Table -->
+<f:SimpleForm id="openItemsForm"
+    editable="false"
+    layout="ResponsiveGridLayout"
+    width="auto"
+    columnsXL="1"
+    columnsL="1"
+    columnsM="1"
+    class="sapUiSmallMarginTop"
+     >
+    <f:content>
+        <Table
+            id="openItemsTable"
+            items="{/openItems}"
+            mode="MultiSelect"
+            width="auto">
+            <headerToolbar>
+                <OverflowToolbar id="_IDGenOverflowToolbar">
+                    <Title id="_IDGenTitle2" text="Open Items (2) Standard" level="H5"/>
+                    <Button id="_IDGenButton1" icon="sap-icon://information" type="Transparent"/>
+                    <ToolbarSpacer id="_IDGenToolbarSpacer"/>
+                    <Button id="_IDGenButton2" icon="sap-icon://grid"/>
+                    <Button id="_IDGenButton4" icon="sap-icon://table-view"/>
+                    <SearchField id="_IDGenSearchField" width="200px"/>
+                    <Button id="_IDGenButton5" text="Select More"/>
+                    <Button id="_IDGenButton6" text="Clear All"/>
+                    <Button id="_IDGenButton7" icon="sap-icon://action-settings"/>
+                    <Button id="_IDGenButton8" icon="sap-icon://refresh"/>
+                </OverflowToolbar>
+            </headerToolbar>
+            <columns>
+                <Column id="_IDGenColumn9" width="4rem"><Text id="_IDGenText" text="Company"/></Column>
+                <Column id="_IDGenColumn10" width="6rem"><Text id="_IDGenText3" text="Account"/></Column>
+                <Column id="_IDGenColumn11" width="7rem"><Text id="_IDGenText4" text="Journal Entry"/></Column>
+                <Column id="_IDGenColumn12" width="5rem"><Text id="_IDGenText5" text="Journal Type"/></Column>
+                <Column id="_IDGenColumn13" width="8rem"><Text id="_IDGenText6" text="Item Text"/></Column>
+                <Column id="_IDGenColumn14" width="6rem"><Text id="_IDGenText16" text="Document Date"/></Column>
+                <Column id="_IDGenColumn15" width="6rem"><Text id="_IDGenText17" text="Net Due Date"/></Column>
+                <Column id="_IDGenColumn16" width="6rem"><Text id="_IDGenText18" text="Amount (EUR)"/></Column>
+                <Column id="_IDGenColumn17" width="6rem"><Text id="_IDGenText19" text="Assignment"/></Column>
+                <Column id="_IDGenColumn18" width="4rem"><Text id="_IDGenText20" text="Clear"/></Column>
+            </columns>
+            <items>
+                <ColumnListItem id="_IDGenColumnListItem2" selected="true">
+                    <cells>
+                        <Text id="_IDGenText21" text="1010"/>
+                        <Text id="_IDGenText22" text="10300002"/>
+                        <Link id="_IDGenLink" text="1900001054"/>
+                        <Text id="_IDGenText23" text="KR"/>
+                        <Text id="_IDGenText24" text=""/>
+                        <Text id="_IDGenText25" text="11/05/2015"/>
+                        <Text id="_IDGenText26" text="11/30/2015"/>
+                        <Text id="_IDGenText27" text="-111.00"/>
+                        <Text id="_IDGenText28" text=""/>
+                        <Button id="_IDGenButton9" icon="sap-icon://accept" type="Emphasized"/>
+                    </cells>
+                </ColumnListItem>
+                <ColumnListItem id="_IDGenColumnListItem3" selected="true">
+                    <cells>
+                        <Text id="_IDGenText29" text="1010"/>
+                        <Text id="_IDGenText30" text="10300002"/>
+                        <Link id="_IDGenLink1" text="1900001055"/>
+                        <Text id="_IDGenText31" text="KR"/>
+                        <Text id="_IDGenText32" text=""/>
+                        <Text id="_IDGenText33" text="11/06/2015"/>
+                        <Text id="_IDGenText34" text="11/30/2015"/>
+                        <Text id="_IDGenText35" text="-111.00"/>
+                        <Text id="_IDGenText36" text=""/>
+                        <Button id="_IDGenButton10" icon="sap-icon://accept" type="Emphasized"/>
+                    </cells>
+                </ColumnListItem>
+            </items>
+        </Table>
+    </f:content>
+</f:SimpleForm>
+
+<!-- Items to Be Cleared Table -->
+<f:SimpleForm id="itemsToClearForm"
+    editable="false"
+    layout="ResponsiveGridLayout"
+    width="auto"
+    columnsXL="1"
+    columnsL="1"
+    columnsM="1"
+    
+    class="sapUiSmallMarginTop">
+    <f:content>
+        <Table
+            id="itemsToClearTable"
+            items="{/itemsToBeCleared}"
+            width="100%">
+            <headerToolbar>
+                <OverflowToolbar id="_IDGenOverflowToolbar1">
+                    <Title id="_IDGenTitle3" text="Items to Be Cleared (2) Standard" level="H5"/>
+                    <Button id="_IDGenButton11" icon="sap-icon://information" type="Transparent"/>
+                    <ToolbarSpacer id="_IDGenToolbarSpacer2"/>
+                    <Button id="_IDGenButton12" text="Remove All"/>
+                    <Button id="_IDGenButton13" icon="sap-icon://delete"/>
+                    <Button id="_IDGenButton14" icon="sap-icon://action-settings"/>
+                </OverflowToolbar>
+            </headerToolbar>
+            <columns>
+                <Column id="_IDGenColumn19" width="4rem"><Text id="_IDGenText37" text="Remove"/></Column>
+                <Column id="_IDGenColumn20" width="6rem"><Text id="_IDGenText38" text="Document"/></Column>
+                <Column id="_IDGenColumn21" width="6rem"><Text id="_IDGenText39" text="Open Amount"/></Column>
+                <Column id="_IDGenColumn22" width="6rem"><Text id="_IDGenText40" text="Allocated"/></Column>
+                <Column id="_IDGenColumn23" width="6rem"><Text id="_IDGenText41" text="Discount"/></Column>
+                <Column id="_IDGenColumn24" width="6rem"><Text id="_IDGenText42" text="Invoice Ref"/></Column>
+            </columns>
+            <items>
+                <ColumnListItem id="_IDGenColumnListItem4">
+                    <cells>
+                        <Button id="_IDGenButton15" icon="sap-icon://navigation-left-arrow"/>
+                        <Link id="_IDGenLink2" text="1900001..."/>
+                        <Text id="_IDGenText43" text="-111.00"/>
+                        <Text id="_IDGenText44" text="-111.00"/>
+                        <Text id="_IDGenText45" text="-2.22"/>
+                        <Text id="_IDGenText46" text=""/>
+                    </cells>
+                </ColumnListItem>
+                <ColumnListItem id="_IDGenColumnListItem5">
+                    <cells>
+                        <Button id="_IDGenButton16" icon="sap-icon://navigation-left-arrow"/>
+                        <Link id="_IDGenLink3" text="1900001..."/>
+                        <Text id="_IDGenText47" text="-111.00"/>
+                        <Text id="_IDGenText48" text="-111.00"/>
+                        <Text id="_IDGenText49" text="-2.22"/>
+                        <Text id="_IDGenText50" text=""/>
+                    </cells>
+                </ColumnListItem>
+            </items>
+        </Table>
+    </f:content>
+</f:SimpleForm>
+            </VBox>
+        </content>
+        
+        <footer>
+            <Toolbar id="_IDGenToolbar">
+                <ToolbarSpacer id="_IDGenToolbarSpacer1"/>
+                <Button id="_IDGenButton25" text="Save" type="Emphasized" press="onPost"/>
+                <Button id="_IDGenButton26" text="Submit" press="onSimulate"/>
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>

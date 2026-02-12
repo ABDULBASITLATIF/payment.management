@@ -1,0 +1,90 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    
+    <f:SimpleForm id="paymentForm"
+        editable="true"
+        width="auto"
+        layout="ResponsiveGridLayout"
+        title="Payment"
+        labelSpanXL="4"
+        labelSpanL="4"
+        labelSpanM="4"
+        labelSpanS="12"
+        adjustLabelSpan="false"
+        emptySpanXL="0"
+        emptySpanL="0"
+        emptySpanM="0"
+        emptySpanS="0"
+        columnsXL="3"
+        columnsL="3"
+        columnsM="2"
+        
+        singleContainerFullSize="false">
+        <f:content>
+            <!-- General Information Section -->
+            <core:Title id="_IDGenTitle8" text="General Information" />
+            
+            <Label id="companyCodeLabel" text="Company Code" required="true"/>
+            <Input id="companyCodeInput" value="1010" editable="false"/>
+            
+            <Label id="postingDateLabel" text="Posting Date"/>
+            <Input id="postingDateInput" value="11/06/2015" editable="false"/>
+            
+            <Label id="documentDateLabel" text="Document Date"/>
+            <Input id="documentDateInput" value="11/06/2015" editable="false"/>
+            
+            <Label id="valueDateLabel" text="Value Date" required="true"/>
+            <DatePicker id="valueDatePicker" value="11/06/2015"/>
+            
+            <Label id="referenceLabel" text="Reference"/>
+            <Input id="referenceInput" value=""/>
+            
+            <Label id="periodLabel" text="Period"/>
+            <Input id="periodInput" value="11" editable="false"/>
+            
+            <Label id="journalEntryTypeLabel" text="Journal Entry Type:"/>
+            <Input id="journalEntryTypeInput" value="KZ (Vendor payment)" editable="false"/>
+            
+            <!-- Bank Data Section -->
+            <core:Title id="_IDGenTitle9" text="Bank Data" />
+            
+            <Label id="glAccountLabel" text="G/L Account" required="true"/>
+           
+             <Input id="glAccountInput" value="11002010" width="80%"/>
+          
+            
+            <Label id="houseBankLabel" text="HouseBank/AccountID" required="true" width="auto"/>
+       
+            <Input id="houseBankInput" value="BANK2" width="60%"/>
+                
+           
+            
+            <Label id="amountCurrencyLabel" text="Amount/Currency:" required="true"/>
+          
+            <Input id="amountInput" value="217.56" width="60%"/>
+       
+ 
+      
+            
+            <Label id="feesLabel" text="Fees:"/>
+            <Input id="feesInput" value="0.00"/>
+            
+            <Label id="assignmentLabel" text="Assignment:"/>
+            <Input id="assignmentInput" value=""/>
+            
+            <!-- Open Item Selection Section -->
+            <core:Title id="_IDGenTitle10" text="Open Item Selection" />
+            
+            <Label id="supplierAccountLabel" text="Supplier Account:"/>
+           
+            <Input id="supplierAccountInput" value="10300002" width="80%"/>
+      
+           
+ 
+        </f:content>
+    </f:SimpleForm>
+    
+</core:FragmentDefinition>

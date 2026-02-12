@@ -61,34 +61,45 @@
         }
       ]
     },
-    "routing": {
-      "config": {
-        "routerClass": "sap.m.routing.Router",
-        "controlAggregation": "pages",
-        "controlId": "app",
-        "transition": "slide",
-        "type": "View",
-        "viewType": "XML",
-        "path": "zfi.payment.management.view",
-        "async": true,
-        "viewPath": "zfi.payment.management.view"
-      },
-      "routes": [
-        {
-          "name": "RouteNewDoc",
-          "pattern": ":?query:",
-          "target": [
-            "TargetNewDoc"
-          ]
-        }
-      ],
-      "targets": {
-        "TargetNewDoc": {
-          "id": "NewDoc",
-          "name": "NewDoc"
-        }
-      }
+"routing": {
+  "config": {
+    "routerClass": "sap.m.routing.Router",
+    "controlAggregation": "pages",
+    "controlId": "app",
+    "transition": "slide",
+    "type": "View",
+    "viewType": "XML",
+    "path": "zfi.payment.management.view",
+    "async": true,
+    "viewPath": "zfi.payment.management.view"
+  },
+  "routes": [
+    {
+      "name": "RouteNewDoc",
+      "pattern": ":?query:",
+      "target": [
+        "TargetNewDoc"
+      ]
     },
+    {
+      "name": "RoutePostOutgoing",
+      "pattern": "postoutgoing",
+      "target": [
+        "TargetPostOutgoing"
+      ]
+    }
+  ],
+  "targets": {
+    "TargetNewDoc": {
+      "id": "NewDoc",
+      "name": "NewDoc"
+    },
+    "TargetPostOutgoing": {
+      "id": "PostOutgoing",
+      "name": "PostOutgoing"
+    }
+  }
+},
     "rootView": {
       "viewName": "zfi.payment.management.view.App",
       "type": "XML",
