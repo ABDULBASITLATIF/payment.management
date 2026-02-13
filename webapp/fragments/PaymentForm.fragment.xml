@@ -28,13 +28,13 @@
             <core:Title id="_IDGenTitle8" text="General Information" />
             
             <Label id="companyCodeLabel" text="Company Code" required="true"/>
-            <Input id="companyCodeInput" value="1010" editable="false"/>
+            <Input id="companyCodeInput" value=" "  />
             
             <Label id="postingDateLabel" text="Posting Date"/>
-            <Input id="postingDateInput" value="" editable="false"/>
+            <Input id="postingDateInput" value=""  />
             
             <Label id="documentDateLabel" text="Document Date"/>
-            <Input id="documentDateInput" value="" editable="false"/>
+            <Input id="documentDateInput" value=""  />
             
             <Label id="valueDateLabel" text="Value Date" required="true"/>
             <DatePicker id="valueDatePicker" value=""/>
@@ -43,10 +43,10 @@
             <Input id="referenceInput" value=""/>
             
             <Label id="periodLabel" text="Period"/>
-            <Input id="periodInput" value="" editable="false"/>
+            <Input id="periodInput" value="" />
             
             <Label id="journalEntryTypeLabel" text="Journal Entry Type:"/>
-            <Input id="journalEntryTypeInput" value=" " editable="false"/>
+            <Input id="journalEntryTypeInput" value=" " />
             
             <!-- Bank Data Section -->
             <core:Title id="_IDGenTitle9" text="Bank Data" />

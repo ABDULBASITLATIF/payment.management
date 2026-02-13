@@ -45,43 +45,57 @@ sap.ui.define([
             this._applyFilters();
         },
 
-        _applyFilters: function() {
-            var aFilters = [];
+       _applyFilters: function() {
+    var oTable = this.byId("table");
+    var oBinding = oTable.getBinding("items");
+    
+    if (!oBinding) {
+        MessageToast.show("No data to filter");
+        return;
+    }
 
-            // Get filter values
-            var sDraftId = this.byId("filterDraftId").getValue();
-            var sFiscYear = this.byId("filterFiscYear").getValue();
-            var oPostingDate = this.byId("filterPostingDate").getDateValue();
-            var sDraftType = this.byId("filterDraftType").getSelectedKey();
+    var aFilters = [];
 
-            // Build filters array
-            if (sDraftId) {
-                // For GUID, use EQ filter
-                aFilters.push(new Filter("draftId", FilterOperator.EQ, sDraftId));
+    // Get filter values
+    var sDraftId = this.byId("filterDraftId").getValue().trim();
+    var sFiscYear = this.byId("filterFiscYear").getValue().trim();
+    var oPostingDate = this.byId("filterPostingDate").getDateValue();
+    var sDraftType = this.byId("filterDraftType").getSelectedKey();
+
+    // Build filters array
+    if (sDraftId) {
+        aFilters.push(new Filter("draftId", FilterOperator.Contains, sDraftId));
+    }
+
+    if (sFiscYear) {
+        aFilters.push(new Filter("fiscYear", FilterOperator.Contains, sFiscYear));
+    }
+
+    if (oPostingDate) {
+        // Create a filter function for date comparison
+        aFilters.push(new Filter({
+            path: "postingDate",
+            test: function(oValue) {
+                if (!oValue) return false;
+                var oItemDate = new Date(oValue);
+                return oItemDate.getFullYear() === oPostingDate.getFullYear() &&
+                       oItemDate.getMonth() === oPostingDate.getMonth() &&
+                       oItemDate.getDate() === oPostingDate.getDate();
             }
+        }));
+    }
 
-            if (sFiscYear) {
-                aFilters.push(new Filter("fiscYear", FilterOperator.EQ, sFiscYear));
-            }
+    if (sDraftType) {
+        aFilters.push(new Filter("draftType", FilterOperator.EQ, sDraftType));
+    }
 
-            if (oPostingDate) {
-                // Format date for OData filter
-                var sFormattedDate = this._formatDateForOData(oPostingDate);
-                aFilters.push(new Filter("postingDate", FilterOperator.EQ, sFormattedDate));
-            }
-
-            if (sDraftType) {
-                aFilters.push(new Filter("draftType", FilterOperator.EQ, sDraftType));
-            }
-
-            // Reload data with filters
-            if (aFilters.length > 0) {
-                this._loadHeadData(aFilters);
-            } else {
-                // If no filters, load all data
-                this._loadHeadData();
-            }
-        },
+    // Apply filters to the table binding
+    oBinding.filter(aFilters, "Application");
+    
+    // Show message
+    var iFilteredCount = oBinding.getLength();
+    MessageToast.show("Filtered: " + iFilteredCount + " records found");
+},
 
         _formatDateForOData: function(oDate) {
             // Format date as YYYY-MM-DD for OData
@@ -91,16 +105,22 @@ sap.ui.define([
             return sYear + '-' + sMonth + '-' + sDay;
         },
 
-        onClearFilters: function() {
-            // Clear all filter inputs
-            this.byId("filterDraftId").setValue("");
-            this.byId("filterFiscYear").setValue("");
-            this.byId("filterPostingDate").setValue("");
-            this.byId("filterDraftType").setSelectedKey("");
-            
-            // Reload data without filters
-            this._loadHeadData();
-        },
+      onClearFilters: function() {
+    // Clear all filter inputs
+    this.byId("filterDraftId").setValue("");
+    this.byId("filterFiscYear").setValue("");
+    this.byId("filterPostingDate").setValue("");
+    this.byId("filterDraftType").setSelectedKey("");
+    
+    // Clear filters from table binding
+    var oTable = this.byId("table");
+    var oBinding = oTable.getBinding("items");
+    
+    if (oBinding) {
+        oBinding.filter([], "Application");
+        MessageToast.show("Filters cleared - showing all " + oBinding.getLength() + " records");
+    }
+},
 
         onSelectionChange: function(oEvent) {
             var aSelectedItems = this.byId("table").getSelectedItems();
