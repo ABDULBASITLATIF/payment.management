@@ -14,6 +14,26 @@
       "id": "@sap/generator-fiori:basic",
       "version": "1.20.1",
       "toolsId": "86a3e0cc-3c24-48f7-bfd1-5b9203b37209"
+    },
+    "dataSources": {
+      "ZFI_PAYMENT_MANAGEMENT_ANNO_MDL": {
+        "uri": "/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Annotations(TechnicalName='ZFI_PAYMENT_MANAGEMENT_ANNO_MDL',Version='0001')/$value/",
+        "type": "ODataAnnotation",
+        "settings": {
+          "localUri": "localService/mainService/ZFI_PAYMENT_MANAGEMENT_ANNO_MDL.xml"
+        }
+      },
+      "mainService": {
+        "uri": "/sap/opu/odata/sap/ZFI_PAYMENT_MANAGEMENT_SRV/",
+        "type": "OData",
+        "settings": {
+          "annotations": [
+            "ZFI_PAYMENT_MANAGEMENT_ANNO_MDL"
+          ],
+          "localUri": "localService/mainService/metadata.xml",
+          "odataVersion": "2.0"
+        }
+      }
     }
   },
   "sap.ui": {
@@ -52,6 +72,11 @@
         "settings": {
           "bundleName": "zfi.payment.management.i18n.i18n"
         }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {}
       }
     },
     "resources": {
@@ -61,45 +86,45 @@
         }
       ]
     },
-"routing": {
-  "config": {
-    "routerClass": "sap.m.routing.Router",
-    "controlAggregation": "pages",
-    "controlId": "app",
-    "transition": "slide",
-    "type": "View",
-    "viewType": "XML",
-    "path": "zfi.payment.management.view",
-    "async": true,
-    "viewPath": "zfi.payment.management.view"
-  },
-  "routes": [
-    {
-      "name": "RouteNewDoc",
-      "pattern": ":?query:",
-      "target": [
-        "TargetNewDoc"
-      ]
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "zfi.payment.management.view",
+        "async": true,
+        "viewPath": "zfi.payment.management.view"
+      },
+      "routes": [
+        {
+          "name": "RouteNewDoc",
+          "pattern": ":?query:",
+          "target": [
+            "TargetNewDoc"
+          ]
+        },
+        {
+          "name": "RoutePostOutgoing",
+          "pattern": "postoutgoing",
+          "target": [
+            "TargetPostOutgoing"
+          ]
+        }
+      ],
+      "targets": {
+        "TargetNewDoc": {
+          "id": "NewDoc",
+          "name": "NewDoc"
+        },
+        "TargetPostOutgoing": {
+          "id": "PostOutgoing",
+          "name": "PostOutgoing"
+        }
+      }
     },
-    {
-      "name": "RoutePostOutgoing",
-      "pattern": "postoutgoing",
-      "target": [
-        "TargetPostOutgoing"
-      ]
-    }
-  ],
-  "targets": {
-    "TargetNewDoc": {
-      "id": "NewDoc",
-      "name": "NewDoc"
-    },
-    "TargetPostOutgoing": {
-      "id": "PostOutgoing",
-      "name": "PostOutgoing"
-    }
-  }
-},
     "rootView": {
       "viewName": "zfi.payment.management.view.App",
       "type": "XML",

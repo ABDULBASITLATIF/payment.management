@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
+    <edmx:Reference Uri="./sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_AGGREGATION',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="Org.OData.Aggregation.V1" Alias="Aggregation"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="./sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_ANALYTICS',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.Analytics.v1" Alias="Analytics"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="./sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CAPABILITIES',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="Org.OData.Capabilities.V1" Alias="Capabilities"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="./sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CODELIST',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.CodeList.v1" Alias="SAP__CodeList"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="./sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMON',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.Common.v1" Alias="Common"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="./sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMUNICATION',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.Communication.v1" Alias="Communication"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="./sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_MEASURES',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="Org.OData.Measures.V1" Alias="Measures"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="./sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_PERSONALDATA',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.PersonalData.v1" Alias="PersonalData"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="./sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_UI',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.UI.v1" Alias="UI"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="./sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_VALIDATION',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="Org.OData.Validation.V1" Alias="Validation"/>
+    </edmx:Reference>
+    <edmx:DataServices m:DataServiceVersion="2.0">
+        <Schema Namespace="ZFI_PAYMENT_MANAGEMENT_SRV" xml:lang="en" sap:schema-version="1" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+            <EntityType Name="headType" sap:label="CDS View for Payment Draft Head" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="draftId"/>
+                </Key>
+                <Property Name="draftId" Type="Edm.Guid" Nullable="false" sap:label="Payment Draft ID"/>
+                <Property Name="compCode" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Company Code"/>
+                <Property Name="fiscYear" Type="Edm.String" MaxLength="4" sap:display-format="NonNegative" sap:label="Fiscal Year"/>
+                <Property Name="draftType" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Draft Type"/>
+                <Property Name="docDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Document Date" sap:quickinfo="Document Date in Document"/>
+                <Property Name="postingDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Posting Date" sap:quickinfo="Posting Date in the Document"/>
+                <Property Name="reference" Type="Edm.String" MaxLength="16" sap:display-format="UpperCase" sap:label="Reference" sap:quickinfo="Reference Document Number"/>
+                <Property Name="headText" Type="Edm.String" MaxLength="25" sap:label="Company Name" sap:quickinfo="Name of Company Code or Company"/>
+                <Property Name="bankKey" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="House Bank" sap:quickinfo="Short Key for a House Bank"/>
+                <Property Name="bankAcc" Type="Edm.String" MaxLength="18" sap:display-format="UpperCase" sap:label="Payee acct no." sap:quickinfo="Bank account number of the payee"/>
+                <Property Name="vendor" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Supplier" sap:quickinfo="Account Number of Supplier"/>
+                <Property Name="action" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Character Length 1" sap:quickinfo="Character Field of Length 1"/>
+                <NavigationProperty Name="to_item" Relationship="ZFI_PAYMENT_MANAGEMENT_SRV.assoc_B8016EAB107248EC709ECEAA8E01519B" FromRole="FromRole_assoc_B8016EAB107248EC709ECEAA8E01519B" ToRole="ToRole_assoc_B8016EAB107248EC709ECEAA8E01519B"/>
+            </EntityType>
+            <EntityType Name="itemType" sap:label="CDS View for Payment Draft Items" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="draftId"/>
+                    <PropertyRef Name="itemId"/>
+                </Key>
+                <Property Name="draftId" Type="Edm.Guid" Nullable="false" sap:label="Payment Draft ID"/>
+                <Property Name="itemId" Type="Edm.Guid" Nullable="false" sap:label="Payment Draft ID"/>
+                <Property Name="itemTy" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Payment Item Type"/>
+                <Property Name="amntLC" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
+                <Property Name="amntDC" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount" sap:quickinfo="Amount in document currency"/>
+                <Property Name="refDoc" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Document Number" sap:quickinfo="Document Number of an Accounting Document"/>
+                <Property Name="refYear" Type="Edm.String" MaxLength="4" sap:display-format="NonNegative" sap:label="Fiscal Year"/>
+                <Property Name="refLine" Type="Edm.String" MaxLength="3" sap:display-format="NonNegative" sap:label="Item" sap:quickinfo="Number of Line Item Within Accounting Document"/>
+            </EntityType>
+            <EntityType Name="openItemsType" sap:label="CDS View to fetch vendor open items" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="compCode"/>
+                    <PropertyRef Name="docNo"/>
+                    <PropertyRef Name="yearF"/>
+                    <PropertyRef Name="lineItem"/>
+                </Key>
+                <Property Name="compCode" Type="Edm.String" Nullable="false" MaxLength="4" sap:display-format="UpperCase" sap:label="Company Code"/>
+                <Property Name="docNo" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="Document Number" sap:quickinfo="Document Number of an Accounting Document"/>
+                <Property Name="yearF" Type="Edm.String" Nullable="false" MaxLength="4" sap:display-format="NonNegative" sap:label="Fiscal Year"/>
+                <Property Name="lineItem" Type="Edm.String" Nullable="false" MaxLength="3" sap:display-format="NonNegative" sap:label="Item" sap:quickinfo="Number of Line Item Within Accounting Document"/>
+                <Property Name="vendorCode" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Supplier" sap:quickinfo="Account Number of Supplier"/>
+                <Property Name="postingDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Posting Date" sap:quickinfo="Posting Date in the Document"/>
+                <Property Name="docType" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="Document Type"/>
+                <Property Name="amntLC" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
+                <Property Name="amntDC" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount" sap:quickinfo="Amount in document currency"/>
+                <Property Name="baseDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Baseline Payment Dte" sap:quickinfo="Baseline Date for Due Date Calculation"/>
+                <Property Name="extRef" Type="Edm.String" MaxLength="16" sap:display-format="UpperCase" sap:label="Reference" sap:quickinfo="Reference Document Number"/>
+                <Property Name="assignNo" Type="Edm.String" MaxLength="18" sap:label="Assignment" sap:quickinfo="Assignment Number"/>
+                <Property Name="spGl" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Special G/L Ind." sap:quickinfo="Special G/L Indicator"/>
+                <Property Name="debCredInd" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Debit/Credit Ind." sap:quickinfo="Debit/Credit Indicator"/>
+                <Property Name="postKey" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="Posting Key"/>
+            </EntityType>
+            <Association Name="assoc_B8016EAB107248EC709ECEAA8E01519B" sap:content-version="1">
+                <End Type="ZFI_PAYMENT_MANAGEMENT_SRV.headType" Multiplicity="1" Role="FromRole_assoc_B8016EAB107248EC709ECEAA8E01519B"/>
+                <End Type="ZFI_PAYMENT_MANAGEMENT_SRV.itemType" Multiplicity="*" Role="ToRole_assoc_B8016EAB107248EC709ECEAA8E01519B"/>
+            </Association>
+            <EntityContainer Name="ZFI_PAYMENT_MANAGEMENT_SRV_Entities" m:IsDefaultEntityContainer="true" sap:message-scope-supported="true" sap:supported-formats="atom json xlsx">
+                <EntitySet Name="head" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.headType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+                <EntitySet Name="item" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.itemType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+                <EntitySet Name="openItems" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.openItemsType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+                <AssociationSet Name="assoc_B8016EAB107248EC709ECEAA8E01519B" Association="ZFI_PAYMENT_MANAGEMENT_SRV.assoc_B8016EAB107248EC709ECEAA8E01519B" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
+                    <End EntitySet="head" Role="FromRole_assoc_B8016EAB107248EC709ECEAA8E01519B"/>
+                    <End EntitySet="item" Role="ToRole_assoc_B8016EAB107248EC709ECEAA8E01519B"/>
+                </AssociationSet>
+            </EntityContainer>
+            <Annotation Term="Core.SchemaVersion" String="1.0.0" xmlns="http://docs.oasis-open.org/odata/ns/edm"/>
+            <Annotations Target="ZFI_PAYMENT_MANAGEMENT_SRV.ZFI_PAYMENT_MANAGEMENT_SRV_Entities" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.ApplyMultiUnitBehaviorForSortingAndFiltering" Bool="true"/>
+            </Annotations>
+            <Annotations Target="ZFI_PAYMENT_MANAGEMENT_SRV.ZFI_PAYMENT_MANAGEMENT_SRV_Entities/head" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Capabilities.NavigationRestrictions">
+                    <Record>
+                        <PropertyValue Property="RestrictedProperties">
+                            <Collection>
+                                <Record>
+                                    <PropertyValue Property="NavigationProperty" NavigationPropertyPath="to_item"/>
+                                    <PropertyValue Property="InsertRestrictions">
+                                        <Record>
+                                            <PropertyValue Property="Insertable" Bool="false"/>
+                                        </Record>
+                                    </PropertyValue>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <atom:link rel="self" href="https://VHFQMWD1WD01.SAP.SAROOJ.COM:44380/sap/opu/odata/sap/ZFI_PAYMENT_MANAGEMENT_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
+            <atom:link rel="latest-version" href="https://VHFQMWD1WD01.SAP.SAROOJ.COM:44380/sap/opu/odata/sap/ZFI_PAYMENT_MANAGEMENT_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>

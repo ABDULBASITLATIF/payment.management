@@ -31,46 +31,46 @@
             <Input id="companyCodeInput" value="1010" editable="false"/>
             
             <Label id="postingDateLabel" text="Posting Date"/>
-            <Input id="postingDateInput" value="11/06/2015" editable="false"/>
+            <Input id="postingDateInput" value="" editable="false"/>
             
             <Label id="documentDateLabel" text="Document Date"/>
-            <Input id="documentDateInput" value="11/06/2015" editable="false"/>
+            <Input id="documentDateInput" value="" editable="false"/>
             
             <Label id="valueDateLabel" text="Value Date" required="true"/>
-            <DatePicker id="valueDatePicker" value="11/06/2015"/>
+            <DatePicker id="valueDatePicker" value=""/>
             
             <Label id="referenceLabel" text="Reference"/>
             <Input id="referenceInput" value=""/>
             
             <Label id="periodLabel" text="Period"/>
-            <Input id="periodInput" value="11" editable="false"/>
+            <Input id="periodInput" value="" editable="false"/>
             
             <Label id="journalEntryTypeLabel" text="Journal Entry Type:"/>
-            <Input id="journalEntryTypeInput" value="KZ (Vendor payment)" editable="false"/>
+            <Input id="journalEntryTypeInput" value=" " editable="false"/>
             
             <!-- Bank Data Section -->
             <core:Title id="_IDGenTitle9" text="Bank Data" />
             
             <Label id="glAccountLabel" text="G/L Account" required="true"/>
            
-             <Input id="glAccountInput" value="11002010" width="80%"/>
+             <Input id="glAccountInput" value=" " width="80%"/>
           
             
             <Label id="houseBankLabel" text="HouseBank/AccountID" required="true" width="auto"/>
        
-            <Input id="houseBankInput" value="BANK2" width="60%"/>
+            <Input id="houseBankInput" value=" " width="60%"/>
                 
            
             
             <Label id="amountCurrencyLabel" text="Amount/Currency:" required="true"/>
           
-            <Input id="amountInput" value="217.56" width="60%"/>
+            <Input id="amountInput" value=" " width="60%"/>
        
  
       
             
             <Label id="feesLabel" text="Fees:"/>
-            <Input id="feesInput" value="0.00"/>
+            <Input id="feesInput" value=" "/>
             
             <Label id="assignmentLabel" text="Assignment:"/>
             <Input id="assignmentInput" value=""/>
@@ -80,7 +80,7 @@
             
             <Label id="supplierAccountLabel" text="Supplier Account:"/>
            
-            <Input id="supplierAccountInput" value="10300002" width="80%"/>
+            <Input id="supplierAccountInput" value=" " width="80%"/>
       
            
  

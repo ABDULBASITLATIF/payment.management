@@ -45,7 +45,7 @@
     <f:content>
         <Table
             id="openItemsTable"
-            items="{/openItems}"
+            items=""
             mode="MultiSelect"
             width="auto">
             <headerToolbar>
@@ -89,20 +89,7 @@
                         <Button id="_IDGenButton9" icon="sap-icon://accept" type="Emphasized"/>
                     </cells>
                 </ColumnListItem>
-                <ColumnListItem id="_IDGenColumnListItem3" selected="true">
-                    <cells>
-                        <Text id="_IDGenText29" text="1010"/>
-                        <Text id="_IDGenText30" text="10300002"/>
-                        <Link id="_IDGenLink1" text="1900001055"/>
-                        <Text id="_IDGenText31" text="KR"/>
-                        <Text id="_IDGenText32" text=""/>
-                        <Text id="_IDGenText33" text="11/06/2015"/>
-                        <Text id="_IDGenText34" text="11/30/2015"/>
-                        <Text id="_IDGenText35" text="-111.00"/>
-                        <Text id="_IDGenText36" text=""/>
-                        <Button id="_IDGenButton10" icon="sap-icon://accept" type="Emphasized"/>
-                    </cells>
-                </ColumnListItem>
+                
             </items>
         </Table>
     </f:content>
@@ -121,7 +108,7 @@
     <f:content>
         <Table
             id="itemsToClearTable"
-            items="{/itemsToBeCleared}"
+            items=""
             width="100%">
             <headerToolbar>
                 <OverflowToolbar id="_IDGenOverflowToolbar1">
@@ -150,16 +137,6 @@
                         <Text id="_IDGenText44" text="-111.00"/>
                         <Text id="_IDGenText45" text="-2.22"/>
                         <Text id="_IDGenText46" text=""/>
-                    </cells>
-                </ColumnListItem>
-                <ColumnListItem id="_IDGenColumnListItem5">
-                    <cells>
-                        <Button id="_IDGenButton16" icon="sap-icon://navigation-left-arrow"/>
-                        <Link id="_IDGenLink3" text="1900001..."/>
-                        <Text id="_IDGenText47" text="-111.00"/>
-                        <Text id="_IDGenText48" text="-111.00"/>
-                        <Text id="_IDGenText49" text="-2.22"/>
-                        <Text id="_IDGenText50" text=""/>
                     </cells>
                 </ColumnListItem>
             </items>
