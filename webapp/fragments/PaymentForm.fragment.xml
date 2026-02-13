@@ -4,87 +4,76 @@
     xmlns:f="sap.ui.layout.form"
     xmlns:core="sap.ui.core">
     
-    <f:SimpleForm id="paymentForm"
-        editable="true"
-        width="auto"
-        layout="ResponsiveGridLayout"
-        title="Payment"
-        labelSpanXL="4"
-        labelSpanL="4"
-        labelSpanM="4"
-        labelSpanS="12"
-        adjustLabelSpan="false"
-        emptySpanXL="0"
-        emptySpanL="0"
-        emptySpanM="0"
-        emptySpanS="0"
-        columnsXL="3"
-        columnsL="3"
-        columnsM="2"
+<f:SimpleForm id="paymentForm"
+    editable="true"
+    layout="ResponsiveGridLayout"
+    title="Payment"
+    labelSpanXL="4"
+    labelSpanL="4"
+    labelSpanM="4"
+    labelSpanS="12"
+    adjustLabelSpan="false"
+    emptySpanXL="0"
+    emptySpanL="0"
+    emptySpanM="0"
+    emptySpanS="0"
+    columnsXL="3"
+    columnsL="3"
+    columnsM="2"
+    singleContainerFullSize="false">
+    <f:content>
+        <!-- General Information Section -->
+        <core:Title id="_IDGenTitle8" text="General Information" />
         
-        singleContainerFullSize="false">
-        <f:content>
-            <!-- General Information Section -->
-            <core:Title id="_IDGenTitle8" text="General Information" />
-            
-            <Label id="companyCodeLabel" text="Company Code" required="true"/>
-            <Input id="companyCodeInput" value=" "  />
-            
-            <Label id="postingDateLabel" text="Posting Date"/>
-            <Input id="postingDateInput" value=""  />
-            
-            <Label id="documentDateLabel" text="Document Date"/>
-            <Input id="documentDateInput" value=""  />
-            
-            <Label id="valueDateLabel" text="Value Date" required="true"/>
-            <DatePicker id="valueDatePicker" value=""/>
-            
-            <Label id="referenceLabel" text="Reference"/>
-            <Input id="referenceInput" value=""/>
-            
-            <Label id="periodLabel" text="Period"/>
-            <Input id="periodInput" value="" />
-            
-            <Label id="journalEntryTypeLabel" text="Journal Entry Type:"/>
-            <Input id="journalEntryTypeInput" value=" " />
-            
-            <!-- Bank Data Section -->
-            <core:Title id="_IDGenTitle9" text="Bank Data" />
-            
-            <Label id="glAccountLabel" text="G/L Account" required="true"/>
-           
-             <Input id="glAccountInput" value=" " width="80%"/>
-          
-            
-            <Label id="houseBankLabel" text="HouseBank/AccountID" required="true" width="auto"/>
-       
-            <Input id="houseBankInput" value=" " width="60%"/>
-                
-           
-            
-            <Label id="amountCurrencyLabel" text="Amount/Currency:" required="true"/>
-          
-            <Input id="amountInput" value=" " width="60%"/>
-       
- 
-      
-            
-            <Label id="feesLabel" text="Fees:"/>
-            <Input id="feesInput" value=" "/>
-            
-            <Label id="assignmentLabel" text="Assignment:"/>
-            <Input id="assignmentInput" value=""/>
-            
-            <!-- Open Item Selection Section -->
-            <core:Title id="_IDGenTitle10" text="Open Item Selection" />
-            
-            <Label id="supplierAccountLabel" text="Supplier Account:"/>
-           
-            <Input id="supplierAccountInput" value=" " width="80%"/>
-      
-           
- 
-        </f:content>
-    </f:SimpleForm>
+        <Label id="draftidLabel" text="Draft ID" required="true" width="auto"/>
+        <Input id="draftidInput" value="" editable="false" width="auto"/>
+        
+        <Label id="companyCodeLabel" text="Company Code" required="true" width="auto"/>
+        <Input id="companyCodeInput" value="" maxLength="4" width="auto"/>
+        
+        <Label id="fiscalYearLabel" text="Fiscal Year" required="true" width="auto"/>
+        <Input id="fiscalYearInput" value="" maxLength="4" width="auto"/>
+        
+        <Label id="draftTypeLabel" text="Draft Type" required="true" width="auto"/>
+        <Input id="draftTypeInput" value="" maxLength="1" width="auto"/>
+        
+        <Label id="documentDateLabel" text="Document Date" required="true" width="auto"/>
+        <DatePicker id="documentDatePicker" 
+            value=""
+            displayFormat="dd/MM/yyyy"
+            width="auto"/>
+        
+        <Label id="postingDateLabel" text="Posting Date" required="true" width="auto"/>
+        <DatePicker id="postingDatePicker" 
+            value=""
+            displayFormat="dd/MM/yyyy"
+            width="auto"/>
+        
+        <Label id="referenceLabel" text="Reference" width="auto"/>
+        <Input id="referenceInput" value="" maxLength="16" width="auto"/>
+        
+        <Label id="companyNameLabel" text="Company Name" width="auto"/>
+        <Input id="companyNameInput" value="" maxLength="25" width="auto"/>
+        
+        <!-- Bank Data Section -->
+        <core:Title id="_IDGenTitle9" text="Bank Data" />
+        
+        <Label id="houseBankLabel" text="House Bank" required="true" width="auto"/>
+        <Input id="houseBankInput" value="" maxLength="5" width="auto"/>
+        
+        <Label id="bankAccountLabel" text="Bank Account No." required="true" width="auto"/>
+        <Input id="bankAccountInput" value="" maxLength="18" width="auto"/>
+        
+        <!-- Supplier Information Section -->
+        <core:Title id="_IDGenTitle10" text="Supplier Information" />
+        
+        <Label id="supplierAccountLabel" text="Vendor" required="true" width="auto"/>
+        <Input id="supplierAccountInput" value="" maxLength="10" width="auto"/>
+        
+        <Label id="actionLabel" text="Action" width="auto"/>
+        <Input id="actionInput" value="" maxLength="1" width="auto"/>
+        
+    </f:content>
+</f:SimpleForm>
     
 </core:FragmentDefinition>
