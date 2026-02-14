@@ -47,6 +47,9 @@
                 <Property Name="bankKey" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="House Bank" sap:quickinfo="Short Key for a House Bank"/>
                 <Property Name="bankAcc" Type="Edm.String" MaxLength="18" sap:display-format="UpperCase" sap:label="Payee acct no." sap:quickinfo="Bank account number of the payee"/>
                 <Property Name="vendor" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Supplier" sap:quickinfo="Account Number of Supplier"/>
+                <Property Name="payAmnt" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount Paid" sap:quickinfo="Amount Paid in the Payment Currency"/>
+                <Property Name="curr" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Currency" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
+                <Property Name="payMethod" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Payment Method"/>
                 <Property Name="action" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Character Length 1" sap:quickinfo="Character Field of Length 1"/>
                 <NavigationProperty Name="to_item" Relationship="ZFI_PAYMENT_MANAGEMENT_SRV.assoc_B8016EAB107248EC709ECEAA8E01519B" FromRole="FromRole_assoc_B8016EAB107248EC709ECEAA8E01519B" ToRole="ToRole_assoc_B8016EAB107248EC709ECEAA8E01519B"/>
             </EntityType>

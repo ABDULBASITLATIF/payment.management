@@ -6,24 +6,16 @@
     
 <f:SimpleForm id="paymentForm"
     editable="true"
-    layout="ResponsiveGridLayout"
+     
     title="Payment"
-    labelSpanXL="4"
-    labelSpanL="4"
-    labelSpanM="4"
-    labelSpanS="12"
-    adjustLabelSpan="false"
-    emptySpanXL="0"
-    emptySpanL="0"
-    emptySpanM="0"
-    emptySpanS="0"
-    columnsXL="3"
-    columnsL="3"
-    columnsM="2"
-    singleContainerFullSize="false">
+  		layout="ColumnLayout"
+			 
+			columnsM="2"
+			columnsL="3"
+			columnsXL="4">
     <f:content>
         <!-- General Information Section -->
-        <core:Title id="_IDGenTitle8" text="General Information" />
+ 
         
         <Label id="draftidLabel" text="Draft ID" required="true" width="auto"/>
         <Input id="draftidInput" value="" editable="false" width="auto"/>
@@ -34,8 +26,8 @@
         <Label id="fiscalYearLabel" text="Fiscal Year" required="true" width="auto"/>
         <Input id="fiscalYearInput" value="" maxLength="4" width="auto"/>
         
-        <Label id="draftTypeLabel" text="Draft Type" required="true" width="auto"/>
-        <Input id="draftTypeInput" value="" maxLength="1" width="auto"/>
+        <!-- <Label id="draftTypeLabel" text="Draft Type" required="true" width="auto"/>
+        <Input id="draftTypeInput" value="" maxLength="1" width="auto"/> -->
         
         <Label id="documentDateLabel" text="Document Date" required="true" width="auto"/>
         <DatePicker id="documentDatePicker" 
@@ -52,11 +44,10 @@
         <Label id="referenceLabel" text="Reference" width="auto"/>
         <Input id="referenceInput" value="" maxLength="16" width="auto"/>
         
-        <Label id="companyNameLabel" text="Company Name" width="auto"/>
-        <Input id="companyNameInput" value="" maxLength="25" width="auto"/>
+        <Label id="_IDGenLabel1" text="Header Text" width="auto"/>
+        <Input id="_IDGenInput" value="" maxLength="25" width="auto"/>
         
-        <!-- Bank Data Section -->
-        <core:Title id="_IDGenTitle9" text="Bank Data" />
+    
         
         <Label id="houseBankLabel" text="House Bank" required="true" width="auto"/>
         <Input id="houseBankInput" value="" maxLength="5" width="auto"/>
@@ -65,14 +56,26 @@
         <Input id="bankAccountInput" value="" maxLength="18" width="auto"/>
         
         <!-- Supplier Information Section -->
-        <core:Title id="_IDGenTitle10" text="Supplier Information" />
+       
         
         <Label id="supplierAccountLabel" text="Vendor" required="true" width="auto"/>
-        <Input id="supplierAccountInput" value="" maxLength="10" width="auto"/>
+        <Input id="supplierAccountInput" 
+    value="" 
+    maxLength="10" 
+    width="auto"
+    submit="onVendorSubmit"/>
         
-        <Label id="actionLabel" text="Action" width="auto"/>
-        <Input id="actionInput" value="" maxLength="1" width="auto"/>
+        <!-- <Label id="actionLabel" text="Action" width="auto"/>
+        <Input id="actionInput" value="" maxLength="1" width="auto"/> -->
         
+        <Label id="_IDGenLabel4" text="Total Pay. Amount" width="auto"/>
+        <Input id="_IDGenInput3" value="" maxLength="1" width="auto"/>
+
+        <Label id="_IDGenLabel2" text="Total Invoice Sum" width="auto"/>
+        <Input id="_IDGenInput1" value="" maxLength="1" width="auto"/>
+
+        <Label id="_IDGenLabel3" text="Balance" width="auto"/>
+        <Input id="_IDGenInput2" value="" maxLength="1" width="auto"/>
     </f:content>
 </f:SimpleForm>
     
