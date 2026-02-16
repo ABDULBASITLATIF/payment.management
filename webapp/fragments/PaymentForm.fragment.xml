@@ -68,14 +68,14 @@
         <!-- <Label id="actionLabel" text="Action" width="auto"/>
         <Input id="actionInput" value="" maxLength="1" width="auto"/> -->
         
-        <Label id="_IDGenLabel4" text="Total Pay. Amount" width="auto"/>
-        <Input id="_IDGenInput3" value="" maxLength="1" width="auto"/>
+        <Label id="_IDGenLabel4" text="Total Pay. Amount" width="auto" />
+        <Input id="_IDGenInput3" value=""   width="auto" change="onPayAmountChange" liveChange="onPayAmountChange"/>
 
         <Label id="_IDGenLabel2" text="Total Invoice Sum" width="auto"/>
-        <Input id="_IDGenInput1" value="" maxLength="1" width="auto"/>
+        <Input id="_IDGenInput1" value=""   width="auto"/>
 
         <Label id="_IDGenLabel3" text="Balance" width="auto"/>
-        <Input id="_IDGenInput2" value="" maxLength="1" width="auto"/>
+        <Input id="_IDGenInput2" value=""   width="auto"/>
     </f:content>
 </f:SimpleForm>
     

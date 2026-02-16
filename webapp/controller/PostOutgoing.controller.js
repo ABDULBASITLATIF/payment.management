@@ -24,13 +24,260 @@ sap.ui.define([
 
     return Controller.extend("zfi.payment.management.controller.PostOutgoing", {
         
-onInit: function() {
+onInit: function () {
     const oModel = new JSONModel({
         openItems: [],
         itemsToBeCleared: []
     });
     this.getView().setModel(oModel, "openItems");
-    this._registerForP13n();  // ✅ only this remains
+
+    // Page mode model: "create" or "edit"
+    const oPageModel = new JSONModel({
+        mode: "create",
+        draftId: null
+    });
+    this.getView().setModel(oPageModel, "pageModel");
+
+    this._registerForP13n();
+
+    // Attach route matched
+    const oRouter = this.getOwnerComponent().getRouter();
+    oRouter.getRoute("RoutePostOutgoing").attachMatched(this._onRouteMatched, this);
+},
+
+_onRouteMatched: function (oEvent) {
+    const oArgs = oEvent.getParameter("arguments");
+    const sDraftId = oArgs.draftId;
+
+    if (sDraftId) {
+        // Edit mode
+        this.getView().getModel("pageModel").setData({
+            mode: "edit",
+            draftId: sDraftId
+        });
+        this._loadDraft(sDraftId);
+    } else {
+        // Create mode
+        this.getView().getModel("pageModel").setData({
+            mode: "create",
+            draftId: null
+        });
+        this._resetPage();
+    }
+},
+
+_resetPage: function () {
+    // Clear JSON model
+    const oModel = this.getView().getModel("openItems");
+    oModel.setData({
+        openItems: [],
+        itemsToBeCleared: []
+    });
+
+    // Clear form fields
+    const aInputIds = [
+        "draftidInput", "companyCodeInput", "fiscalYearInput",
+        "referenceInput", "_IDGenInput", "houseBankInput",
+        "bankAccountInput", "supplierAccountInput",
+        "_IDGenInput3", "_IDGenInput1", "_IDGenInput2"
+    ];
+    aInputIds.forEach(function (sId) {
+        const oControl = this.byId(sId);
+        if (oControl) {
+            oControl.setValue("");
+            if (oControl.setValueState) {
+                oControl.setValueState(sap.ui.core.ValueState.None);
+            }
+        }
+    }.bind(this));
+
+    // Clear date pickers
+    const oDocPicker = this.byId("documentDatePicker");
+    const oPostPicker = this.byId("postingDatePicker");
+    if (oDocPicker)  { oDocPicker.setValue("");  }
+    if (oPostPicker) { oPostPicker.setValue(""); }
+
+    // Reset Save button text
+    this._updateSaveButton("create");
+    this._updateTableTitles();
+},
+
+_updateSaveButton: function (sMode) {
+    const oSaveButton = this.byId("_IDGenButton25");
+    if (oSaveButton) {
+        if (sMode === "edit") {
+            oSaveButton.setText("Update");
+            oSaveButton.attachPress(this.onUpdate.bind(this));
+            oSaveButton.detachPress(this.onSave.bind(this));
+        } else {
+            oSaveButton.setText("Save");
+            oSaveButton.attachPress(this.onSave.bind(this));
+            oSaveButton.detachPress(this.onUpdate.bind(this));
+        }
+    }
+},
+
+_loadDraft: function (sDraftId) {
+    const oDataModel = this.getOwnerComponent().getModel();
+    const that = this;
+
+    this.getView().setBusy(true);
+
+    oDataModel.read("/head(guid'" + sDraftId + "')", {
+        urlParameters: { "$expand": "to_item" },
+        success: function (oHead) {
+            that.getView().setBusy(false);
+
+            // Populate form fields
+            that._populateFormFields(oHead);
+
+            const sVendor  = oHead.vendor;
+            const aToItems = oHead.to_item && oHead.to_item.results
+                ? oHead.to_item.results
+                : [];
+
+            // Map to_item → itemsToBeCleared using UI field names
+            const aItemsToBeCleared = aToItems.map(function (oItem) {
+                return that._mapItemToUIFormat(oItem);
+            });
+
+            // Load open items and exclude already-cleared ones
+            that._loadOpenItemsExcluding(sVendor, aItemsToBeCleared, aToItems);
+
+            // Switch button to Update
+            that._updateSaveButton("edit");
+        },
+        error: function () {
+            that.getView().setBusy(false);
+            MessageBox.error("Failed to load draft.");
+        }
+    });
+},
+
+_populateFormFields: function (oHead) {
+
+    const fnSet = function (sId, sValue) {
+        const oCtrl = this.byId(sId);
+        if (oCtrl) { oCtrl.setValue(sValue || ""); }
+    }.bind(this);
+
+    const fnSetDate = function (sId, value) {
+    const oCtrl = this.byId(sId);
+    if (!oCtrl || !value) { return; }
+
+    let oDate = null;
+
+    // OData model already parsed it into a JS Date object
+    if (value instanceof Date) {
+        oDate = value;
+
+    // /Date(timestamp)/ or /Date(timestamp+offset)/ format
+    } else if (typeof value === "string" && value.indexOf("/Date(") === 0) {
+        const sTimestamp = value.replace("/Date(", "").replace(")/", "").split("+")[0];
+        oDate = new Date(parseInt(sTimestamp));
+
+    // ISO string: "2025-03-27T00:00:00"
+    } else if (typeof value === "string" && value.indexOf("T") > -1) {
+        oDate = new Date(value);
+
+    // Plain date string: "2025-03-27"
+    } else if (typeof value === "string" && value.indexOf("-") > -1) {
+        const aParts = value.split("-");
+        oDate = new Date(
+            parseInt(aParts[0]),
+            parseInt(aParts[1]) - 1,
+            parseInt(aParts[2])
+        );
+    }
+
+    if (oDate && !isNaN(oDate.getTime())) {
+        oCtrl.setDateValue(oDate);
+    } else {
+        console.warn("Could not parse date for [" + sId + "], raw value:", value, "type:", typeof value);
+    }
+}.bind(this);
+
+    fnSet("draftidInput",         oHead.draftId);
+    fnSet("companyCodeInput",     oHead.compCode);
+    fnSet("fiscalYearInput",      oHead.fiscYear);
+    fnSet("referenceInput",       oHead.reference);
+    fnSet("_IDGenInput",          oHead.headText);
+    fnSet("houseBankInput",       oHead.bankKey);
+    fnSet("bankAccountInput",     oHead.bankAcc);
+    fnSet("supplierAccountInput", oHead.vendor);
+    fnSet("_IDGenInput3",         oHead.payAmnt);
+
+    fnSetDate("documentDatePicker", oHead.docDate);
+    fnSetDate("postingDatePicker",  oHead.postingDate);
+},
+
+_mapItemToUIFormat: function (oItem) {
+    // Maps to_item backend fields → UI openItems field names
+    return {
+        docNo:       oItem.refDoc,
+        yearF:       oItem.refYear,
+        lineItem:    oItem.refLine,
+        compCode:    oItem.compCode    || "",
+        amntLC:      oItem.amntLC      || "0.000",
+        amntDC:      oItem.amntDC      || "0.000",
+        docType:     oItem.docType     || "",
+        baseDate:    oItem.baseDate    || null,
+        postingDate: oItem.postingDate || null,
+        extRef:      oItem.extRef      || "",
+        assignNo:    oItem.assignNo    || "",
+        spGl:        oItem.spGl        || "",
+        debCredInd:  oItem.debCredInd  || "",
+        postKey:     oItem.postKey     || "",
+        vendorCode:  oItem.vendorCode  || ""
+    };
+},
+
+_loadOpenItemsExcluding: function (sVendor, aItemsToBeCleared, aOriginalToItems) {
+    const oDataModel = this.getOwnerComponent().getModel();
+    const oJSONModel = this.getView().getModel("openItems");
+    const that = this;
+
+    const oTable = this.byId("openItemsTable");
+    if (oTable) { oTable.setBusy(true); }
+
+    const aFilters = [new Filter("vendorCode", FilterOperator.EQ, sVendor)];
+
+    oDataModel.read("/openItems", {
+        filters: aFilters,
+        success: function (oData) {
+            if (oTable) { oTable.setBusy(false); }
+
+            const aAllOpenItems = oData.results || [];
+
+            // Build lookup Set: refDoc|refYear|refLine
+            const oClearedSet = new Set(
+                aOriginalToItems.map(function (oItem) {
+                    return oItem.refDoc + "|" + oItem.refYear + "|" + oItem.refLine;
+                })
+            );
+
+            // Exclude items already cleared
+            const aFilteredOpenItems = aAllOpenItems.filter(function (oItem) {
+                const sKey = oItem.docNo + "|" + oItem.yearF + "|" + oItem.lineItem;
+                return !oClearedSet.has(sKey);
+            });
+
+            oJSONModel.setData({
+                openItems: aFilteredOpenItems,
+                itemsToBeCleared: aItemsToBeCleared
+            });
+
+            that._updateTableTitles();
+            MessageToast.show(
+                "Loaded " + aFilteredOpenItems.length + " open items, " +
+                aItemsToBeCleared.length + " items to be cleared"
+            );
+        },
+        error: function () {
+            if (oTable) { oTable.setBusy(false); }
+            MessageBox.error("Failed to load open items for vendor: " + sVendor);
+        }
+    });
 },
 onVendorSubmit: function(oEvt) {
     const sVendor = oEvt.getSource().getValue().trim();
@@ -88,19 +335,68 @@ _loadOpenItems: function(sVendor) {
         }
     });
 },
+// _updateTableTitles: function() {
+//     const oModel = this.getView().getModel("openItems");
+//     const iOpenItems = oModel.getProperty("/openItems").length;
+//     const iItemsToBeCleared = oModel.getProperty("/itemsToBeCleared").length;
+    
+//     const oOpenItemsTitle = this.byId("_IDGenTitle2");
+//     const oItemsToClearTitle = this.byId("_IDGenTitle3");
+    
+//     if (oOpenItemsTitle) {
+//         oOpenItemsTitle.setText("Open Items (" + iOpenItems + ")");
+//     }
+//     if (oItemsToClearTitle) {
+//         oItemsToClearTitle.setText("Items to Be Cleared (" + iItemsToBeCleared + ")");
+//     }
+// },
 _updateTableTitles: function() {
     const oModel = this.getView().getModel("openItems");
-    const iOpenItems = oModel.getProperty("/openItems").length;
-    const iItemsToBeCleared = oModel.getProperty("/itemsToBeCleared").length;
-    
+    const aOpenItems = oModel.getProperty("/openItems");
+    const aItemsToBeCleared = oModel.getProperty("/itemsToBeCleared");
+
+    const iOpenItems = aOpenItems.length;
+    const iItemsToBeCleared = aItemsToBeCleared.length;
+
     const oOpenItemsTitle = this.byId("_IDGenTitle2");
     const oItemsToClearTitle = this.byId("_IDGenTitle3");
-    
+
     if (oOpenItemsTitle) {
         oOpenItemsTitle.setText("Open Items (" + iOpenItems + ")");
     }
     if (oItemsToClearTitle) {
         oItemsToClearTitle.setText("Items to Be Cleared (" + iItemsToBeCleared + ")");
+    }
+
+    // Calculate Total Invoice Sum from itemsToBeCleared amntLC
+    const fTotalInvoiceSum = aItemsToBeCleared.reduce(function(fSum, oItem) {
+        const fAmt = parseFloat(oItem.amntLC) || 0;
+        return fSum + fAmt;
+    }, 0);
+
+    // Get Total Payment Amount from the fragment input
+    const oPayAmntInput = this.byId("_IDGenInput3");
+    const fPayAmnt = oPayAmntInput ? (parseFloat(oPayAmntInput.getValue()) || 0) : 0;
+
+    // Calculate Balance
+    const fBalance = fPayAmnt - fTotalInvoiceSum;
+
+    // Update Invoice Sum field
+    const oInvoiceSumInput = this.byId("_IDGenInput1");
+    if (oInvoiceSumInput) {
+        oInvoiceSumInput.setValue(fTotalInvoiceSum.toFixed(3));
+    }
+
+    // Update Balance field
+    const oBalanceInput = this.byId("_IDGenInput2");
+    if (oBalanceInput) {
+        oBalanceInput.setValue(fBalance.toFixed(3));
+        oBalanceInput.setValueState(
+            Math.abs(fBalance) < 0.001
+                ? sap.ui.core.ValueState.None
+                : sap.ui.core.ValueState.Error
+        );
+        oBalanceInput.setValueStateText("Balance must be zero to save");
     }
 },
         _registerForP13n: function() {
@@ -656,7 +952,7 @@ onClearItem: function(oEvt) {
     });
 
     this._updateTableTitles();
-    this._rebindOpenItemsTable();
+    // this._rebindOpenItemsTable();
 
     MessageToast.show("Item moved to clearing: " + oItem.docNo);
 },
@@ -736,6 +1032,643 @@ onRefreshItems: function() {
         onNavBack: function() {
             const oRouter = this.getOwnerComponent().getRouter();
             oRouter.navTo("RouteNewDoc");
+        },
+
+// onPost: function() {
+//     const that = this;
+
+//     // ── 1. Collect form field values ──────────────────────────────────────
+//     const sCompCode  = this.byId("companyCodeInput")     ? this.byId("companyCodeInput").getValue().trim()     : "";
+//     const sFiscYear  = this.byId("fiscalYearInput")      ? this.byId("fiscalYearInput").getValue().trim()      : "";
+//     const sReference = this.byId("referenceInput")       ? this.byId("referenceInput").getValue().trim()       : "";
+//     const sHeadText  = this.byId("_IDGenInput")          ? this.byId("_IDGenInput").getValue().trim()          : "";
+//     const sBankKey   = this.byId("houseBankInput")       ? this.byId("houseBankInput").getValue().trim()       : "";
+//     const sBankAcc   = this.byId("bankAccountInput")     ? this.byId("bankAccountInput").getValue().trim()     : "";
+//     const sVendor    = this.byId("supplierAccountInput") ? this.byId("supplierAccountInput").getValue().trim() : "";
+//     const sPayAmnt   = this.byId("_IDGenInput3")         ? this.byId("_IDGenInput3").getValue().trim()         : "0";
+
+//     const oDocDatePicker  = this.byId("documentDatePicker");
+//     const oPostDatePicker = this.byId("postingDatePicker");
+//     const oDocDate        = oDocDatePicker  ? oDocDatePicker.getDateValue()  : null;
+//     const oPostDate       = oPostDatePicker ? oPostDatePicker.getDateValue() : null;
+
+//     // ── 2. Required field validation ──────────────────────────────────────
+//     if (!sCompCode || !sFiscYear || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
+//         MessageBox.error("Please fill all required fields before saving.");
+//         return;
+//     }
+
+//     // ── 3. Balance validation ─────────────────────────────────────────────
+//     const oModel            = this.getView().getModel("openItems");
+//     const aItemsToBeCleared = oModel.getProperty("/itemsToBeCleared");
+
+//     if (aItemsToBeCleared.length === 0) {
+//         MessageBox.error("Please move at least one item to the 'Items to Be Cleared' table before saving.");
+//         return;
+//     }
+
+//     const fTotalInvoiceSum = aItemsToBeCleared.reduce(function(fSum, oItem) {
+//         return fSum + (parseFloat(oItem.amntLC) || 0);
+//     }, 0);
+
+//     const fPayAmnt = parseFloat(sPayAmnt) || 0;
+//     const fBalance = fPayAmnt - fTotalInvoiceSum;
+
+//     if (Math.abs(fBalance) >= 0.001) {
+//         MessageBox.error(
+//             "Balance must be zero before saving.\n" +
+//             "Total Payment Amount: " + fPayAmnt.toFixed(3) + "\n" +
+//             "Total Invoice Sum:    " + fTotalInvoiceSum.toFixed(3) + "\n" +
+//             "Balance:              " + fBalance.toFixed(3)
+//         );
+//         return;
+//     }
+
+//     // ── 4. Date conversion helper ─────────────────────────────────────────
+//     function toODataDate(value) {
+//         if (!value) { return null; }
+
+//         // JS Date object (from DatePicker.getDateValue())
+//         if (value instanceof Date) {
+//             return "/Date(" + value.getTime() + ")/";
+//         }
+
+//         // Already in /Date(timestamp)/ format — return as-is
+//         if (typeof value === "string" && value.indexOf("/Date(") === 0) {
+//             return value;
+//         }
+
+//         // ISO string: "2025-03-27T00:00:00"
+//         if (typeof value === "string" && value.indexOf("T") > -1) {
+//             const oDate = new Date(value);
+//             if (!isNaN(oDate.getTime())) {
+//                 return "/Date(" + oDate.getTime() + ")/";
+//             }
+//         }
+
+//         // Display formatted string: "03/27/2025" (MM/dd/yyyy)
+//         if (typeof value === "string" && value.indexOf("/") > -1 && value.length === 10) {
+//             const aParts = value.split("/");
+//             const oDate = new Date(
+//                 parseInt(aParts[2]),
+//                 parseInt(aParts[0]) - 1,
+//                 parseInt(aParts[1])
+//             );
+//             if (!isNaN(oDate.getTime())) {
+//                 return "/Date(" + oDate.getTime() + ")/";
+//             }
+//         }
+
+//         return null;
+//     }
+
+//     // ── 5. Build to_item deep entity array ────────────────────────────────
+//     const aToItems = aItemsToBeCleared.map(function(oItem, iIndex) {
+//         const sItemId = String(iIndex + 1).padStart(3, "0");
+
+//         return {
+//             itemId:      sItemId,
+//             itemTy:      "1",
+//             amntLC:      oItem.amntLC      || "0.000",
+//             amntDC:      oItem.amntDC      || "0.000",
+//             compCode:    oItem.compCode    || sCompCode,
+//             refDoc:      oItem.docNo,
+//             refYear:     oItem.yearF,
+//             refLine:     oItem.lineItem,
+//             docType:     oItem.docType     || "",
+//             baseDate:    toODataDate(oItem.baseDate),
+//             extRef:      oItem.extRef      || "",
+//             assignNo:    oItem.assignNo    || "",
+//             spGl:        oItem.spGl        || "",
+//             debCredInd:  oItem.debCredInd  || "",
+//             postKey:     oItem.postKey     || "",
+//             postingDate: toODataDate(oItem.postingDate)
+//         };
+//     });
+
+//     // ── 6. Build head payload ─────────────────────────────────────────────
+//     const oPayload = {
+//         compCode:    sCompCode,
+//         fiscYear:    sFiscYear,
+//         draftType:   "1",
+//         docDate:     toODataDate(oDocDate),
+//         postingDate: toODataDate(oPostDate),
+//         reference:   sReference,
+//         headText:    sHeadText,
+//         bankKey:     sBankKey,
+//         bankAcc:     sBankAcc,
+//         vendor:      sVendor,
+//         payAmnt:     parseFloat(sPayAmnt).toFixed(3),
+//         action:      "I",
+//         to_item:     aToItems
+//     };
+
+//     // ── 7. POST to backend ────────────────────────────────────────────────
+//     const oDataModel = this.getOwnerComponent().getModel();
+
+//     oDataModel.create("/head", oPayload, {
+//         success: function(oCreatedData) {
+//             const sDraftId = oCreatedData.draftId;
+
+//             const oDraftIdInput = that.byId("draftidInput");
+//             if (oDraftIdInput && sDraftId) {
+//                 oDraftIdInput.setValue(sDraftId);
+//             }
+
+//             MessageToast.show("Saved successfully. Draft ID: " + sDraftId);
+//         },
+//         error: function(oError) {
+//             let sErrorMessage = "Failed to save payment";
+//             if (oError && oError.responseText) {
+//                 try {
+//                     const oErrorResponse = JSON.parse(oError.responseText);
+//                     if (oErrorResponse.error && oErrorResponse.error.message && oErrorResponse.error.message.value) {
+//                         sErrorMessage = oErrorResponse.error.message.value;
+//                     }
+//                 } catch (e) {
+//                     sErrorMessage = oError.message || sErrorMessage;
+//                 }
+//             }
+//             MessageBox.error(sErrorMessage);
+//         }
+//     });
+// },
+
+// onSave: function () {
+//     const that = this;
+
+//     // ── 1. Collect form field values ──────────────────────────────────────
+//     const sCompCode  = this.byId("companyCodeInput")     ? this.byId("companyCodeInput").getValue().trim()     : "";
+//     const sFiscYear  = this.byId("fiscalYearInput")      ? this.byId("fiscalYearInput").getValue().trim()      : "";
+//     const sReference = this.byId("referenceInput")       ? this.byId("referenceInput").getValue().trim()       : "";
+//     const sHeadText  = this.byId("_IDGenInput")          ? this.byId("_IDGenInput").getValue().trim()          : "";
+//     const sBankKey   = this.byId("houseBankInput")       ? this.byId("houseBankInput").getValue().trim()       : "";
+//     const sBankAcc   = this.byId("bankAccountInput")     ? this.byId("bankAccountInput").getValue().trim()     : "";
+//     const sVendor    = this.byId("supplierAccountInput") ? this.byId("supplierAccountInput").getValue().trim() : "";
+//     const sPayAmnt   = this.byId("_IDGenInput3")         ? this.byId("_IDGenInput3").getValue().trim()         : "0";
+
+//     const oDocDatePicker  = this.byId("documentDatePicker");
+//     const oPostDatePicker = this.byId("postingDatePicker");
+//     const oDocDate        = oDocDatePicker  ? oDocDatePicker.getDateValue()  : null;
+//     const oPostDate       = oPostDatePicker ? oPostDatePicker.getDateValue() : null;
+
+//     // ── 2. Required field validation ──────────────────────────────────────
+//     if (!sCompCode || !sFiscYear || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
+//         MessageBox.error("Please fill all required fields before saving.");
+//         return;
+//     }
+
+//     // ── 3. Balance validation ─────────────────────────────────────────────
+//     const oModel            = this.getView().getModel("openItems");
+//     const aItemsToBeCleared = oModel.getProperty("/itemsToBeCleared");
+
+//     if (aItemsToBeCleared.length === 0) {
+//         MessageBox.error("Please move at least one item to the 'Items to Be Cleared' table before saving.");
+//         return;
+//     }
+
+//     const fTotalInvoiceSum = aItemsToBeCleared.reduce(function (fSum, oItem) {
+//         return fSum + (parseFloat(oItem.amntLC) || 0);
+//     }, 0);
+
+//     const fPayAmnt = parseFloat(sPayAmnt) || 0;
+//     const fBalance = fPayAmnt - fTotalInvoiceSum;
+
+//     if (Math.abs(fBalance) >= 0.001) {
+//         MessageBox.error(
+//             "Balance must be zero before saving.\n" +
+//             "Total Payment Amount: " + fPayAmnt.toFixed(3) + "\n" +
+//             "Total Invoice Sum:    " + fTotalInvoiceSum.toFixed(3) + "\n" +
+//             "Balance:              " + fBalance.toFixed(3)
+//         );
+//         return;
+//     }
+
+//     // ── 4. Date conversion helper ─────────────────────────────────────────
+//     function toODataDate(value) {
+//         if (!value) { return null; }
+//         if (value instanceof Date) {
+//             return "/Date(" + value.getTime() + ")/";
+//         }
+//         if (typeof value === "string" && value.indexOf("/Date(") === 0) {
+//             return value;
+//         }
+//         if (typeof value === "string" && value.indexOf("T") > -1) {
+//             const oDate = new Date(value);
+//             if (!isNaN(oDate.getTime())) {
+//                 return "/Date(" + oDate.getTime() + ")/";
+//             }
+//         }
+//         if (typeof value === "string" && value.indexOf("/") > -1 && value.length === 10) {
+//             const aParts = value.split("/");
+//             const oDate = new Date(
+//                 parseInt(aParts[2]),
+//                 parseInt(aParts[0]) - 1,
+//                 parseInt(aParts[1])
+//             );
+//             if (!isNaN(oDate.getTime())) {
+//                 return "/Date(" + oDate.getTime() + ")/";
+//             }
+//         }
+//         return null;
+//     }
+
+//     // ── 5. Build to_item deep entity array ────────────────────────────────
+//     const aToItems = aItemsToBeCleared.map(function (oItem, iIndex) {
+//         const sItemId = String(iIndex + 1).padStart(3, "0");
+//         return {
+//             itemId:      sItemId,
+//             itemTy:      "1",
+//             amntLC:      oItem.amntLC      || "0.000",
+//             amntDC:      oItem.amntDC      || "0.000",
+//             compCode:    oItem.compCode    || sCompCode,
+//             refDoc:      oItem.docNo,
+//             refYear:     oItem.yearF,
+//             refLine:     oItem.lineItem,
+//             docType:     oItem.docType     || "",
+//             baseDate:    toODataDate(oItem.baseDate),
+//             extRef:      oItem.extRef      || "",
+//             assignNo:    oItem.assignNo    || "",
+//             spGl:        oItem.spGl        || "",
+//             debCredInd:  oItem.debCredInd  || "",
+//             postKey:     oItem.postKey     || "",
+//             postingDate: toODataDate(oItem.postingDate)
+//         };
+//     });
+
+//     // ── 6. Build head payload ─────────────────────────────────────────────
+//     const oPayload = {
+//         compCode:    sCompCode,
+//         fiscYear:    sFiscYear,
+//         draftType:   "1",
+//         docDate:     toODataDate(oDocDate),
+//         postingDate: toODataDate(oPostDate),
+//         reference:   sReference,
+//         headText:    sHeadText,
+//         bankKey:     sBankKey,
+//         bankAcc:     sBankAcc,
+//         vendor:      sVendor,
+//         payAmnt:     parseFloat(sPayAmnt).toFixed(3),
+//         action:      "I",
+//         to_item:     aToItems
+//     };
+
+//     // ── 7. POST to backend ────────────────────────────────────────────────
+//     const oDataModel = this.getOwnerComponent().getModel();
+
+//     oDataModel.create("/head", oPayload, {
+//         success: function (oCreatedData) {
+//             const sDraftId = oCreatedData.draftId;
+
+//             const oDraftIdInput = that.byId("draftidInput");
+//             if (oDraftIdInput && sDraftId) {
+//                 oDraftIdInput.setValue(sDraftId);
+//             }
+
+//             // Switch page to edit mode after first save
+//             that.getView().getModel("pageModel").setData({
+//                 mode: "edit",
+//                 draftId: sDraftId
+//             });
+//             that._updateSaveButton("edit");
+
+//             MessageToast.show("Saved successfully. Draft ID: " + sDraftId);
+//         },
+//         error: function (oError) {
+//             let sErrorMessage = "Failed to save payment";
+//             if (oError && oError.responseText) {
+//                 try {
+//                     const oErrorResponse = JSON.parse(oError.responseText);
+//                     if (oErrorResponse.error && oErrorResponse.error.message && oErrorResponse.error.message.value) {
+//                         sErrorMessage = oErrorResponse.error.message.value;
+//                     }
+//                 } catch (e) {
+//                     sErrorMessage = oError.message || sErrorMessage;
+//                 }
+//             }
+//             MessageBox.error(sErrorMessage);
+//         }
+//     });
+// },
+
+onSave: function() {
+    const that = this;
+
+    // ── 1. Collect form field values ──────────────────────────────────────
+    const sCompCode  = this.byId("companyCodeInput")     ? this.byId("companyCodeInput").getValue().trim()     : "";
+    const sFiscYear  = this.byId("fiscalYearInput")      ? this.byId("fiscalYearInput").getValue().trim()      : "";
+    const sReference = this.byId("referenceInput")       ? this.byId("referenceInput").getValue().trim()       : "";
+    const sHeadText  = this.byId("_IDGenInput")          ? this.byId("_IDGenInput").getValue().trim()          : "";
+    const sBankKey   = this.byId("houseBankInput")       ? this.byId("houseBankInput").getValue().trim()       : "";
+    const sBankAcc   = this.byId("bankAccountInput")     ? this.byId("bankAccountInput").getValue().trim()     : "";
+    const sVendor    = this.byId("supplierAccountInput") ? this.byId("supplierAccountInput").getValue().trim() : "";
+    const sPayAmnt   = this.byId("_IDGenInput3")         ? this.byId("_IDGenInput3").getValue().trim()         : "0";
+
+    const oDocDatePicker  = this.byId("documentDatePicker");
+    const oPostDatePicker = this.byId("postingDatePicker");
+    const oDocDate        = oDocDatePicker  ? oDocDatePicker.getDateValue()  : null;
+    const oPostDate       = oPostDatePicker ? oPostDatePicker.getDateValue() : null;
+
+    // ── 2. Required field validation ──────────────────────────────────────
+    if (!sCompCode || !sFiscYear || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
+        MessageBox.error("Please fill all required fields before saving.");
+        return;
+    }
+
+    // ── 3. Balance validation ─────────────────────────────────────────────
+    const oModel            = this.getView().getModel("openItems");
+    const aItemsToBeCleared = oModel.getProperty("/itemsToBeCleared");
+
+    if (aItemsToBeCleared.length === 0) {
+        MessageBox.error("Please move at least one item to the 'Items to Be Cleared' table before saving.");
+        return;
+    }
+
+    const fTotalInvoiceSum = aItemsToBeCleared.reduce(function(fSum, oItem) {
+        return fSum + (parseFloat(oItem.amntLC) || 0);
+    }, 0);
+
+    const fPayAmnt = parseFloat(sPayAmnt) || 0;
+    const fBalance = fPayAmnt - fTotalInvoiceSum;
+
+    if (Math.abs(fBalance) >= 0.001) {
+        MessageBox.error(
+            "Balance must be zero before saving.\n" +
+            "Total Payment Amount: " + fPayAmnt.toFixed(3) + "\n" +
+            "Total Invoice Sum:    " + fTotalInvoiceSum.toFixed(3) + "\n" +
+            "Balance:              " + fBalance.toFixed(3)
+        );
+        return;
+    }
+
+    // ── 4. Date conversion helper ─────────────────────────────────────────
+    function toODataDate(value) {
+        if (!value) { return null; }
+        if (value instanceof Date) {
+            return "/Date(" + value.getTime() + ")/";
         }
+        if (typeof value === "string" && value.indexOf("/Date(") === 0) {
+            return value;
+        }
+        if (typeof value === "string" && value.indexOf("T") > -1) {
+            const oDate = new Date(value);
+            if (!isNaN(oDate.getTime())) {
+                return "/Date(" + oDate.getTime() + ")/";
+            }
+        }
+        if (typeof value === "string" && value.indexOf("/") > -1 && value.length === 10) {
+            const aParts = value.split("/");
+            const oDate = new Date(
+                parseInt(aParts[2]),
+                parseInt(aParts[0]) - 1,
+                parseInt(aParts[1])
+            );
+            if (!isNaN(oDate.getTime())) {
+                return "/Date(" + oDate.getTime() + ")/";
+            }
+        }
+        return null;
+    }
+
+    // ── 5. Build to_item deep entity array ────────────────────────────────
+    const aToItems = aItemsToBeCleared.map(function(oItem, iIndex) {
+        const sItemId = String(iIndex + 1).padStart(3, "0");
+        return {
+            itemId:      sItemId,
+            itemTy:      "1",
+            amntLC:      oItem.amntLC      || "0.000",
+            amntDC:      oItem.amntDC      || "0.000",
+            compCode:    oItem.compCode    || sCompCode,
+            refDoc:      oItem.docNo,
+            refYear:     oItem.yearF,
+            refLine:     oItem.lineItem,
+            docType:     oItem.docType     || "",
+            baseDate:    toODataDate(oItem.baseDate),
+            extRef:      oItem.extRef      || "",
+            assignNo:    oItem.assignNo    || "",
+            spGl:        oItem.spGl        || "",
+            debCredInd:  oItem.debCredInd  || "",
+            postKey:     oItem.postKey     || "",
+            postingDate: toODataDate(oItem.postingDate)
+        };
+    });
+
+    // ── 6. Build head payload ─────────────────────────────────────────────
+    const oPayload = {
+        compCode:    sCompCode,
+        fiscYear:    sFiscYear,
+        draftType:   "1",
+        docDate:     toODataDate(oDocDate),
+        postingDate: toODataDate(oPostDate),
+        reference:   sReference,
+        headText:    sHeadText,
+        bankKey:     sBankKey,
+        bankAcc:     sBankAcc,
+        vendor:      sVendor,
+        payAmnt:     parseFloat(sPayAmnt).toFixed(3),
+        action:      "I",
+        to_item:     aToItems
+    };
+
+    // ── 7. POST to backend ────────────────────────────────────────────────
+    const oDataModel = this.getOwnerComponent().getModel();
+
+    oDataModel.setUseBatch(false);
+
+    oDataModel.create("/head", oPayload, {
+        success: function(oCreatedData) {
+            const sDraftId = oCreatedData.draftId;
+
+            const oDraftIdInput = that.byId("draftidInput");
+            if (oDraftIdInput && sDraftId) {
+                oDraftIdInput.setValue(sDraftId);
+            }
+
+            that.getView().getModel("pageModel").setData({
+                mode: "edit",
+                draftId: sDraftId
+            });
+            that._updateSaveButton("edit");
+
+            oDataModel.setUseBatch(true);
+
+            MessageToast.show("Saved successfully. Draft ID: " + sDraftId);
+        },
+        error: function(oError) {
+            oDataModel.setUseBatch(true);
+
+            let sErrorMessage = "Failed to save payment";
+            if (oError && oError.responseText) {
+                try {
+                    const oErrorResponse = JSON.parse(oError.responseText);
+                    if (oErrorResponse.error && oErrorResponse.error.message && oErrorResponse.error.message.value) {
+                        sErrorMessage = oErrorResponse.error.message.value;
+                    }
+                } catch (e) {
+                    sErrorMessage = oError.message || sErrorMessage;
+                }
+            }
+            MessageBox.error(sErrorMessage);
+        }
+    });
+},
+
+onUpdate: function() {
+    const that = this;
+    const oPageModel    = this.getView().getModel("pageModel");
+    const sSavedDraftId = oPageModel.getProperty("/draftId");
+
+    // ── 1. Collect form field values ──────────────────────────────────────
+    const sCompCode  = this.byId("companyCodeInput")     ? this.byId("companyCodeInput").getValue().trim()     : "";
+    const sFiscYear  = this.byId("fiscalYearInput")      ? this.byId("fiscalYearInput").getValue().trim()      : "";
+    const sReference = this.byId("referenceInput")       ? this.byId("referenceInput").getValue().trim()       : "";
+    const sHeadText  = this.byId("_IDGenInput")          ? this.byId("_IDGenInput").getValue().trim()          : "";
+    const sBankKey   = this.byId("houseBankInput")       ? this.byId("houseBankInput").getValue().trim()       : "";
+    const sBankAcc   = this.byId("bankAccountInput")     ? this.byId("bankAccountInput").getValue().trim()     : "";
+    const sVendor    = this.byId("supplierAccountInput") ? this.byId("supplierAccountInput").getValue().trim() : "";
+    const sPayAmnt   = this.byId("_IDGenInput3")         ? this.byId("_IDGenInput3").getValue().trim()         : "0";
+
+    const oDocDatePicker  = this.byId("documentDatePicker");
+    const oPostDatePicker = this.byId("postingDatePicker");
+    const oDocDate        = oDocDatePicker  ? oDocDatePicker.getDateValue()  : null;
+    const oPostDate       = oPostDatePicker ? oPostDatePicker.getDateValue() : null;
+
+    // ── 2. Required field validation ──────────────────────────────────────
+    if (!sCompCode || !sFiscYear || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
+        MessageBox.error("Please fill all required fields before updating.");
+        return;
+    }
+
+    // ── 3. Balance validation ─────────────────────────────────────────────
+    const oModel            = this.getView().getModel("openItems");
+    const aItemsToBeCleared = oModel.getProperty("/itemsToBeCleared");
+
+    if (aItemsToBeCleared.length === 0) {
+        MessageBox.error("Please move at least one item to the 'Items to Be Cleared' table before updating.");
+        return;
+    }
+
+    const fTotalInvoiceSum = aItemsToBeCleared.reduce(function(fSum, oItem) {
+        return fSum + (parseFloat(oItem.amntLC) || 0);
+    }, 0);
+
+    const fPayAmnt = parseFloat(sPayAmnt) || 0;
+    const fBalance = fPayAmnt - fTotalInvoiceSum;
+
+    if (Math.abs(fBalance) >= 0.001) {
+        MessageBox.error(
+            "Balance must be zero before updating.\n" +
+            "Total Payment Amount: " + fPayAmnt.toFixed(3) + "\n" +
+            "Total Invoice Sum:    " + fTotalInvoiceSum.toFixed(3) + "\n" +
+            "Balance:              " + fBalance.toFixed(3)
+        );
+        return;
+    }
+
+    // ── 4. Date conversion helper ─────────────────────────────────────────
+    function toODataDate(value) {
+        if (!value) { return null; }
+        if (value instanceof Date) {
+            return "/Date(" + value.getTime() + ")/";
+        }
+        if (typeof value === "string" && value.indexOf("/Date(") === 0) {
+            return value;
+        }
+        if (typeof value === "string" && value.indexOf("T") > -1) {
+            const oDate = new Date(value);
+            if (!isNaN(oDate.getTime())) {
+                return "/Date(" + oDate.getTime() + ")/";
+            }
+        }
+        if (typeof value === "string" && value.indexOf("/") > -1 && value.length === 10) {
+            const aParts = value.split("/");
+            const oDate = new Date(
+                parseInt(aParts[2]),
+                parseInt(aParts[0]) - 1,
+                parseInt(aParts[1])
+            );
+            if (!isNaN(oDate.getTime())) {
+                return "/Date(" + oDate.getTime() + ")/";
+            }
+        }
+        return null;
+    }
+
+    // ── 5. Build to_item deep entity array ────────────────────────────────
+    const aToItems = aItemsToBeCleared.map(function(oItem, iIndex) {
+        const sItemId = String(iIndex + 1).padStart(3, "0");
+        return {
+            itemId:      sItemId,
+            itemTy:      "1",
+            amntLC:      oItem.amntLC      || "0.000",
+            amntDC:      oItem.amntDC      || "0.000",
+            compCode:    oItem.compCode    || sCompCode,
+            refDoc:      oItem.docNo,
+            refYear:     oItem.yearF,
+            refLine:     oItem.lineItem,
+            docType:     oItem.docType     || "",
+            baseDate:    toODataDate(oItem.baseDate),
+            extRef:      oItem.extRef      || "",
+            assignNo:    oItem.assignNo    || "",
+            spGl:        oItem.spGl        || "",
+            debCredInd:  oItem.debCredInd  || "",
+            postKey:     oItem.postKey     || "",
+            postingDate: toODataDate(oItem.postingDate)
+        };
+    });
+
+    // ── 6. Build head payload ─────────────────────────────────────────────
+    const oPayload = {
+        draftId:     sSavedDraftId,
+        compCode:    sCompCode,
+        fiscYear:    sFiscYear,
+        draftType:   "1",
+        docDate:     toODataDate(oDocDate),
+        postingDate: toODataDate(oPostDate),
+        reference:   sReference,
+        headText:    sHeadText,
+        bankKey:     sBankKey,
+        bankAcc:     sBankAcc,
+        vendor:      sVendor,
+        payAmnt:     parseFloat(sPayAmnt).toFixed(3),
+        action:      "U",
+        to_item:     aToItems
+    };
+
+    // ── 7. POST to backend (Action "U" tells backend to update) ───────────
+    const oDataModel = this.getOwnerComponent().getModel();
+
+    oDataModel.setUseBatch(false);
+
+    oDataModel.create("/head", oPayload, {
+        success: function(oUpdatedData) {
+            oDataModel.setUseBatch(true);
+
+            MessageToast.show("Updated successfully. Draft ID: " + sSavedDraftId);
+        },
+        error: function(oError) {
+            oDataModel.setUseBatch(true);
+
+            let sErrorMessage = "Failed to update payment";
+            if (oError && oError.responseText) {
+                try {
+                    const oErrorResponse = JSON.parse(oError.responseText);
+                    if (oErrorResponse.error && oErrorResponse.error.message && oErrorResponse.error.message.value) {
+                        sErrorMessage = oErrorResponse.error.message.value;
+                    }
+                } catch (e) {
+                    sErrorMessage = oError.message || sErrorMessage;
+                }
+            }
+            MessageBox.error(sErrorMessage);
+        }
+    });
+},
+
+ 
+onPayAmountChange: function() {
+    // Reuse existing logic — just recalculate titles/sum/balance
+    this._updateTableTitles();
+},
     });
 });

@@ -9,14 +9,18 @@ sap.ui.define([
     "use strict";
 
     return Controller.extend("zfi.payment.management.controller.NewDoc", {
-        onInit() {
-            // Initialize JSON model for the table
-            var oJsonModel = new JSONModel();
-            this.getView().setModel(oJsonModel, "headModel");
+       onInit: function() {
+    var oJsonModel = new JSONModel();
+    this.getView().setModel(oJsonModel, "headModel");
 
-            // Load data from OData service
-            this._loadHeadData();
-        },
+    // Attach route matched to reload data every time user navigates back
+    var oRouter = this.getOwnerComponent().getRouter();
+    oRouter.getRoute("RouteNewDoc").attachMatched(this._onRouteMatched, this);
+},
+
+_onRouteMatched: function() {
+    this._loadHeadData();
+},
 
         _loadHeadData: function () {
             var oView = this.getView();
@@ -160,12 +164,18 @@ sap.ui.define([
         //         });
         //     }
         // },
-        onCreate: function () {
-            // Get the router
-            var oRouter = this.getOwnerComponent().getRouter();
-            // Navigate to PostOutgoing route
-            oRouter.navTo("RoutePostOutgoing");
-        }
+   onCreate: function () {
+    var oRouter = this.getOwnerComponent().getRouter();
+    oRouter.navTo("RoutePostOutgoing", {});
+},
+
+onEditDraft: function (oEvent) {
+    var oItem = oEvent.getSource();
+    var oContext = oItem.getBindingContext("headModel");
+    var sDraftId = oContext.getProperty("draftId");
+    var oRouter = this.getOwnerComponent().getRouter();
+    oRouter.navTo("RoutePostOutgoing", { draftId: sDraftId });
+},
 
     });
 });

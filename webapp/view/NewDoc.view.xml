@@ -177,7 +177,11 @@
     </columns>
 
     <items>
-        <ColumnListItem id="_IDGenColumnListItem" vAlign="Middle">
+       <ColumnListItem 
+    id="_IDGenColumnListItem" 
+    vAlign="Middle"
+    type="Navigation"
+    press=".onEditDraft">
             <cells>
                 <Text id="_IDGenText7" text="{headModel>compCode}"/>
                 <Text id="_IDGenText8" text="{headModel>fiscYear}"/>

@@ -59,13 +59,22 @@
                     <PropertyRef Name="itemId"/>
                 </Key>
                 <Property Name="draftId" Type="Edm.Guid" Nullable="false" sap:label="Payment Draft ID"/>
-                <Property Name="itemId" Type="Edm.Guid" Nullable="false" sap:label="Payment Draft ID"/>
+                <Property Name="itemId" Type="Edm.String" Nullable="false" MaxLength="3" sap:display-format="NonNegative" sap:label="Item" sap:quickinfo="Number of Line Item Within Accounting Document"/>
                 <Property Name="itemTy" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Payment Item Type"/>
                 <Property Name="amntLC" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
                 <Property Name="amntDC" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount" sap:quickinfo="Amount in document currency"/>
+                <Property Name="compCode" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Company Code"/>
                 <Property Name="refDoc" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Document Number" sap:quickinfo="Document Number of an Accounting Document"/>
                 <Property Name="refYear" Type="Edm.String" MaxLength="4" sap:display-format="NonNegative" sap:label="Fiscal Year"/>
                 <Property Name="refLine" Type="Edm.String" MaxLength="3" sap:display-format="NonNegative" sap:label="Item" sap:quickinfo="Number of Line Item Within Accounting Document"/>
+                <Property Name="docType" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="Document Type"/>
+                <Property Name="baseDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Baseline Payment Dte" sap:quickinfo="Baseline Date for Due Date Calculation"/>
+                <Property Name="extRef" Type="Edm.String" MaxLength="16" sap:display-format="UpperCase" sap:label="Reference" sap:quickinfo="Reference Document Number"/>
+                <Property Name="assignNo" Type="Edm.String" MaxLength="18" sap:label="Assignment" sap:quickinfo="Assignment Number"/>
+                <Property Name="spGl" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Special G/L Ind." sap:quickinfo="Special G/L Indicator"/>
+                <Property Name="debCredInd" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Debit/Credit Ind." sap:quickinfo="Debit/Credit Indicator"/>
+                <Property Name="postKey" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="Posting Key"/>
+                <Property Name="postingDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Posting Date" sap:quickinfo="Posting Date in the Document"/>
             </EntityType>
             <EntityType Name="openItemsType" sap:label="CDS View to fetch vendor open items" sap:content-version="1">
                 <Key>

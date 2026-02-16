@@ -106,13 +106,11 @@
             "TargetNewDoc"
           ]
         },
-        {
-          "name": "RoutePostOutgoing",
-          "pattern": "postoutgoing",
-          "target": [
-            "TargetPostOutgoing"
-          ]
-        }
+{
+  "name": "RoutePostOutgoing",
+  "pattern": "postoutgoing/:draftId:",
+  "target": ["TargetPostOutgoing"]
+}
       ],
       "targets": {
         "TargetNewDoc": {
