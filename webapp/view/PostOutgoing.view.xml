@@ -281,7 +281,7 @@
             <Toolbar id="_IDGenToolbar">
                 <ToolbarSpacer id="_IDGenToolbarSpacer1"/>
                 <Button id="_IDGenButton25" text="Save" type="Emphasized"/>
-                <Button id="_IDGenButton26" text="Submit" press="onSimulate"/>
+                <Button id="_IDGenButton26" text="Submit" press="onSubmit"/>
             </Toolbar>
         </footer>
     </Page>

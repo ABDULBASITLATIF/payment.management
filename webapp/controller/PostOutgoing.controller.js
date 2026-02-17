@@ -1406,5 +1406,67 @@ onPayAmountChange: function() {
     // Reuse existing logic — just recalculate titles/sum/balance
     this._updateTableTitles();
 },
+
+onSubmit: function() {
+    const that = this;
+    const oPageModel    = this.getView().getModel("pageModel");
+    const sMode         = oPageModel.getProperty("/mode");
+    const sSavedDraftId = oPageModel.getProperty("/draftId");
+    const oDataModel    = this.getOwnerComponent().getModel();
+
+const fnSubmit = function(sDraftId) {
+    oDataModel.setUseBatch(false);
+    oDataModel.create("/head", { draftId: sDraftId, action: "S" }, {
+        success: function() {
+            oDataModel.setUseBatch(true);
+            MessageBox.success("Payment submitted successfully. Draft ID: " + sDraftId, {
+                onClose: function() {
+                    const oRouter = that.getOwnerComponent().getRouter();
+                    oRouter.navTo("RouteNewDoc");
+                }
+            });
+        },
+        error: function(oError) {
+            oDataModel.setUseBatch(true);
+            let sErrorMessage = "Failed to submit payment";
+            if (oError && oError.responseText) {
+                try {
+                    const oErrorResponse = JSON.parse(oError.responseText);
+                    if (oErrorResponse.error && oErrorResponse.error.message && oErrorResponse.error.message.value) {
+                        sErrorMessage = oErrorResponse.error.message.value;
+                    }
+                } catch (e) {
+                    sErrorMessage = oError.message || sErrorMessage;
+                }
+            }
+            MessageBox.error(sErrorMessage);
+        }
+    });
+};
+
+    if (sMode === "edit") {
+        // Already has draftId — update first then submit
+        that.onUpdate();
+        fnSubmit(sSavedDraftId);
+    } else {
+        // No draftId yet — save first then submit
+        that.onSave();
+        // After onSave succeeds it switches pageModel to edit mode and sets draftId
+        // We poll pageModel to get the draftId once onSave completes
+        const iMaxAttempts = 20;
+        let iAttempts = 0;
+        const oInterval = setInterval(function() {
+            iAttempts++;
+            const sNewDraftId = that.getView().getModel("pageModel").getProperty("/draftId");
+            if (sNewDraftId) {
+                clearInterval(oInterval);
+                fnSubmit(sNewDraftId);
+            } else if (iAttempts >= iMaxAttempts) {
+                clearInterval(oInterval);
+                MessageBox.error("Save did not complete in time. Please try submitting again.");
+            }
+        }, 500);
+    }
+},
     });
 });

@@ -104,17 +104,17 @@
             visibleInFilterBar="true"
         >
             <fb:control>
-                <Select
-                    id="filterDraftType"
-                    forceSelection="false"
-                    selectedKey=""
-                >
-                    <core:Item id="_IDGenItem5" key="" text="All"/>
-                    <core:Item id="_IDGenItem6" key="O" text="Outgoing Payment"/>
-                    <core:Item id="_IDGenItem7" key="I" text="Incoming Payment"/>
-                    <core:Item id="_IDGenItem8" key="J" text="Journal Entry"/>
-                    <!-- Add more draft types as needed -->
-                </Select>
+     <Select
+    id="filterDraftType"
+    forceSelection="false"
+    selectedKey=""
+>
+    <core:Item id="_IDGenItem5" key=""  text="All"/>
+    <core:Item id="_IDGenItem6" key="1" text="Created"/>
+    <!-- <core:Item id="_IDGenItem7" key="2" text=""/>
+    <core:Item id="_IDGenItem8" key="3" text=" "/> -->
+    <core:Item id="_IDGenItem9" key="4" text="Rejected, ReSubmit"/>
+</Select>
             </fb:control>
         </fb:FilterGroupItem>
     </fb:filterGroupItems>
