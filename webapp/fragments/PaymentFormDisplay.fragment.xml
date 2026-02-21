@@ -1,0 +1,64 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    
+    <f:SimpleForm id="paymentFormDisplay"
+        editable="false"
+        title="Payment"
+        layout="ColumnLayout"
+        columnsM="2"
+        columnsL="3"
+        columnsXL="4">
+        <f:content>
+
+            <Label id="draftidLabelD"     text="Draft ID"              width="auto"/>
+            <Text id="draftidText"        text="{pageModel>/draftId}"  width="auto"/>
+
+            <Label id="companyCodeLabelD" text="Company Code"          width="auto"/>
+            <Text id="companyCodeText"    text="{pageModel>/compCode}" width="auto"/>
+
+            <Label id="fiscalYearLabelD"  text="Fiscal Year"           width="auto"/>
+            <Text id="fiscalYearText"     text="{pageModel>/fiscYear}" width="auto"/>
+
+            <Label id="documentDateLabelD" text="Document Date"         width="auto"/>
+            <Text id="documentDateText"    text="{pageModel>/docDate}"  width="auto"/>
+
+            <Label id="postingDateLabelD"  text="Posting Date"          width="auto"/>
+            <Text id="postingDateText"     text="{pageModel>/postingDate}" width="auto"/>
+
+            <Label id="referenceLabelD"   text="Reference"             width="auto"/>
+            <Text id="referenceText"      text="{pageModel>/reference}" width="auto"/>
+
+            <Label id="_IDGenLabelD1"     text="Header Text"           width="auto"/>
+            <Text id="headTextText"       text="{pageModel>/headText}" width="auto"/>
+
+            <Label id="houseBankLabelD"   text="House Bank"            width="auto"/>
+            <Text id="houseBankText"      text="{pageModel>/bankKey}"  width="auto"/>
+
+            <Label id="houseBankAccLabelD" text="House Bank Account ID" width="auto"/>
+            <Text id="houseBankAccText"    text="{pageModel>/bankAcc}" width="auto"/>
+
+            <Label id="glAccountLabelD"   text="G/L Account"           width="auto"/>
+            <Text id="glAccountText"      text="{pageModel>/bankGL}"   width="auto"/>
+
+            <Label id="supplierLabelD"    text="Vendor"                width="auto"/>
+            <Text id="supplierText"       text="{pageModel>/vendor}"   width="auto"/>
+
+            <Label id="currencyLabelD"    text="Currency"              width="auto"/>
+            <Text id="currencyText"       text="{pageModel>/curr}"     width="auto"/>
+
+            <Label id="_IDGenLabelD4"     text="Total Pay. Amount"     width="auto"/>
+            <Text id="payAmntText"        text="{pageModel>/payAmnt}"  width="auto"/>
+
+            <Label id="_IDGenLabelD2"     text="Total Invoice Sum"     width="auto"/>
+            <Text id="invoiceSumText"     text="{pageModel>/invoiceSum}" width="auto"/>
+
+            <Label id="_IDGenLabelD3"     text="Balance"               width="auto"/>
+            <Text id="balanceText"        text="{pageModel>/balance}"  width="auto"/>
+
+        </f:content>
+    </f:SimpleForm>
+
+</core:FragmentDefinition>

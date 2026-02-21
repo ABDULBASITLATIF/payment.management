@@ -64,7 +64,8 @@ _onRouteMatched: function() {
             var sDraftId = this.byId("filterDraftId").getValue().trim();
             var sFiscYear = this.byId("filterFiscYear").getValue().trim();
             var oPostingDate = this.byId("filterPostingDate").getDateValue();
-            var sDraftType = this.byId("filterDraftType").getSelectedKey();
+            var sDraftType   = this.byId("filterDrafttype").getSelectedKey();
+            var sDraftStatus = this.byId("filterDraftStatus").getSelectedKey();
 
             // Build filters array
             if (sDraftId) {
@@ -89,9 +90,13 @@ _onRouteMatched: function() {
                 }));
             }
 
-            if (sDraftType) {
-                aFilters.push(new Filter("draftType", FilterOperator.EQ, sDraftType));
+           if (sDraftType) {
+              aFilters.push(new Filter("draftType", FilterOperator.EQ, sDraftType));
             }
+
+           if (sDraftStatus) {
+               aFilters.push(new Filter("draftSt", FilterOperator.EQ, sDraftStatus));
+           }
 
             // Apply filters to the table binding
             oBinding.filter(aFilters, "Application");
@@ -114,7 +119,8 @@ _onRouteMatched: function() {
             this.byId("filterDraftId").setValue("");
             this.byId("filterFiscYear").setValue("");
             this.byId("filterPostingDate").setValue("");
-            this.byId("filterDraftType").setSelectedKey("");
+            this.byId("filterDrafttype").setSelectedKey("");
+            this.byId("filterDraftStatus").setSelectedKey("");
 
             // Clear filters from table binding
             var oTable = this.byId("table");

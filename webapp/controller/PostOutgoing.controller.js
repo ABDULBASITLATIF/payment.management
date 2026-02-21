@@ -16,13 +16,15 @@ sap.ui.define([
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
     "sap/m/MessageBox",
-    "sap/m/MessageToast"
+    "sap/m/MessageToast",
+    "../modules/InputHelps"
 ], function(Controller, JSONModel, Engine, SelectionController, SortController, 
     FilterController, MetadataHelper, Sorter, ColumnListItem, 
-    Text, Link, Button, coreLibrary, ColumnWidthController, Filter, FilterOperator, MessageBox, MessageToast) {
+    Text, Link, Button, coreLibrary, ColumnWidthController, Filter, FilterOperator, MessageBox, MessageToast, InputHelps) {
     "use strict";
 
     return Controller.extend("zfi.payment.management.controller.PostOutgoing", {
+        InputHelps:InputHelps,
         
 onInit: function () {
     const oModel = new JSONModel({
@@ -78,8 +80,8 @@ _resetPage: function () {
     const aInputIds = [
         "draftidInput", "companyCodeInput", "fiscalYearInput",
         "referenceInput", "_IDGenInput", "houseBankInput",
-        "bankAccountInput", "supplierAccountInput",
-        "_IDGenInput3", "_IDGenInput1", "_IDGenInput2"
+        "houseBankAccountInput", "glAccountInput", "supplierAccountInput",
+        "currencyInput", "_IDGenInput3", "_IDGenInput1", "_IDGenInput2"
     ];
     aInputIds.forEach(function (sId) {
         const oControl = this.byId(sId);
@@ -92,15 +94,20 @@ _resetPage: function () {
     }.bind(this));
 
     // Clear date pickers
-    const oDocPicker = this.byId("documentDatePicker");
+    const oDocPicker  = this.byId("documentDatePicker");
     const oPostPicker = this.byId("postingDatePicker");
     if (oDocPicker)  { oDocPicker.setValue("");  }
     if (oPostPicker) { oPostPicker.setValue(""); }
+
+    // Reset display mode flags before applying
+    this._bDisplayMode = false;
+    this._applyDisplayMode("");
 
     // Reset Save button text
     this._updateSaveButton("create");
     this._updateTableTitles();
 },
+
 
 _updateSaveButton: function (sMode) {
     const oSaveButton = this.byId("_IDGenButton25");
@@ -209,6 +216,150 @@ _populateFormFields: function (oHead) {
 
     fnSetDate("documentDatePicker", oHead.docDate);
     fnSetDate("postingDatePicker",  oHead.postingDate);
+
+    this.getView().getModel("pageModel").setProperty("/draftSt", oHead.draftSt || "");
+    this._applyDisplayMode(oHead.draftSt);
+},
+
+_applyDisplayMode: function (sDraftSt) {
+    const bIsInApproval = sDraftSt === "2"; // In Approval — full display mode
+    const bIsCreated    = sDraftSt === "1"; // Created — some fields locked
+    const bIsApproved   = sDraftSt === "3"; // Approved — display mode + Post button
+    const bIsRejected   = sDraftSt === "4"; // Rejected — editable + Update + Resubmit
+
+    // ── Toggle form visibility ─────────────────────────────────────────────
+    const oEditFormBox    = this.byId("editFormBox");
+    const oDisplayFormBox = this.byId("displayFormBox");
+    if (oEditFormBox)    { oEditFormBox.setVisible(!bIsInApproval && !bIsApproved); }
+    if (oDisplayFormBox) { oDisplayFormBox.setVisible(bIsInApproval || bIsApproved); }
+
+    // ── Populate pageModel for display fragment ────────────────────────────
+    if (bIsInApproval || bIsApproved) {
+        const oPageModel = this.getView().getModel("pageModel");
+
+        const fnGet = function (sId) {
+            const oCtrl = this.byId(sId);
+            return oCtrl ? oCtrl.getValue() : "";
+        }.bind(this);
+
+        const fnGetDate = function (sId) {
+            const oCtrl = this.byId(sId);
+            if (!oCtrl) { return ""; }
+            const oDate = oCtrl.getDateValue();
+            if (!oDate) { return ""; }
+            const sDay   = String(oDate.getDate()).padStart(2, "0");
+            const sMonth = String(oDate.getMonth() + 1).padStart(2, "0");
+            const sYear  = oDate.getFullYear();
+            return sDay + "/" + sMonth + "/" + sYear;
+        }.bind(this);
+
+        oPageModel.setProperty("/compCode",    fnGet("companyCodeInput"));
+        oPageModel.setProperty("/fiscYear",    fnGet("fiscalYearInput"));
+        oPageModel.setProperty("/reference",   fnGet("referenceInput"));
+        oPageModel.setProperty("/headText",    fnGet("_IDGenInput"));
+        oPageModel.setProperty("/bankKey",     fnGet("houseBankInput"));
+        oPageModel.setProperty("/bankAcc",     fnGet("houseBankAccountInput"));
+        oPageModel.setProperty("/bankGL",      fnGet("glAccountInput"));
+        oPageModel.setProperty("/vendor",      fnGet("supplierAccountInput"));
+        oPageModel.setProperty("/curr",        fnGet("currencyInput"));
+        oPageModel.setProperty("/payAmnt",     fnGet("_IDGenInput3"));
+        oPageModel.setProperty("/invoiceSum",  fnGet("_IDGenInput1"));
+        oPageModel.setProperty("/balance",     fnGet("_IDGenInput2"));
+        oPageModel.setProperty("/docDate",     fnGetDate("documentDatePicker"));
+        oPageModel.setProperty("/postingDate", fnGetDate("postingDatePicker"));
+    }
+
+    // ── Fields always locked (vendor, company code, bank fields) ──────────
+    const aAlwaysLockedIds = [
+        "supplierAccountInput", "companyCodeInput", "houseBankInput",
+        "houseBankAccountInput", "glAccountInput"
+    ];
+
+    // ── Fields editable in Created and Rejected modes ─────────────────────
+    const aEditableIds = [
+        "fiscalYearInput", "referenceInput", "_IDGenInput",
+        "currencyInput", "_IDGenInput3",
+        "documentDatePicker", "postingDatePicker"
+    ];
+
+    if (bIsInApproval || bIsApproved) {
+        // Display fragment handles — nothing to do for inputs
+    } else if (bIsCreated || bIsRejected) {
+        // Lock vendor/bank fields, keep rest editable
+        aAlwaysLockedIds.forEach(function (sId) {
+            const oCtrl = this.byId(sId);
+            if (oCtrl) { oCtrl.setEditable(false); }
+        }.bind(this));
+
+        aEditableIds.forEach(function (sId) {
+            const oCtrl = this.byId(sId);
+            if (oCtrl) { oCtrl.setEditable(true); }
+        }.bind(this));
+    } else {
+        // Create mode — all fields editable
+        aAlwaysLockedIds.concat(aEditableIds).forEach(function (sId) {
+            const oCtrl = this.byId(sId);
+            if (oCtrl) { oCtrl.setEditable(true); }
+        }.bind(this));
+    }
+
+    // ── Button visibility and text ────────────────────────────────────────
+    const oSaveButton   = this.byId("_IDGenButton25");
+    const oSubmitButton = this.byId("_IDGenButton26");
+    const oPostButton   = this.byId("_IDGenButton2622");
+
+    if (bIsInApproval) {
+        // Hide all buttons
+        if (oSaveButton)   { oSaveButton.setVisible(false);              }
+        if (oSubmitButton) { oSubmitButton.setVisible(false);             }
+        if (oPostButton)   { oPostButton.setVisible(false);               }
+
+    } else if (bIsApproved) {
+        // Show Post only
+        if (oSaveButton)   { oSaveButton.setVisible(false);              }
+        if (oSubmitButton) { oSubmitButton.setVisible(false);             }
+        if (oPostButton)   { oPostButton.setVisible(true);                }
+
+    } else if (bIsCreated) {
+        // Show Update and Submit, hide Post
+        if (oSaveButton)   { oSaveButton.setVisible(true);               }
+        if (oSubmitButton) { oSubmitButton.setVisible(true);  oSubmitButton.setText("Submit");    }
+        if (oPostButton)   { oPostButton.setVisible(false);               }
+
+    } else if (bIsRejected) {
+        // Show Update and Resubmit, hide Save and Post
+        if (oSaveButton)   { oSaveButton.setVisible(true);               }
+        if (oSubmitButton) { oSubmitButton.setVisible(true);  oSubmitButton.setText("Resubmit"); }
+        if (oPostButton)   { oPostButton.setVisible(false);               }
+
+    } else {
+        // Create mode — show Save and Submit, hide Post
+        if (oSaveButton)   { oSaveButton.setVisible(true);               }
+        if (oSubmitButton) { oSubmitButton.setVisible(true);  oSubmitButton.setText("Submit");    }
+        if (oPostButton)   { oPostButton.setVisible(false);               }
+    }
+
+    // ── Store display mode flag for handleStateChange ─────────────────────
+    this._bDisplayMode = bIsInApproval || bIsApproved;
+
+    // ── Clear column in open items table ──────────────────────────────────
+    const oClearColumn = this.byId("clearColumn");
+    if (oClearColumn) { oClearColumn.setVisible(!this._bDisplayMode); }
+
+    // ── Remove column in items to be cleared table ────────────────────────
+    const oRemoveColumn = this.byId("_IDGenColumn19");
+    if (oRemoveColumn) { oRemoveColumn.setVisible(!this._bDisplayMode); }
+
+    // ── Hide/show Remove buttons in already-rendered rows ─────────────────
+    const oItemsToClearTable = this.byId("itemsToClearTable");
+    if (oItemsToClearTable) {
+        oItemsToClearTable.getItems().forEach(function (oItem) {
+            const aCells = oItem.getCells();
+            if (aCells && aCells[0]) {
+                aCells[0].setVisible(!this._bDisplayMode);
+            }
+        }.bind(this));
+    }
 },
 
 _mapItemToUIFormat: function (oItem) {
@@ -502,8 +653,7 @@ _updateTableTitles: function() {
             Engine.getInstance().attachStateChange(this.handleStateChange.bind(this));
         },
 
-
-handleStateChange: function(oEvt) {
+handleStateChange: function (oEvt) {
     const oTable = this.byId("openItemsTable");
     const oState = oEvt.getParameter("state");
 
@@ -515,24 +665,23 @@ handleStateChange: function(oEvt) {
     const aFilter = this.createFilters(oState);
     const aSorter = this.createSorters(oState);
 
-    // Define all possible cells by their p13n key
     const mCellDefinitions = {
-        "compCode_col": function() {
+        "compCode_col": function () {
             return new Text({ text: "{openItems>compCode}" });
         },
-        "docNo_col": function() {
+        "docNo_col": function () {
             return new Link({ text: "{openItems>docNo}" });
         },
-        "yearF_col": function() {
+        "yearF_col": function () {
             return new Text({ text: "{openItems>yearF}" });
         },
-        "lineItem_col": function() {
+        "lineItem_col": function () {
             return new Text({ text: "{openItems>lineItem}" });
         },
-        "vendorCode_col": function() {
+        "vendorCode_col": function () {
             return new Text({ text: "{openItems>vendorCode}" });
         },
-        "postingDate_col": function() {
+        "postingDate_col": function () {
             return new Text({
                 text: {
                     path: "openItems>postingDate",
@@ -541,14 +690,14 @@ handleStateChange: function(oEvt) {
                 }
             });
         },
-        "docType_col": function() {
+        "docType_col": function () {
             return new Text({ text: "{openItems>docType}" });
         },
-        "amntLC_col": function() {
+        "amntLC_col": function () {
             return new Text({
                 text: {
                     path: "openItems>amntLC",
-                    formatter: function(value) {
+                    formatter: function (value) {
                         if (value !== null && value !== undefined) {
                             return parseFloat(value).toFixed(2);
                         }
@@ -557,11 +706,11 @@ handleStateChange: function(oEvt) {
                 }
             });
         },
-        "amntDC_col": function() {
+        "amntDC_col": function () {
             return new Text({
                 text: {
                     path: "openItems>amntDC",
-                    formatter: function(value) {
+                    formatter: function (value) {
                         if (value !== null && value !== undefined) {
                             return parseFloat(value).toFixed(2);
                         }
@@ -570,7 +719,7 @@ handleStateChange: function(oEvt) {
                 }
             });
         },
-        "baseDate_col": function() {
+        "baseDate_col": function () {
             return new Text({
                 text: {
                     path: "openItems>baseDate",
@@ -579,29 +728,31 @@ handleStateChange: function(oEvt) {
                 }
             });
         },
-        "extRef_col": function() {
+        "extRef_col": function () {
             return new Text({ text: "{openItems>extRef}" });
         },
-        "assignNo_col": function() {
+        "assignNo_col": function () {
             return new Text({ text: "{openItems>assignNo}" });
         },
-        "spGl_col": function() {
+        "spGl_col": function () {
             return new Text({ text: "{openItems>spGl}" });
         },
-        "debCredInd_col": function() {
+        "debCredInd_col": function () {
             return new Text({ text: "{openItems>debCredInd}" });
         },
-        "postKey_col": function() {
+        "postKey_col": function () {
             return new Text({ text: "{openItems>postKey}" });
         }
     };
 
     const oClearColumn = this.byId("clearColumn");
 
-    // Build cells by iterating actual DOM column order (after updateColumns reordered them)
-    const aCells = oTable.getColumns().map(function(oColumn) {
-        // If this is the clear button column, return the button
+    const aCells = oTable.getColumns().map(function (oColumn) {
         if (oColumn === oClearColumn) {
+            // In display mode, render empty text instead of button
+            if (this._bDisplayMode) {
+                return new Text({ text: "" });
+            }
             return new Button({
                 icon: "sap-icon://accept",
                 type: "Emphasized",
@@ -609,13 +760,11 @@ handleStateChange: function(oEvt) {
             });
         }
 
-        // For all other columns, look up by p13n key
         const sKey = this._getKey(oColumn);
         if (sKey && mCellDefinitions[sKey]) {
             return mCellDefinitions[sKey]();
         }
 
-        // Fallback empty cell to keep column/cell count in sync
         return new Text({ text: "" });
     }.bind(this));
 
@@ -1096,7 +1245,7 @@ onSave: function() {
     const sReference = this.byId("referenceInput")       ? this.byId("referenceInput").getValue().trim()       : "";
     const sHeadText  = this.byId("_IDGenInput")          ? this.byId("_IDGenInput").getValue().trim()          : "";
     const sBankKey   = this.byId("houseBankInput")       ? this.byId("houseBankInput").getValue().trim()       : "";
-    const sBankAcc   = this.byId("bankAccountInput")     ? this.byId("bankAccountInput").getValue().trim()     : "";
+    const sBankAcc   = this.byId("houseBankAccountInput") ? this.byId("houseBankAccountInput").getValue().trim() : "";
     const sVendor    = this.byId("supplierAccountInput") ? this.byId("supplierAccountInput").getValue().trim() : "";
     const sPayAmnt   = this.byId("_IDGenInput3")         ? this.byId("_IDGenInput3").getValue().trim()         : "0";
 
@@ -1104,6 +1253,9 @@ onSave: function() {
     const oPostDatePicker = this.byId("postingDatePicker");
     const oDocDate        = oDocDatePicker  ? oDocDatePicker.getDateValue()  : null;
     const oPostDate       = oPostDatePicker ? oPostDatePicker.getDateValue() : null;
+
+    const sBankGL   = this.byId("glAccountInput")     ? this.byId("glAccountInput").getValue().trim()     : "";
+    const sCurrency = this.byId("currencyInput")       ? this.byId("currencyInput").getValue().trim()       : "";
 
     // ── 2. Required field validation ──────────────────────────────────────
     if (!sCompCode || !sFiscYear || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
@@ -1190,24 +1342,27 @@ onSave: function() {
     });
 
     // ── 6. Build head payload ─────────────────────────────────────────────
-    const oPayload = {
-        compCode:    sCompCode,
-        fiscYear:    sFiscYear,
-        draftType:   "1",
-        docDate:     toODataDate(oDocDate),
-        postingDate: toODataDate(oPostDate),
-        reference:   sReference,
-        headText:    sHeadText,
-        bankKey:     sBankKey,
-        bankAcc:     sBankAcc,
-        vendor:      sVendor,
-        payAmnt:     parseFloat(sPayAmnt).toFixed(3),
-        action:      "I",
-        to_item:     aToItems
-    };
+const oPayload = {
+    compCode:    sCompCode,
+    fiscYear:    sFiscYear,
+    draftType:   "1",
+    docDate:     toODataDate(oDocDate),
+    postingDate: toODataDate(oPostDate),
+    reference:   sReference,
+    headText:    sHeadText,
+    bankKey:     sBankKey,
+    bankAcc:     sBankAcc,
+    bankGL:      sBankGL,
+    vendor:      sVendor,
+    curr:        sCurrency,
+    payAmnt:     parseFloat(sPayAmnt).toFixed(3),
+    action:      "I",
+    to_item:     aToItems
+};
 
     // ── 7. POST to backend ────────────────────────────────────────────────
     const oDataModel = this.getOwnerComponent().getModel();
+    delete oPayload.draftId;
 
     oDataModel.setUseBatch(false);
 
@@ -1260,7 +1415,7 @@ onUpdate: function() {
     const sReference = this.byId("referenceInput")       ? this.byId("referenceInput").getValue().trim()       : "";
     const sHeadText  = this.byId("_IDGenInput")          ? this.byId("_IDGenInput").getValue().trim()          : "";
     const sBankKey   = this.byId("houseBankInput")       ? this.byId("houseBankInput").getValue().trim()       : "";
-    const sBankAcc   = this.byId("bankAccountInput")     ? this.byId("bankAccountInput").getValue().trim()     : "";
+    const sBankAcc   = this.byId("houseBankAccountInput") ? this.byId("houseBankAccountInput").getValue().trim() : "";
     const sVendor    = this.byId("supplierAccountInput") ? this.byId("supplierAccountInput").getValue().trim() : "";
     const sPayAmnt   = this.byId("_IDGenInput3")         ? this.byId("_IDGenInput3").getValue().trim()         : "0";
 
@@ -1268,6 +1423,9 @@ onUpdate: function() {
     const oPostDatePicker = this.byId("postingDatePicker");
     const oDocDate        = oDocDatePicker  ? oDocDatePicker.getDateValue()  : null;
     const oPostDate       = oPostDatePicker ? oPostDatePicker.getDateValue() : null;
+
+    const sBankGL   = this.byId("glAccountInput")     ? this.byId("glAccountInput").getValue().trim()     : "";
+    const sCurrency = this.byId("currencyInput")       ? this.byId("currencyInput").getValue().trim()       : "";
 
     // ── 2. Required field validation ──────────────────────────────────────
     if (!sCompCode || !sFiscYear || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
@@ -1354,22 +1512,24 @@ onUpdate: function() {
     });
 
     // ── 6. Build head payload ─────────────────────────────────────────────
-    const oPayload = {
-        draftId:     sSavedDraftId,
-        compCode:    sCompCode,
-        fiscYear:    sFiscYear,
-        draftType:   "1",
-        docDate:     toODataDate(oDocDate),
-        postingDate: toODataDate(oPostDate),
-        reference:   sReference,
-        headText:    sHeadText,
-        bankKey:     sBankKey,
-        bankAcc:     sBankAcc,
-        vendor:      sVendor,
-        payAmnt:     parseFloat(sPayAmnt).toFixed(3),
-        action:      "U",
-        to_item:     aToItems
-    };
+        const oPayload = {
+            draftId:     sSavedDraftId,
+            compCode:    sCompCode,
+            fiscYear:    sFiscYear,
+            draftType:   "1",
+            docDate:     toODataDate(oDocDate),
+            postingDate: toODataDate(oPostDate),
+            reference:   sReference,
+            headText:    sHeadText,
+            bankKey:     sBankKey,
+            bankAcc:     sBankAcc,
+            bankGL:      sBankGL,
+            vendor:      sVendor,
+            curr:        sCurrency,
+            payAmnt:     parseFloat(sPayAmnt).toFixed(3),
+            action:      "U",
+            to_item:     aToItems
+        };
 
     // ── 7. POST to backend (Action "U" tells backend to update) ───────────
     const oDataModel = this.getOwnerComponent().getModel();
@@ -1467,6 +1627,55 @@ const fnSubmit = function(sDraftId) {
             }
         }, 500);
     }
+},
+onPost: function () {
+    const that = this;
+    const oPageModel    = this.getView().getModel("pageModel");
+    const sDraftId      = oPageModel.getProperty("/draftId");
+    const oDataModel    = this.getOwnerComponent().getModel();
+
+    if (!sDraftId) {
+        MessageBox.error("Draft ID not found. Cannot post.");
+        return;
+    }
+
+    MessageBox.confirm("Are you sure you want to post this payment?", {
+        onClose: function (sAction) {
+            if (sAction !== MessageBox.Action.OK) { return; }
+
+            oDataModel.setUseBatch(false);
+
+            oDataModel.create("/head", {
+                draftId: sDraftId,
+                action:  "P"
+            }, {
+                success: function () {
+                    oDataModel.setUseBatch(true);
+                    MessageBox.success("Payment posted successfully. Draft ID: " + sDraftId, {
+                        onClose: function () {
+                            const oRouter = that.getOwnerComponent().getRouter();
+                            oRouter.navTo("RouteNewDoc");
+                        }
+                    });
+                },
+                error: function (oError) {
+                    oDataModel.setUseBatch(true);
+                    let sErrorMessage = "Failed to post payment";
+                    if (oError && oError.responseText) {
+                        try {
+                            const oErrorResponse = JSON.parse(oError.responseText);
+                            if (oErrorResponse.error && oErrorResponse.error.message && oErrorResponse.error.message.value) {
+                                sErrorMessage = oErrorResponse.error.message.value;
+                            }
+                        } catch (e) {
+                            sErrorMessage = oError.message || sErrorMessage;
+                        }
+                    }
+                    MessageBox.error(sErrorMessage);
+                }
+            });
+        }
+    });
 },
     });
 });
