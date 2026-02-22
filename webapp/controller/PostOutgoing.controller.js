@@ -111,15 +111,21 @@ _resetPage: function () {
 
 _updateSaveButton: function (sMode) {
     const oSaveButton = this.byId("_IDGenButton25");
+    const oUpdateButton = this.byId("_IDGenButton27");
     if (oSaveButton) {
         if (sMode === "edit") {
-            oSaveButton.setText("Update");
-            oSaveButton.attachPress(this.onUpdate.bind(this));
-            oSaveButton.detachPress(this.onSave.bind(this));
+            oSaveButton.setVisible(false);
+            oUpdateButton.setVisible(true);
+            // _IDGenButton27
+            // oSaveButton.setText("Update");
+            // oSaveButton.attachPress(this.onUpdate.bind(this));
+            // oSaveButton.detachPress(this.onSave.bind(this));
         } else {
-            oSaveButton.setText("Save");
-            oSaveButton.attachPress(this.onSave.bind(this));
-            oSaveButton.detachPress(this.onUpdate.bind(this));
+            oSaveButton.setVisible(true);
+            oUpdateButton.setVisible(false);
+            // oSaveButton.setText("Save");
+            // oSaveButton.attachPress(this.onSave.bind(this));
+            // oSaveButton.detachPress(this.onUpdate.bind(this));
         }
     }
 },
@@ -211,8 +217,10 @@ _populateFormFields: function (oHead) {
     fnSet("referenceInput",       oHead.reference);
     fnSet("_IDGenInput",          oHead.headText);
     fnSet("houseBankInput",       oHead.bankKey);
-    fnSet("bankAccountInput",     oHead.bankAcc);
+    fnSet("houseBankAccountInput",     oHead.bankAcc);
     fnSet("supplierAccountInput", oHead.vendor);
+    
+    fnSet("glAccountInput", oHead.bankGL);
     fnSet("_IDGenInput3",         oHead.payAmnt);
 
     fnSetDate("documentDatePicker", oHead.docDate);
@@ -306,7 +314,9 @@ _applyDisplayMode: function (sDraftSt) {
 
     // ── Button visibility and text ────────────────────────────────────────
     const oSaveButton   = this.byId("_IDGenButton25");
+    const oUpdateButton   = this.byId("_IDGenButton27");
     const oSubmitButton = this.byId("_IDGenButton26");
+
     const oPostButton   = this.byId("_IDGenButton2622");
 
     if (bIsInApproval) {
@@ -314,30 +324,33 @@ _applyDisplayMode: function (sDraftSt) {
         if (oSaveButton)   { oSaveButton.setVisible(false);              }
         if (oSubmitButton) { oSubmitButton.setVisible(false);             }
         if (oPostButton)   { oPostButton.setVisible(false);               }
+        if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
 
     } else if (bIsApproved) {
         // Show Post only
         if (oSaveButton)   { oSaveButton.setVisible(false);              }
         if (oSubmitButton) { oSubmitButton.setVisible(false);             }
         if (oPostButton)   { oPostButton.setVisible(true);                }
+        if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
 
     } else if (bIsCreated) {
         // Show Update and Submit, hide Post
-        if (oSaveButton)   { oSaveButton.setVisible(true);               }
+        if (oSaveButton)   { oSaveButton.setVisible(false);               }
         if (oSubmitButton) { oSubmitButton.setVisible(true);  oSubmitButton.setText("Submit");    }
         if (oPostButton)   { oPostButton.setVisible(false);               }
-
+        if (oUpdateButton)   { oUpdateButton.setVisible(true);               }
     } else if (bIsRejected) {
         // Show Update and Resubmit, hide Save and Post
-        if (oSaveButton)   { oSaveButton.setVisible(true);               }
+        if (oSaveButton)   { oSaveButton.setVisible(false);               }
         if (oSubmitButton) { oSubmitButton.setVisible(true);  oSubmitButton.setText("Resubmit"); }
         if (oPostButton)   { oPostButton.setVisible(false);               }
-
+        if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
     } else {
         // Create mode — show Save and Submit, hide Post
         if (oSaveButton)   { oSaveButton.setVisible(true);               }
         if (oSubmitButton) { oSubmitButton.setVisible(true);  oSubmitButton.setText("Submit");    }
         if (oPostButton)   { oPostButton.setVisible(false);               }
+        if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
     }
 
     // ── Store display mode flag for handleStateChange ─────────────────────
@@ -1583,7 +1596,7 @@ onSubmit: function() {
 
 const fnSubmit = function(sDraftId) {
     oDataModel.setUseBatch(false);
-    oDataModel.create("/head", { draftId: sDraftId, action: "S" }, {
+    oDataModel.create("/head", { draftId: sDraftId, action: "R" }, {
         success: function() {
             oDataModel.setUseBatch(true);
             MessageBox.success("Payment submitted successfully. Draft ID: " + sDraftId, {
@@ -1656,7 +1669,8 @@ onPost: function () {
                 draftId: sDraftId,
                 action:  "P"
             }, {
-                success: function () {
+                success: function (oData,oResp) {
+                    debugger;
                     oDataModel.setUseBatch(true);
                     MessageBox.success("Payment posted successfully. Draft ID: " + sDraftId, {
                         onClose: function () {

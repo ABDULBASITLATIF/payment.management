@@ -47,13 +47,13 @@
                     class="sapUiSmallMarginTop">
                     <f:content>
                       <Table
-    id="openItemsTable"
-    items="{path: 'openItems>/openItems'}"
-    mode="MultiSelect"
-    width="auto"
-    fixedLayout="Strict"
-    autoPopinMode="true"
-    sticky="ColumnHeaders,HeaderToolbar">
+                        id="openItemsTable"
+                        items="{path: 'openItems>/openItems'}"
+                        mode="MultiSelect"
+                        width="auto"
+                        fixedLayout="Strict"
+                        autoPopinMode="true"
+                        sticky="ColumnHeaders,HeaderToolbar">
 
                             <headerToolbar>
                                 <OverflowToolbar id="_IDGenOverflowToolbar">
@@ -285,7 +285,8 @@
         <footer>
             <Toolbar id="_IDGenToolbar">
                 <ToolbarSpacer id="_IDGenToolbarSpacer1"/>
-                <Button id="_IDGenButton25" text="Save" type="Emphasized"/>
+                <Button id="_IDGenButton25" text="Save" type="Emphasized" press="onSave"/>
+                <Button id="_IDGenButton27" text="Update" type="Emphasized" press="onUpdate"/>
                 <Button id="_IDGenButton26" text="Submit" press="onSubmit"/>
                 <Button id="_IDGenButton2622" text="Post" press="onPost" visible="false"/>
             </Toolbar>
