@@ -110,6 +110,10 @@ _resetPage: function () {
 
 
 _updateSaveButton: function (sMode) {
+    const sDraftSt = this.getView().getModel("pageModel").getProperty("/draftSt");
+    if (sDraftSt === "2" || sDraftSt === "3") {
+        return; // In Approval or Approved — _applyDisplayMode handles buttons
+    }
     const oSaveButton = this.byId("_IDGenButton25");
     const oUpdateButton = this.byId("_IDGenButton27");
     if (oSaveButton) {
@@ -225,6 +229,7 @@ _populateFormFields: function (oHead) {
 
     fnSetDate("documentDatePicker", oHead.docDate);
     fnSetDate("postingDatePicker",  oHead.postingDate);
+    fnSet("currencyInput",  oHead.curr);
 
     this.getView().getModel("pageModel").setProperty("/draftSt", oHead.draftSt || "");
     this._applyDisplayMode(oHead.draftSt);
@@ -318,6 +323,7 @@ _applyDisplayMode: function (sDraftSt) {
     const oSubmitButton = this.byId("_IDGenButton26");
 
     const oPostButton   = this.byId("_IDGenButton2622");
+    const oResubmitButton   = this.byId("resubmitButton");
 
     if (bIsInApproval) {
         // Hide all buttons
@@ -342,15 +348,17 @@ _applyDisplayMode: function (sDraftSt) {
     } else if (bIsRejected) {
         // Show Update and Resubmit, hide Save and Post
         if (oSaveButton)   { oSaveButton.setVisible(false);               }
-        if (oSubmitButton) { oSubmitButton.setVisible(true);  oSubmitButton.setText("Resubmit"); }
+        if (oSubmitButton) { oSubmitButton.setVisible(false); }
         if (oPostButton)   { oPostButton.setVisible(false);               }
         if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
+        if (oResubmitButton)   { oResubmitButton.setVisible(true);               }
     } else {
         // Create mode — show Save and Submit, hide Post
         if (oSaveButton)   { oSaveButton.setVisible(true);               }
-        if (oSubmitButton) { oSubmitButton.setVisible(true);  oSubmitButton.setText("Submit");    }
+        if (oSubmitButton) { oSubmitButton.setVisible(true); }
         if (oPostButton)   { oPostButton.setVisible(false);               }
         if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
+        if (oResubmitButton)   { oResubmitButton.setVisible(false);               }
     }
 
     // ── Store display mode flag for handleStateChange ─────────────────────
@@ -1090,165 +1098,21 @@ onRefreshItems: function() {
             oRouter.navTo("RouteNewDoc");
         },
 
-// onPost: function() {
-//     const that = this;
-
-//     // ── 1. Collect form field values ──────────────────────────────────────
-//     const sCompCode  = this.byId("companyCodeInput")     ? this.byId("companyCodeInput").getValue().trim()     : "";
-//     const sFiscYear  = this.byId("fiscalYearInput")      ? this.byId("fiscalYearInput").getValue().trim()      : "";
-//     const sReference = this.byId("referenceInput")       ? this.byId("referenceInput").getValue().trim()       : "";
-//     const sHeadText  = this.byId("_IDGenInput")          ? this.byId("_IDGenInput").getValue().trim()          : "";
-//     const sBankKey   = this.byId("houseBankInput")       ? this.byId("houseBankInput").getValue().trim()       : "";
-//     const sBankAcc   = this.byId("bankAccountInput")     ? this.byId("bankAccountInput").getValue().trim()     : "";
-//     const sVendor    = this.byId("supplierAccountInput") ? this.byId("supplierAccountInput").getValue().trim() : "";
-//     const sPayAmnt   = this.byId("_IDGenInput3")         ? this.byId("_IDGenInput3").getValue().trim()         : "0";
-
-//     const oDocDatePicker  = this.byId("documentDatePicker");
-//     const oPostDatePicker = this.byId("postingDatePicker");
-//     const oDocDate        = oDocDatePicker  ? oDocDatePicker.getDateValue()  : null;
-//     const oPostDate       = oPostDatePicker ? oPostDatePicker.getDateValue() : null;
-
-//     // ── 2. Required field validation ──────────────────────────────────────
-//     if (!sCompCode || !sFiscYear || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
-//         MessageBox.error("Please fill all required fields before saving.");
-//         return;
-//     }
-
-//     // ── 3. Balance validation ─────────────────────────────────────────────
-//     const oModel            = this.getView().getModel("openItems");
-//     const aItemsToBeCleared = oModel.getProperty("/itemsToBeCleared");
-
-//     if (aItemsToBeCleared.length === 0) {
-//         MessageBox.error("Please move at least one item to the 'Items to Be Cleared' table before saving.");
-//         return;
-//     }
-
-//     const fTotalInvoiceSum = aItemsToBeCleared.reduce(function(fSum, oItem) {
-//         return fSum + (parseFloat(oItem.amntLC) || 0);
-//     }, 0);
-
-//     const fPayAmnt = parseFloat(sPayAmnt) || 0;
-//     const fBalance = fPayAmnt - fTotalInvoiceSum;
-
-//     if (Math.abs(fBalance) >= 0.001) {
-//         MessageBox.error(
-//             "Balance must be zero before saving.\n" +
-//             "Total Payment Amount: " + fPayAmnt.toFixed(3) + "\n" +
-//             "Total Invoice Sum:    " + fTotalInvoiceSum.toFixed(3) + "\n" +
-//             "Balance:              " + fBalance.toFixed(3)
-//         );
-//         return;
-//     }
-
-//     // ── 4. Date conversion helper ─────────────────────────────────────────
-//     function toODataDate(value) {
-//         if (!value) { return null; }
-
-//         // JS Date object (from DatePicker.getDateValue())
-//         if (value instanceof Date) {
-//             return "/Date(" + value.getTime() + ")/";
-//         }
-
-//         // Already in /Date(timestamp)/ format — return as-is
-//         if (typeof value === "string" && value.indexOf("/Date(") === 0) {
-//             return value;
-//         }
-
-//         // ISO string: "2025-03-27T00:00:00"
-//         if (typeof value === "string" && value.indexOf("T") > -1) {
-//             const oDate = new Date(value);
-//             if (!isNaN(oDate.getTime())) {
-//                 return "/Date(" + oDate.getTime() + ")/";
-//             }
-//         }
-
-//         // Display formatted string: "03/27/2025" (MM/dd/yyyy)
-//         if (typeof value === "string" && value.indexOf("/") > -1 && value.length === 10) {
-//             const aParts = value.split("/");
-//             const oDate = new Date(
-//                 parseInt(aParts[2]),
-//                 parseInt(aParts[0]) - 1,
-//                 parseInt(aParts[1])
-//             );
-//             if (!isNaN(oDate.getTime())) {
-//                 return "/Date(" + oDate.getTime() + ")/";
-//             }
-//         }
-
-//         return null;
-//     }
-
-//     // ── 5. Build to_item deep entity array ────────────────────────────────
-//     const aToItems = aItemsToBeCleared.map(function(oItem, iIndex) {
-//         const sItemId = String(iIndex + 1).padStart(3, "0");
-
-//         return {
-//             itemId:      sItemId,
-//             itemTy:      "1",
-//             amntLC:      oItem.amntLC      || "0.000",
-//             amntDC:      oItem.amntDC      || "0.000",
-//             compCode:    oItem.compCode    || sCompCode,
-//             refDoc:      oItem.docNo,
-//             refYear:     oItem.yearF,
-//             refLine:     oItem.lineItem,
-//             docType:     oItem.docType     || "",
-//             baseDate:    toODataDate(oItem.baseDate),
-//             extRef:      oItem.extRef      || "",
-//             assignNo:    oItem.assignNo    || "",
-//             spGl:        oItem.spGl        || "",
-//             debCredInd:  oItem.debCredInd  || "",
-//             postKey:     oItem.postKey     || "",
-//             postingDate: toODataDate(oItem.postingDate)
-//         };
-//     });
-
-//     // ── 6. Build head payload ─────────────────────────────────────────────
-//     const oPayload = {
-//         compCode:    sCompCode,
-//         fiscYear:    sFiscYear,
-//         draftType:   "1",
-//         docDate:     toODataDate(oDocDate),
-//         postingDate: toODataDate(oPostDate),
-//         reference:   sReference,
-//         headText:    sHeadText,
-//         bankKey:     sBankKey,
-//         bankAcc:     sBankAcc,
-//         vendor:      sVendor,
-//         payAmnt:     parseFloat(sPayAmnt).toFixed(3),
-//         action:      "I",
-//         to_item:     aToItems
-//     };
-
-//     // ── 7. POST to backend ────────────────────────────────────────────────
-//     const oDataModel = this.getOwnerComponent().getModel();
-
-//     oDataModel.create("/head", oPayload, {
-//         success: function(oCreatedData) {
-//             const sDraftId = oCreatedData.draftId;
-
-//             const oDraftIdInput = that.byId("draftidInput");
-//             if (oDraftIdInput && sDraftId) {
-//                 oDraftIdInput.setValue(sDraftId);
-//             }
-
-//             MessageToast.show("Saved successfully. Draft ID: " + sDraftId);
-//         },
-//         error: function(oError) {
-//             let sErrorMessage = "Failed to save payment";
-//             if (oError && oError.responseText) {
-//                 try {
-//                     const oErrorResponse = JSON.parse(oError.responseText);
-//                     if (oErrorResponse.error && oErrorResponse.error.message && oErrorResponse.error.message.value) {
-//                         sErrorMessage = oErrorResponse.error.message.value;
-//                     }
-//                 } catch (e) {
-//                     sErrorMessage = oError.message || sErrorMessage;
-//                 }
-//             }
-//             MessageBox.error(sErrorMessage);
-//         }
-//     });
-// },
+_setBusyDialog: function(bOpen) {
+    if (bOpen) {
+        if (!this._oBusyDialog) {
+            this._oBusyDialog = new sap.m.BusyDialog({
+                title: "Please Wait",
+                text:  "Processing..."
+            });
+        }
+        this._oBusyDialog.open();
+    } else {
+        if (this._oBusyDialog) {
+            this._oBusyDialog.close();
+        }
+    }
+},
 
 
 
@@ -1383,9 +1247,10 @@ const oPayload = {
     delete oPayload.draftId;
 
     oDataModel.setUseBatch(false);
-
+    this._setBusyDialog(true);
     oDataModel.create("/head", oPayload, {
         success: function(oCreatedData) {
+            that._setBusyDialog(false);
             const sDraftId = oCreatedData.draftId;
 
             const oDraftIdInput = that.byId("draftidInput");
@@ -1404,6 +1269,7 @@ const oPayload = {
             MessageToast.show("Saved successfully. Draft ID: " + sDraftId);
         },
         error: function(oError) {
+            that._setBusyDialog(false);
             oDataModel.setUseBatch(true);
 
             let sErrorMessage = "Failed to save payment";
@@ -1555,14 +1421,16 @@ onUpdate: function() {
     const oDataModel = this.getOwnerComponent().getModel();
 
     oDataModel.setUseBatch(false);
-
+    this._setBusyDialog(true);
     oDataModel.create("/head", oPayload, {
         success: function(oUpdatedData) {
+            that._setBusyDialog(false);
             oDataModel.setUseBatch(true);
 
             MessageToast.show("Updated successfully. Draft ID: " + sSavedDraftId);
         },
         error: function(oError) {
+            that._setBusyDialog(false);
             oDataModel.setUseBatch(true);
 
             let sErrorMessage = "Failed to update payment";
@@ -1596,8 +1464,10 @@ onSubmit: function() {
 
 const fnSubmit = function(sDraftId) {
     oDataModel.setUseBatch(false);
-    oDataModel.create("/head", { draftId: sDraftId, action: "R" }, {
+    that._setBusyDialog(true);
+    oDataModel.create("/head", { draftId: sDraftId, action: "S" }, {
         success: function() {
+            that._setBusyDialog(false);
             oDataModel.setUseBatch(true);
             MessageBox.success("Payment submitted successfully. Draft ID: " + sDraftId, {
                 onClose: function() {
@@ -1607,6 +1477,7 @@ const fnSubmit = function(sDraftId) {
             });
         },
         error: function(oError) {
+            that._setBusyDialog(false);
             oDataModel.setUseBatch(true);
             let sErrorMessage = "Failed to submit payment";
             if (oError && oError.responseText) {
@@ -1643,6 +1514,7 @@ const fnSubmit = function(sDraftId) {
                 fnSubmit(sNewDraftId);
             } else if (iAttempts >= iMaxAttempts) {
                 clearInterval(oInterval);
+                that._setBusyDialog(false);
                 MessageBox.error("Save did not complete in time. Please try submitting again.");
             }
         }, 500);
@@ -1664,13 +1536,15 @@ onPost: function () {
             if (sAction !== MessageBox.Action.OK) { return; }
 
             oDataModel.setUseBatch(false);
-
+            that._setBusyDialog(true);
             oDataModel.create("/head", {
                 draftId: sDraftId,
                 action:  "P"
             }, {
                 success: function (oData,oResp) {
+
                     debugger;
+                    that._setBusyDialog(false);
                     oDataModel.setUseBatch(true);
                     MessageBox.success("Payment posted successfully. Draft ID: " + sDraftId, {
                         onClose: function () {
@@ -1680,6 +1554,7 @@ onPost: function () {
                     });
                 },
                 error: function (oError) {
+                    that._setBusyDialog(false);
                     oDataModel.setUseBatch(true);
                     let sErrorMessage = "Failed to post payment";
                     if (oError && oError.responseText) {
@@ -1698,5 +1573,72 @@ onPost: function () {
         }
     });
 },
+onResubmit: function() {
+    const that = this;
+    const oPageModel    = this.getView().getModel("pageModel");
+    const sMode         = oPageModel.getProperty("/mode");
+    const sSavedDraftId = oPageModel.getProperty("/draftId");
+    const oDataModel    = this.getOwnerComponent().getModel();
+
+const fnSubmit = function(sDraftId) {
+    oDataModel.setUseBatch(false);
+    that._setBusyDialog(true);
+    oDataModel.create("/head", { draftId: sDraftId, action: "R" }, {
+        success: function() {
+            that._setBusyDialog(false);
+            oDataModel.setUseBatch(true);
+            MessageBox.success("Payment submitted successfully. Draft ID: " + sDraftId, {
+                onClose: function() {
+                    const oRouter = that.getOwnerComponent().getRouter();
+                    oRouter.navTo("RouteNewDoc");
+                }
+            });
+        },
+        error: function(oError) {
+            that._setBusyDialog(false);
+            oDataModel.setUseBatch(true);
+            let sErrorMessage = "Failed to submit payment";
+            if (oError && oError.responseText) {
+                try {
+                    const oErrorResponse = JSON.parse(oError.responseText);
+                    if (oErrorResponse.error && oErrorResponse.error.message && oErrorResponse.error.message.value) {
+                        sErrorMessage = oErrorResponse.error.message.value;
+                    }
+                } catch (e) {
+                    sErrorMessage = oError.message || sErrorMessage;
+                }
+            }
+            MessageBox.error(sErrorMessage);
+        }
+    });
+};
+
+    if (sMode === "edit") {
+        // Already has draftId — update first then submit
+        that.onUpdate();
+        fnSubmit(sSavedDraftId);
+    } else {
+        // No draftId yet — save first then submit
+        that.onSave();
+        // After onSave succeeds it switches pageModel to edit mode and sets draftId
+        // We poll pageModel to get the draftId once onSave completes
+        const iMaxAttempts = 20;
+        let iAttempts = 0;
+        const oInterval = setInterval(function() {
+            iAttempts++;
+            const sNewDraftId = that.getView().getModel("pageModel").getProperty("/draftId");
+            if (sNewDraftId) {
+                clearInterval(oInterval);
+                fnSubmit(sNewDraftId);
+            } else if (iAttempts >= iMaxAttempts) {
+                clearInterval(oInterval);
+                that._setBusyDialog(false);
+                MessageBox.error("Save did not complete in time. Please try submitting again.");
+            }
+        }, 500);
+    }
+},
+
+
     });
 });

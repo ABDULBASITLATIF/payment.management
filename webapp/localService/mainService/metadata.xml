@@ -208,7 +208,7 @@
                 <Property Name="bankGL" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="G/L Account" sap:quickinfo="General Ledger Account"/>
                 <Property Name="vendor" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Supplier" sap:quickinfo="Account Number of Supplier"/>
                 <Property Name="name1" Type="Edm.String" MaxLength="35" sap:label="Supplier's Name"/>
-                <Property Name="payAmnt" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount Paid" sap:quickinfo="Amount Paid in the Payment Currency"/>
+                <Property Name="payAmnt" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="curr" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
                 <Property Name="curr" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Currency" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
                 <Property Name="payMethod" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Payment Method"/>
                 <Property Name="draftSt" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Payment Draft Status"/>
@@ -216,6 +216,7 @@
                 <Property Name="action" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Character Length 1" sap:quickinfo="Character Field of Length 1"/>
                 <Property Name="procStat" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Character Length 1" sap:quickinfo="Character Field of Length 1"/>
                 <Property Name="msg" Type="Edm.String" MaxLength="255" sap:label="Text" sap:quickinfo="Text, 255 Characters"/>
+                <Property Name="postDoc" Type="Edm.String" MaxLength="50" sap:label="c" sap:quickinfo="Comment"/>
                 <NavigationProperty Name="to_item" Relationship="ZFI_PAYMENT_MANAGEMENT_SRV.assoc_B8016EAB107248EC709ECEAA8E01519B" FromRole="FromRole_assoc_B8016EAB107248EC709ECEAA8E01519B" ToRole="ToRole_assoc_B8016EAB107248EC709ECEAA8E01519B"/>
             </EntityType>
             <EntityType Name="itemType" sap:label="CDS View for Payment Draft Items" sap:content-version="1">
@@ -226,8 +227,10 @@
                 <Property Name="draftId" Type="Edm.Guid" Nullable="false" sap:label="Payment Draft ID"/>
                 <Property Name="itemId" Type="Edm.String" Nullable="false" MaxLength="3" sap:display-format="NonNegative" sap:label="Item" sap:quickinfo="Number of Line Item Within Accounting Document"/>
                 <Property Name="itemTy" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Payment Item Type"/>
-                <Property Name="amntLC" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
-                <Property Name="amntDC" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount" sap:quickinfo="Amount in document currency"/>
+                <Property Name="compCurr" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Currency" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
+                <Property Name="amntLC" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="compCurr" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
+                <Property Name="docCurr" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Currency" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
+                <Property Name="amntDC" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="docCurr" sap:label="Amount" sap:quickinfo="Amount in document currency"/>
                 <Property Name="compCode" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Company Code"/>
                 <Property Name="refDoc" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Document Number" sap:quickinfo="Document Number of an Accounting Document"/>
                 <Property Name="refYear" Type="Edm.String" MaxLength="4" sap:display-format="NonNegative" sap:label="Fiscal Year"/>
@@ -259,7 +262,7 @@
                 <Property Name="bankGL" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="G/L Account" sap:quickinfo="General Ledger Account"/>
                 <Property Name="vendor" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Supplier" sap:quickinfo="Account Number of Supplier"/>
                 <Property Name="name1" Type="Edm.String" MaxLength="35" sap:label="Supplier's Name"/>
-                <Property Name="payAmnt" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount Paid" sap:quickinfo="Amount Paid in the Payment Currency"/>
+                <Property Name="payAmnt" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
                 <NavigationProperty Name="to_item" Relationship="ZFI_PAYMENT_MANAGEMENT_SRV.assoc_E602B8A74B4D5B24C6231CC77718C3E8" FromRole="FromRole_assoc_E602B8A74B4D5B24C6231CC77718C3E8" ToRole="ToRole_assoc_E602B8A74B4D5B24C6231CC77718C3E8"/>
             </EntityType>
             <EntityType Name="openItemsType" sap:label="CDS View to fetch vendor open items" sap:content-version="1">
@@ -276,8 +279,10 @@
                 <Property Name="vendorCode" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Supplier" sap:quickinfo="Account Number of Supplier"/>
                 <Property Name="postingDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Posting Date" sap:quickinfo="Posting Date in the Document"/>
                 <Property Name="docType" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="Document Type"/>
-                <Property Name="amntLC" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
-                <Property Name="amntDC" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount" sap:quickinfo="Amount in document currency"/>
+                <Property Name="compCurr" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Currency" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
+                <Property Name="amntLC" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="compCurr" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
+                <Property Name="docCurr" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Currency" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
+                <Property Name="amntDC" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="docCurr" sap:label="Amount" sap:quickinfo="Amount in document currency"/>
                 <Property Name="baseDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Baseline Payment Dte" sap:quickinfo="Baseline Date for Due Date Calculation"/>
                 <Property Name="extRef" Type="Edm.String" MaxLength="16" sap:display-format="UpperCase" sap:label="Reference" sap:quickinfo="Reference Document Number"/>
                 <Property Name="assignNo" Type="Edm.String" MaxLength="18" sap:label="Assignment" sap:quickinfo="Assignment Number"/>
