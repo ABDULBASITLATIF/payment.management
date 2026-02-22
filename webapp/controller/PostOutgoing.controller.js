@@ -133,6 +133,7 @@ _loadDraft: function (sDraftId) {
     oDataModel.read("/head(guid'" + sDraftId + "')", {
         urlParameters: { "$expand": "to_item" },
         success: function (oHead) {
+            debugger;
             that.getView().setBusy(false);
 
             // Populate form fields
@@ -379,7 +380,9 @@ _mapItemToUIFormat: function (oItem) {
         spGl:        oItem.spGl        || "",
         debCredInd:  oItem.debCredInd  || "",
         postKey:     oItem.postKey     || "",
-        vendorCode:  oItem.vendorCode  || ""
+        vendorCode:  oItem.vendorCode  || "",
+        docCurr:  oItem.docCurr  || "",
+        compCurr:  oItem.compCurr  || ""
     };
 },
 
@@ -970,7 +973,7 @@ onClearItem: function(oEvt) {
     if (!oContext) {
         return;
     }
-
+    debugger;
     const oModel = this.getView().getModel("openItems");
     const sPath = oContext.getPath();
     const iIndex = parseInt(sPath.split("/").pop());
@@ -1337,6 +1340,8 @@ onSave: function() {
             spGl:        oItem.spGl        || "",
             debCredInd:  oItem.debCredInd  || "",
             postKey:     oItem.postKey     || "",
+            docCurr:     oItem.docCurr     || "",
+            compCurr:     oItem.compCurr     || "",
             postingDate: toODataDate(oItem.postingDate)
         };
     });
@@ -1507,6 +1512,8 @@ onUpdate: function() {
             spGl:        oItem.spGl        || "",
             debCredInd:  oItem.debCredInd  || "",
             postKey:     oItem.postKey     || "",
+            docCurr :  oItem.docCurr  || "",
+            compCurr:     oItem.compCurr     || "",
             postingDate: toODataDate(oItem.postingDate)
         };
     });
