@@ -15,7 +15,7 @@ builder:
       configuration:
         target:
           url: https://vhfqmwd1wd01.sap.sarooj.com:44300/
-          client: '110'
+          client: '100'
         app:
           name: ZPAY_MANAGE1
           description: A Payment Management Application
