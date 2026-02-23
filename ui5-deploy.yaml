@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://sap.github.io/ui5-tooling/schema/ui5.yaml.json
+
+specVersion: "4.0"
+metadata:
+  name: zfi.payment.management
+type: application
+builder:
+  resources:
+    excludes:
+      - /test/**
+      - /localService/**
+  customTasks:
+    - name: deploy-to-abap
+      afterTask: generateCachebusterInfo
+      configuration:
+        target:
+          url: https://vhfqmwd1wd01.sap.sarooj.com:44300/
+          client: '110'
+        app:
+          name: ZPAY_MANAGE1
+          description: A Payment Management Application
+          package: ZFIORI_DEV
+          transport: DP4K902727
+        exclude:
+          - /test/
