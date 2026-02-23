@@ -324,13 +324,15 @@ _applyDisplayMode: function (sDraftSt) {
 
     const oPostButton   = this.byId("_IDGenButton2622");
     const oResubmitButton   = this.byId("resubmitButton");
-
+    
+    const openItemForm   = this.byId("openItemsForm");
     if (bIsInApproval) {
         // Hide all buttons
         if (oSaveButton)   { oSaveButton.setVisible(false);              }
         if (oSubmitButton) { oSubmitButton.setVisible(false);             }
         if (oPostButton)   { oPostButton.setVisible(false);               }
         if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
+        if (openItemForm)   { openItemForm.setVisible(false);               }
 
     } else if (bIsApproved) {
         // Show Post only
@@ -338,6 +340,7 @@ _applyDisplayMode: function (sDraftSt) {
         if (oSubmitButton) { oSubmitButton.setVisible(false);             }
         if (oPostButton)   { oPostButton.setVisible(true);                }
         if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
+        if (openItemForm)   { openItemForm.setVisible(false);               }
 
     } else if (bIsCreated) {
         // Show Update and Submit, hide Post
@@ -345,6 +348,7 @@ _applyDisplayMode: function (sDraftSt) {
         if (oSubmitButton) { oSubmitButton.setVisible(true);  oSubmitButton.setText("Submit");    }
         if (oPostButton)   { oPostButton.setVisible(false);               }
         if (oUpdateButton)   { oUpdateButton.setVisible(true);               }
+        if (openItemForm)   { openItemForm.setVisible(true);               }
     } else if (bIsRejected) {
         // Show Update and Resubmit, hide Save and Post
         if (oSaveButton)   { oSaveButton.setVisible(false);               }
@@ -352,6 +356,8 @@ _applyDisplayMode: function (sDraftSt) {
         if (oPostButton)   { oPostButton.setVisible(false);               }
         if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
         if (oResubmitButton)   { oResubmitButton.setVisible(true);               }
+        
+        if (openItemForm)   { openItemForm.setVisible(true);               }
     } else {
         // Create mode — show Save and Submit, hide Post
         if (oSaveButton)   { oSaveButton.setVisible(true);               }
@@ -359,6 +365,8 @@ _applyDisplayMode: function (sDraftSt) {
         if (oPostButton)   { oPostButton.setVisible(false);               }
         if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
         if (oResubmitButton)   { oResubmitButton.setVisible(false);               }
+        
+        if (openItemForm)   { openItemForm.setVisible(true);               }
     }
 
     // ── Store display mode flag for handleStateChange ─────────────────────
@@ -1546,12 +1554,21 @@ onPost: function () {
                     debugger;
                     that._setBusyDialog(false);
                     oDataModel.setUseBatch(true);
-                    MessageBox.success("Payment posted successfully. Draft ID: " + sDraftId, {
-                        onClose: function () {
-                            const oRouter = that.getOwnerComponent().getRouter();
-                            oRouter.navTo("RouteNewDoc");
-                        }
-                    });
+                    if (oData.procStat === "E"){
+                        MessageBox.error(oData.msg, {
+                            onClose: function () {
+                                const oRouter = that.getOwnerComponent().getRouter();
+                                oRouter.navTo("RouteNewDoc");
+                            }
+                        });
+                    }else{
+                        MessageBox.success("Document " + oData.postdoc + " posted successfully for Draft ID: " + sDraftId, {
+                            onClose: function () {
+                                const oRouter = that.getOwnerComponent().getRouter();
+                                oRouter.navTo("RouteNewDoc");
+                            }
+                        });
+                    }
                 },
                 error: function (oError) {
                     that._setBusyDialog(false);
