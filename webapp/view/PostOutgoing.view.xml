@@ -5,10 +5,6 @@
     xmlns:f="sap.ui.layout.form"
     xmlns:core="sap.ui.core"
     xmlns:l="sap.ui.layout"
-    xmlns:plugins="sap.m.plugins"
-    xmlns:columnmenu="sap.m.table.columnmenu"
-    xmlns:dnd="sap.ui.core.dnd"
-    xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
     height="100%">
     
     <Page id="_IDGenPage"
@@ -60,128 +56,110 @@
                                     <Title id="_IDGenTitle2" text="Open Items" level="H5"/>
                                     <Button id="_IDGenButton1" icon="sap-icon://information" type="Transparent"/>
                                     <ToolbarSpacer id="_IDGenToolbarSpacer"/>
-                                    <SearchField id="_IDGenSearchField" width="200px"/>
-                                    <Button id="_IDGenButton7" icon="sap-icon://action-settings" press="openPersoDialog" tooltip="Settings"/>
+                                    <!-- <SearchField id="_IDGenSearchField" width="200px"/>
+                                    <Button id="_IDGenButton7" icon="sap-icon://action-settings" press="openPersoDialog" tooltip="Settings"/> -->
                                <Button id="_IDGenButton8" icon="sap-icon://refresh" press="onRefreshItems"/>
                                 </OverflowToolbar>
                             </headerToolbar>
-                            <infoToolbar>
-                                <OverflowToolbar id="filterInfo" visible="false" design="Info" active="true" press="onFilterInfoPress">
-                                    <Text id="filterInfoText" wrapping="false" text="Table filter active"/>
-                                    <ToolbarSpacer id="_IDGenToolbarSpacer3"/>
-                                    <Button id="_IDGenButton2" tooltip="Remove All Filters" icon="sap-icon://decline" type="Transparent" press="onClearFilterPress"/>
-                                </OverflowToolbar>
-                            </infoToolbar>
-                            <dependents>
-                                <plugins:ColumnResizer id="_IDGenColumnResizer" columnResize="onColumnResize"/>
-                                <columnmenu:Menu id="menu" beforeOpen="beforeOpenColumnMenu">
-                                    <columnmenu:QuickSort id="_IDGenQuickSort" change="onSort">
-                                        <columnmenu:items>
-                                            <columnmenu:QuickSortItem id="_IDGenQuickSortItem"/>
-                                        </columnmenu:items>
-                                    </columnmenu:QuickSort>
-                                </columnmenu:Menu>
-                            </dependents>
-                            <dragDropConfig>
-                                <dnd:DragDropInfo id="_IDGenDragDropInfo" sourceAggregation="columns" targetAggregation="columns" dropPosition="Between" drop="onColumnMove"/>
-                            </dragDropConfig>
-                           <columns>
-    <!-- Hidden by default -->
-    <Column id="_IDGenColumn9" app:p13nKey="compCode_col" headerMenu="menu" width="auto" visible="false">
-        <header><Text id="_IDGenText1" text="Company Code"/></header>
-    </Column>
-    
-    <!-- Visible by default -->
-    <Column id="_IDGenColumn10" app:p13nKey="docNo_col" headerMenu="menu" width="auto">
-        <Text id="_IDGenText2" text="Document Number"/>
-    </Column>
-    <Column id="_IDGenColumn11" app:p13nKey="yearF_col" headerMenu="menu" width="auto">
-        <Text id="_IDGenText3" text="Fiscal Year"/>
-    </Column>
-    <Column id="_IDGenColumn12" app:p13nKey="lineItem_col" headerMenu="menu" width="auto">
-        <Text id="_IDGenText4" text="Line Item"/>
-    </Column>
-    
-    <!-- Hidden by default -->
-    <Column id="_IDGenColumn13" app:p13nKey="vendorCode_col" headerMenu="menu" width="auto" visible="false">
-        <Text id="_IDGenText5" text="Supplier"/>
-    </Column>
-    
-    <!-- Visible by default -->
-    <Column id="_IDGenColumn14" app:p13nKey="postingDate_col" headerMenu="menu" width="auto">
-        <Text id="_IDGenText6" text="Posting Date"/>
-    </Column>
-    <Column id="_IDGenColumn15" app:p13nKey="docType_col" headerMenu="menu" width="auto">
-        <Text id="_IDGenText16" text="Document Type"/>
-    </Column>
-    <Column id="_IDGenColumn16" app:p13nKey="amntLC_col" headerMenu="menu" width="auto" hAlign="End">
-        <Text id="_IDGenText17" text="Amount (Local)"/>
-    </Column>
-    <Column id="_IDGenColumn17" app:p13nKey="amntDC_col" headerMenu="menu" width="auto" hAlign="End">
-        <Text id="_IDGenText18" text="Amount (Doc)"/>
-    </Column>
-    <Column id="_IDGenColumn18" app:p13nKey="baseDate_col" headerMenu="menu" width="auto">
-        <Text id="_IDGenText19" text="Baseline Date"/>
-    </Column>
-    <Column id="_IDGenColumn25" app:p13nKey="extRef_col" headerMenu="menu" width="auto">
-        <Text id="_IDGenText20" text="Reference"/>
-    </Column>
-    <Column id="_IDGenColumn26" app:p13nKey="assignNo_col" headerMenu="menu" width="auto">
-        <Text id="_IDGenText21" text="Assignment"/>
-    </Column>
-    
-    <!-- Hidden by default -->
-    <Column id="_IDGenColumn27" app:p13nKey="spGl_col" headerMenu="menu" width="auto" visible="false">
-        <Text id="_IDGenText22" text="Special G/L"/>
-    </Column>
-    <Column id="_IDGenColumn28" app:p13nKey="debCredInd_col" headerMenu="menu" width="auto" visible="false">
-        <Text id="_IDGenText23" text="D/C Ind."/>
-    </Column>
-    <Column id="_IDGenColumn29" app:p13nKey="postKey_col" headerMenu="menu" width="auto" visible="false">
-        <Text id="_IDGenText24" text="Posting Key"/>
-    </Column>
-    
-    <!-- Clear button column - always visible, not part of p13n -->
-    <Column id="clearColumn" width="auto">
-        <Text id="_IDGenText25" text="Clear"/>
-    </Column>
-</columns>
-                            <items>
-                                <ColumnListItem id="_IDGenColumnListItem1">
-                       <cells>
-    <Text id="_IDGenText26" text="{openItems>compCode}"/>
-    <Link id="_IDGenLink" text="{openItems>docNo}"/>
-    <Text id="_IDGenText27" text="{openItems>yearF}"/>
-    <Text id="_IDGenText28" text="{openItems>lineItem}"/>
-    <Text id="_IDGenText29" text="{openItems>vendorCode}"/>
+                                    <columns>         
+                                            
+                                                
+                                    <!-- Hidden by default -->
+                                    <Column id="_IDGenColumn9"     width="auto" visible="false">
+                                        <header><Text id="_IDGenText1" text="Company Code"/></header>
+                                    </Column>
+                                    
+                                    <!-- Visible by default -->
+                                    <Column id="_IDGenColumn10"   width="auto">
+                                        <Text id="_IDGenText2" text="Document Number"/>
+                                    </Column>
+                                    <Column id="_IDGenColumn11"    width="auto">
+                                        <Text id="_IDGenText3" text="Fiscal Year"/>
+                                    </Column>
+                                    <Column id="_IDGenColumn12"     width="auto">
+                                        <Text id="_IDGenText4" text="Line Item"/>
+                                    </Column>
+                                    
+                                    <!-- Hidden by default -->
+                                    <Column id="_IDGenColumn13"    width="auto" visible="false">
+                                        <Text id="_IDGenText5" text="Supplier"/>
+                                    </Column>
+                                    
+                                    <!-- Visible by default -->
+                                    <Column id="_IDGenColumn14"     width="auto">
+                                        <Text id="_IDGenText6" text="Posting Date"/>
+                                    </Column>
+                                    <Column id="_IDGenColumn15"     width="auto">
+                                        <Text id="_IDGenText16" text="Document Type"/>
+                                    </Column>
+                                    <Column id="_IDGenColumn16"    width="auto" hAlign="End">
+                                        <Text id="_IDGenText17" text="Amount (Local)"/>
+                                    </Column>
+                                    <Column id="_IDGenColumn17"    width="auto" hAlign="End">
+                                        <Text id="_IDGenText18" text="Amount (Doc)"/>
+                                    </Column>
+                                    <Column id="_IDGenColumn18"     width="auto">
+                                        <Text id="_IDGenText19" text="Baseline Date"/>
+                                    </Column>
+                                    <Column id="_IDGenColumn25"     width="auto">
+                                        <Text id="_IDGenText20" text="Reference"/>
+                                    </Column>
+                                    <Column id="_IDGenColumn26"    width="auto">
+                                        <Text id="_IDGenText21" text="Assignment"/>
+                                    </Column>
+                                    
+                                    <!-- Hidden by default -->
+                                    <Column id="_IDGenColumn27"     width="auto" visible="false">
+                                        <Text id="_IDGenText22" text="Special G/L"/>
+                                    </Column>
+                                    <Column id="_IDGenColumn28"    width="auto" visible="false">
+                                        <Text id="_IDGenText23" text="D/C Ind."/>
+                                    </Column>
+                                    <Column id="_IDGenColumn29"     width="auto" visible="false">
+                                        <Text id="_IDGenText24" text="Posting Key"/>
+                                    </Column>
+                                    
+                                    <!-- Clear button column - always visible, not part of p13n -->
+                                    <Column id="clearColumn" width="auto">
+                                        <Text id="_IDGenText25" text="Clear"/>
+                                    </Column>
+                                </columns>
+                                                            <items>
+                                                                <ColumnListItem id="_IDGenColumnListItem1">
+                                                    <cells>
+                                    <Text id="_IDGenText26" text="{openItems>compCode}"/>
+                                    <Link id="_IDGenLink" text="{openItems>docNo}"/>
+                                    <Text id="_IDGenText27" text="{openItems>yearF}"/>
+                                    <Text id="_IDGenText28" text="{openItems>lineItem}"/>
+                                    <Text id="_IDGenText29" text="{openItems>vendorCode}"/>
 
-   <Text id="_IDGenText30" text="{
-    path: 'openItems>postingDate',
-    type: 'sap.ui.model.type.Date',
-    formatOptions: {
-        pattern: 'MM/dd/yyyy'
-    }
-}"/>
+                                <Text id="_IDGenText30" text="{
+                                    path: 'openItems>postingDate',
+                                    type: 'sap.ui.model.type.Date',
+                                    formatOptions: {
+                                        pattern: 'MM/dd/yyyy'
+                                    }
+                                }"/>
 
-    <Text id="_IDGenText31" text="{openItems>docType}"/>
-    <Text id="_IDGenText32" text="{openItems>amntLC}"/>
-    <Text id="_IDGenText33" text="{openItems>amntDC}"/>
+                                    <Text id="_IDGenText31" text="{openItems>docType}"/>
+                                    <Text id="_IDGenText32" text="{openItems>amntLC}"/>
+                                    <Text id="_IDGenText33" text="{openItems>amntDC}"/>
 
-<Text id="_IDGenText34" text="{
-    path: 'openItems>baseDate',
-    type: 'sap.ui.model.type.Date',
-    formatOptions: {
-        pattern: 'MM/dd/yyyy'
-    }
-}"/>
+                                <Text id="_IDGenText34" text="{
+                                    path: 'openItems>baseDate',
+                                    type: 'sap.ui.model.type.Date',
+                                    formatOptions: {
+                                        pattern: 'MM/dd/yyyy'
+                                    }
+                                }"/>
 
-    <Text id="_IDGenText35" text="{openItems>extRef}"/>
-    <Text id="_IDGenText36" text="{openItems>assignNo}"/>
-    <Text id="_IDGenText47" text="{openItems>spGl}"/>
-    <Text id="_IDGenText48" text="{openItems>debCredInd}"/>
-    <Text id="_IDGenText49" text="{openItems>postKey}"/>
-    <Button id="_IDGenButton4" icon="sap-icon://accept" type="Emphasized" press="onClearItem"/>
-</cells>
+                                    <Text id="_IDGenText35" text="{openItems>extRef}"/>
+                                    <Text id="_IDGenText36" text="{openItems>assignNo}"/>
+                                    <Text id="_IDGenText47" text="{openItems>spGl}"/>
+                                    <Text id="_IDGenText48" text="{openItems>debCredInd}"/>
+                                    <Text id="_IDGenText49" text="{openItems>postKey}"/>
+                                    <Button id="_IDGenButton4" icon="sap-icon://accept" type="Emphasized" press="onClearItem"/>
+                                </cells>
                                 </ColumnListItem>
                             </items>
                         </Table>
