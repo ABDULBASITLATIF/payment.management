@@ -56,9 +56,9 @@
                                     <Title id="_IDGenTitle2" text="Open Items" level="H5"/>
                                     <Button id="_IDGenButton1" icon="sap-icon://information" type="Transparent"/>
                                     <ToolbarSpacer id="_IDGenToolbarSpacer"/>
-                                    <!-- <SearchField id="_IDGenSearchField" width="200px"/>
-                                    <Button id="_IDGenButton7" icon="sap-icon://action-settings" press="openPersoDialog" tooltip="Settings"/> -->
-                               <Button id="_IDGenButton8" icon="sap-icon://refresh" press="onRefreshItems"/>
+                                    <SearchField id="_IDGenSearchField" width="200px"  search="onSearchOpenItems" />
+                                    <Button id="_IDGenButton33" icon="sap-icon://action-settings" press="onOpenViewSettings" tooltip="View Settings"/>
+                                    <Button id="_IDGenButton8" icon="sap-icon://refresh" press="onRefreshItems"/>
                                 </OverflowToolbar>
                             </headerToolbar>
                                     <columns>         

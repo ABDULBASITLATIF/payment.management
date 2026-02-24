@@ -54,6 +54,240 @@ _onRouteMatched: function (oEvent) {
     }
 },
 
+//--------------------View Setting Menu---------------------
+onOpenViewSettings: function () {
+    const that = this;
+    if (!this._oViewSettingsDialog) {
+        this.loadFragment({
+            name: "zfi.payment.management.fragments.ViewSettingsDialog"
+        }).then(function (oDialog) {
+            that._oViewSettingsDialog = oDialog;
+            that.getView().addDependent(oDialog);
+            oDialog.open();
+        });
+    } else {
+        this._oViewSettingsDialog.open();
+    }
+},
+
+onFilterFieldChange: function () {
+    const sKey         = this.byId("filterFieldSelect").getSelectedKey();
+    const aDateFields  = ["postingDate", "baseDate"];
+    const bIsDate      = aDateFields.indexOf(sKey) > -1;
+
+    const oInput       = this.byId("filterValueInput");
+    const oDatePicker  = this.byId("filterDatePicker");
+    const oOperator    = this.byId("filterOperatorSelect");
+
+    // ── Reset data whenever field changes ─────────────────────────────────
+    const oModel = this.getView().getModel("openItems");
+    if (this._aOriginalOpenItems) {
+        oModel.setProperty("/openItems", this._aOriginalOpenItems);
+        this._aOriginalOpenItems = null;
+    }
+    const oBinding = this.byId("openItemsTable").getBinding("items");
+    oBinding.filter([]);
+
+    // Show date picker or text input depending on field
+    oInput.setVisible(!bIsDate);
+    oDatePicker.setVisible(bIsDate);
+
+    // For date fields force EQ operator and disable operator select
+    if (bIsDate) {
+        oOperator.setSelectedKey("EQ");
+        oOperator.setEnabled(false);
+    } else {
+        oOperator.setEnabled(true);
+    }
+
+    // Clear values on field switch
+    oInput.setValue("");
+    oDatePicker.setDateValue(null);
+},
+
+onViewSettingsConfirm: function () {
+    const oTable   = this.byId("openItemsTable");
+    const oBinding = oTable.getBinding("items");
+    const oModel   = this.getView().getModel("openItems");
+
+    // ── Always restore original items before applying new filter ──────────
+    if (this._aOriginalOpenItems) {
+        oModel.setProperty("/openItems", this._aOriginalOpenItems);
+        this._aOriginalOpenItems = null;
+    }
+
+    // ── Sort ──────────────────────────────────────────────────────────────
+    const sSortField = this.byId("sortFieldSelect").getSelectedKey();
+    const bDesc      = this.byId("sortOrderBtn").getSelectedKey() === "desc";
+    const aSorters   = sSortField
+        ? [new sap.ui.model.Sorter(sSortField, bDesc)]
+        : [];
+
+    // ── Filter ────────────────────────────────────────────────────────────
+    const sFilterField    = this.byId("filterFieldSelect").getSelectedKey();
+    const sFilterOperator = this.byId("filterOperatorSelect").getSelectedKey();
+    const aDateFields     = ["postingDate", "baseDate"];
+    const bIsDate         = aDateFields.indexOf(sFilterField) > -1;
+
+    let aFilters = [];
+
+    if (sFilterField) {
+        if (bIsDate) {
+            const oSelectedDate = this.byId("filterDatePicker").getDateValue();
+
+            if (oSelectedDate) {
+                // Always read from current full model data
+                const aAllItems = oModel.getProperty("/openItems");
+
+                const aFiltered = aAllItems.filter(function (oItem) {
+                    const oValue = oItem[sFilterField];
+                    if (!oValue) { return false; }
+
+                    let oDate = null;
+                    if (oValue instanceof Date) {
+                        oDate = oValue;
+                    } else if (typeof oValue === "string" && oValue.indexOf("/Date(") === 0) {
+                        const ts = oValue.replace("/Date(", "").replace(")/", "").split("+")[0];
+                        oDate = new Date(parseInt(ts));
+                    } else if (typeof oValue === "string") {
+                        oDate = new Date(oValue);
+                    }
+
+                    if (!oDate || isNaN(oDate.getTime())) { return false; }
+
+                    return oDate.getUTCDate()     === oSelectedDate.getDate()
+                        && oDate.getUTCMonth()    === oSelectedDate.getMonth()
+                        && oDate.getUTCFullYear() === oSelectedDate.getFullYear();
+                });
+
+                // Store original before replacing
+                this._aOriginalOpenItems = aAllItems;
+                oModel.setProperty("/openItems", aFiltered);
+
+                oBinding.sort(aSorters);
+                this._oViewSettingsDialog.close();
+                return;
+            }
+        } else {
+            const sFilterValue = this.byId("filterValueInput").getValue().trim();
+            if (sFilterValue) {
+                const oOperator = sap.ui.model.FilterOperator[sFilterOperator];
+                aFilters.push(new sap.ui.model.Filter(sFilterField, oOperator, sFilterValue));
+            }
+        }
+    }
+
+    oBinding.sort(aSorters);
+    oBinding.filter(aFilters);
+    this._oViewSettingsDialog.close();
+},
+
+onViewSettingsReset: function () {
+    const oModel = this.getView().getModel("openItems");
+
+    // Restore original items if date filter was applied
+    if (this._aOriginalOpenItems) {
+        oModel.setProperty("/openItems", this._aOriginalOpenItems);
+        this._aOriginalOpenItems = null;
+    }
+
+    // Reset sort controls
+    this.byId("sortFieldSelect").setSelectedKey("");
+    this.byId("sortOrderBtn").setSelectedKey("asc");
+
+    // Reset filter controls
+    this.byId("filterFieldSelect").setSelectedKey("");
+    this.byId("filterOperatorSelect").setSelectedKey("Contains");
+    this.byId("filterOperatorSelect").setEnabled(true);
+    this.byId("filterValueInput").setValue("");
+    this.byId("filterValueInput").setVisible(true);
+    this.byId("filterDatePicker").setDateValue(null);
+    this.byId("filterDatePicker").setVisible(false);
+
+    // Clear binding sort and filter
+    const oBinding = this.byId("openItemsTable").getBinding("items");
+    oBinding.sort([]);
+    oBinding.filter([]);
+
+    this._oViewSettingsDialog.close();
+},
+
+onViewSettingsCancel: function () {
+    this._oViewSettingsDialog.close();
+},
+
+onViewSettingsCancel: function () {
+    this._oViewSettingsDialog.close();
+},
+
+onSearchOpenItems: function (oEvt) {
+    const sQuery   = oEvt.getSource().getValue().trim();
+    const oModel   = this.getView().getModel("openItems");
+    const oBinding = this.byId("openItemsTable").getBinding("items");
+
+    // Always restore original before searching
+    if (this._aOriginalOpenItems) {
+        oModel.setProperty("/openItems", this._aOriginalOpenItems);
+        this._aOriginalOpenItems = null;
+    }
+    oBinding.filter([]);
+
+    if (!sQuery) {
+        return;
+    }
+
+    const aAllItems = oModel.getProperty("/openItems");
+
+    const aFiltered = aAllItems.filter(function (oItem) {
+        const sQuery_lower = sQuery.toLowerCase();
+
+        // Check all string/number fields
+        return (oItem.docNo      && String(oItem.docNo).toLowerCase().indexOf(sQuery_lower)      > -1)
+            || (oItem.yearF      && String(oItem.yearF).toLowerCase().indexOf(sQuery_lower)      > -1)
+            || (oItem.lineItem   && String(oItem.lineItem).toLowerCase().indexOf(sQuery_lower)   > -1)
+            || (oItem.compCode   && String(oItem.compCode).toLowerCase().indexOf(sQuery_lower)   > -1)
+            || (oItem.vendorCode && String(oItem.vendorCode).toLowerCase().indexOf(sQuery_lower) > -1)
+            || (oItem.docType    && String(oItem.docType).toLowerCase().indexOf(sQuery_lower)    > -1)
+            || (oItem.extRef     && String(oItem.extRef).toLowerCase().indexOf(sQuery_lower)     > -1)
+            || (oItem.assignNo   && String(oItem.assignNo).toLowerCase().indexOf(sQuery_lower)   > -1)
+            || (oItem.spGl       && String(oItem.spGl).toLowerCase().indexOf(sQuery_lower)       > -1)
+            || (oItem.debCredInd && String(oItem.debCredInd).toLowerCase().indexOf(sQuery_lower) > -1)
+            || (oItem.postKey    && String(oItem.postKey).toLowerCase().indexOf(sQuery_lower)    > -1)
+            || (oItem.amntLC     && String(oItem.amntLC).toLowerCase().indexOf(sQuery_lower)     > -1)
+            || (oItem.amntDC     && String(oItem.amntDC).toLowerCase().indexOf(sQuery_lower)     > -1)
+            || (function () {
+                // Check postingDate
+                if (!oItem.postingDate) { return false; }
+                let oDate = oItem.postingDate instanceof Date
+                    ? oItem.postingDate
+                    : new Date(oItem.postingDate);
+                if (isNaN(oDate.getTime())) { return false; }
+                const sDay   = String(oDate.getUTCDate()).padStart(2, "0");
+                const sMonth = String(oDate.getUTCMonth() + 1).padStart(2, "0");
+                const sYear  = oDate.getUTCFullYear();
+                const sFormatted = sMonth + "/" + sDay + "/" + sYear;
+                return sFormatted.indexOf(sQuery) > -1;
+            })()
+            || (function () {
+                // Check baseDate
+                if (!oItem.baseDate) { return false; }
+                let oDate = oItem.baseDate instanceof Date
+                    ? oItem.baseDate
+                    : new Date(oItem.baseDate);
+                if (isNaN(oDate.getTime())) { return false; }
+                const sDay   = String(oDate.getUTCDate()).padStart(2, "0");
+                const sMonth = String(oDate.getUTCMonth() + 1).padStart(2, "0");
+                const sYear  = oDate.getUTCFullYear();
+                const sFormatted = sMonth + "/" + sDay + "/" + sYear;
+                return sFormatted.indexOf(sQuery) > -1;
+            })();
+    });
+
+    this._aOriginalOpenItems = aAllItems;
+    oModel.setProperty("/openItems", aFiltered);
+},
+
+
 _resetPage: function () {
     // Clear JSON model
     const oModel = this.getView().getModel("openItems");
@@ -667,6 +901,14 @@ formatAmount: function(value) {
     return "";
 },
 onRefreshItems: function() {
+
+       // Clear search field
+    const oSearchField = this.byId("_IDGenSearchField");
+    if (oSearchField) { oSearchField.setValue(""); }
+
+    // Clear original items cache
+    this._aOriginalOpenItems = null;
+
     const oVendorInput = this.byId("supplierAccountInput");
     const sVendor = oVendorInput ? oVendorInput.getValue().trim() : "";
 
@@ -675,13 +917,61 @@ onRefreshItems: function() {
         return;
     }
 
-    this._loadOpenItems(sVendor);
+    this._refreshOpenItemsOnly(sVendor);
+    this.onViewSettingsReset();
 },
 
         onNavBack: function() {
             const oRouter = this.getOwnerComponent().getRouter();
             oRouter.navTo("RouteNewDoc");
         },
+
+
+_refreshOpenItemsOnly: function (sVendor) {
+    const oDataModel = this.getOwnerComponent().getModel();
+    const oJSONModel = this.getView().getModel("openItems");
+    const that       = this;
+
+    const oTable = this.byId("openItemsTable");
+    if (oTable) { oTable.setBusy(true); }
+
+    const aFilters = [new Filter("vendorCode", FilterOperator.EQ, sVendor)];
+
+    oDataModel.read("/openItems", {
+        filters: aFilters,
+        success: function (oData) {
+            if (oTable) { oTable.setBusy(false); }
+
+            const aAllOpenItems = oData.results || [];
+
+            // Get current itemsToBeCleared — preserve them
+            const aItemsToBeCleared = oJSONModel.getProperty("/itemsToBeCleared") || [];
+
+            // Build lookup set from itemsToBeCleared to exclude them from open items
+            const oClearedSet = new Set(
+                aItemsToBeCleared.map(function (oItem) {
+                    return oItem.docNo + "|" + oItem.yearF + "|" + oItem.lineItem;
+                })
+            );
+
+            // Exclude already cleared items from fresh open items
+            const aFilteredOpenItems = aAllOpenItems.filter(function (oItem) {
+                const sKey = oItem.docNo + "|" + oItem.yearF + "|" + oItem.lineItem;
+                return !oClearedSet.has(sKey);
+            });
+
+            // Only update openItems, keep itemsToBeCleared intact
+            oJSONModel.setProperty("/openItems", aFilteredOpenItems);
+
+            that._updateTableTitles();
+            MessageToast.show("Refreshed " + aFilteredOpenItems.length + " open items");
+        },
+        error: function () {
+            if (oTable) { oTable.setBusy(false); }
+            MessageBox.error("Failed to refresh open items for vendor: " + sVendor);
+        }
+    });
+},        
 
 _setBusyDialog: function(bOpen) {
     if (bOpen) {

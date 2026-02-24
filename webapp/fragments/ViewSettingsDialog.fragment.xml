@@ -1,0 +1,80 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+
+    <Dialog id="filterSortDialog" title="View Settings" contentWidth="40rem">
+        <content>
+            <IconTabBar id="viewSettingsTabBar" expanded="true" headerMode="Inline">
+                <items>
+                    <IconTabFilter id="_IDGenIconTabFilter" text="Sort" key="sort">
+                        <VBox id="_IDGenVBox1" class="sapUiSmallMargin">
+                            <Label id="_IDGenLabel" text="Sort By"/>
+                            <Select id="sortFieldSelect">
+                                <items>
+                                    <core:Item id="_IDGenItem2" key="" text="None"/>
+                                    <core:Item id="_IDGenItem5" key="docNo" text="Document Number"/>
+                                    <core:Item id="_IDGenItem6" key="yearF" text="Fiscal Year"/>
+                                    <core:Item id="_IDGenItem7" key="postingDate" text="Posting Date"/>
+                                    <core:Item id="_IDGenItem8" key="docType" text="Document Type"/>
+                                    <core:Item id="_IDGenItem9" key="amntLC" text="Amount (Local)"/>
+                                    <core:Item id="_IDGenItem10" key="amntDC" text="Amount (Doc)"/>
+                                    <core:Item id="_IDGenItem11" key="baseDate" text="Baseline Date"/>
+                                    <core:Item id="_IDGenItem12" key="extRef" text="Reference"/>
+                                    <core:Item id="_IDGenItem13" key="assignNo" text="Assignment"/>
+                                </items>
+                            </Select>
+                            <Label id="_IDGenLabel5" text="Order" class="sapUiSmallMarginTop"/>
+                            <SegmentedButton id="sortOrderBtn" selectedKey="asc">
+                                <items>
+                                    <SegmentedButtonItem id="_IDGenSegmentedButtonItem" key="asc" text="Ascending"/>
+                                    <SegmentedButtonItem id="_IDGenSegmentedButtonItem1" key="desc" text="Descending"/>
+                                </items>
+                            </SegmentedButton>
+                        </VBox>
+                    </IconTabFilter>
+
+                    <IconTabFilter id="_IDGenIconTabFilter1" text="Filter" key="filter">
+                        <VBox id="_IDGenVBox2" class="sapUiSmallMargin">
+                            <Label id="_IDGenLabel6" text="Filter By"/>
+                            <Select id="filterFieldSelect" change="onFilterFieldChange">
+                                <items>
+                                    <core:Item id="_IDGenItem14" key="" text="Select Field"/>
+                                    <core:Item id="_IDGenItem15" key="docNo" text="Document Number"/>
+                                    <core:Item id="_IDGenItem16" key="yearF" text="Fiscal Year"/>
+                                    <core:Item id="_IDGenItem17" key="docType" text="Document Type"/>
+                                    <core:Item id="_IDGenItem18" key="extRef" text="Reference"/>
+                                    <core:Item id="_IDGenItem19" key="assignNo" text="Assignment"/>
+                                    <core:Item id="_IDGenItem20" key="vendorCode" text="Supplier"/>
+                                    <core:Item id="_IDGenItem21" key="debCredInd" text="D/C Indicator"/>
+                                    <core:Item id="_IDGenItem22" key="compCode" text="Company Code"/>
+                                    <core:Item id="_IDGenItem23" key="postingDate" text="Posting Date"/>
+                                    <core:Item id="_IDGenItem24" key="baseDate" text="Baseline Date"/>
+                                </items>
+                            </Select>
+                            <Label id="_IDGenLabel7" text="Operator" class="sapUiSmallMarginTop"/>
+                            <Select id="filterOperatorSelect">
+                                <items>
+                                    <core:Item id="_IDGenItem25" key="Contains" text="Contains"/>
+                                    <core:Item id="_IDGenItem26" key="EQ" text="Equals"/>
+                                    <core:Item id="_IDGenItem27" key="StartsWith" text="Starts With"/>
+                                    <core:Item id="_IDGenItem28" key="EndsWith" text="Ends With"/>
+                                </items>
+                            </Select>
+                            <Label id="_IDGenLabel8" text="Value" class="sapUiSmallMarginTop"/>
+                            <!-- Text input — shown for non-date fields -->
+                            <Input id="filterValueInput" placeholder="Enter filter value..." width="100%"/>
+                            <!-- Date picker — shown for date fields, hidden by default -->
+                            <DatePicker id="filterDatePicker" visible="false" width="100%" placeholder="Select date..." displayFormat="MM/dd/yyyy"/>
+                        </VBox>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+        <buttons>
+            <Button id="_IDGenButton5" text="OK" type="Emphasized" press="onViewSettingsConfirm"/>
+            <Button id="_IDGenButton6" text="Reset" press="onViewSettingsReset"/>
+            <Button id="_IDGenButton7" text="Cancel" press="onViewSettingsCancel"/>
+        </buttons>
+    </Dialog>
+
+</core:FragmentDefinition>
