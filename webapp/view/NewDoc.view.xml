@@ -159,7 +159,7 @@
 >
     <headerToolbar>
         <OverflowToolbar id="tableHeaderToolbar">
-            <Title id="tableTitle" text="Payment Drafts ({headModel>/.length})" level="H2"/>
+            <Title id="tableTitle" text="Payment Drafts" level="H2"/>
             <ToolbarSpacer id="toolbarSpacer"/>
             <Button 
                 id="btnClearFilters"
