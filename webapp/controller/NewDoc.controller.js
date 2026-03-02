@@ -35,6 +35,7 @@ _onRouteMatched: function() {
                 success: function (oData) {
                     // Set data to JSON model
                     var oJsonModel = oView.getModel("headModel");
+                    
                     oJsonModel.setData(oData.results);
                     oView.setBusy(false);
                 },

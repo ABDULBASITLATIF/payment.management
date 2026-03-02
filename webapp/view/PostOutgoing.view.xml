@@ -257,7 +257,37 @@
 </Table>
     </f:content>
 </f:SimpleForm>
-            </VBox>
+            <Table id="aprvrTable"     items="{path: 'aprvrTab>/'}"
+                        width="100%"
+                        growing="true"
+                        growingThreshold="100"
+                        growingScrollToLoad="true"
+                        >
+                    <headerToolbar>
+                        <OverflowToolbar id="aprvrTabTool">
+                            <Title id="aprvrTabTitle" text="Approver Table" level="H5"/>
+                        </OverflowToolbar>
+                    </headerToolbar>                        
+                    <columns>
+                        <Column id="levelCol" width="4rem"><Text id="levelCT" text="Approver Level"/></Column>
+                        <Column id="UserCol" width="7rem">
+                            <Text id="UserCT" text="User Name"/>
+                        </Column>
+                        <Column id="StatusCol" width="5rem">
+                            <Text id="StatusCT" text="Status"/>
+                        </Column>
+                    </columns>
+                    <items>
+                    <ColumnListItem id="aprvColItem">
+                        <cells>
+                            <Text id="levelCell" text="{aprvrTab>level}"></Text>
+                            <Text id="userCell" text="{aprvrTab>aprvr}"></Text>
+                            <Text id="statusCell" text="{aprvrTab>aprvrStatus}"></Text>
+                        </cells>
+                    </ColumnListItem>
+                    </items>
+            </Table>    
+            </VBox>        
         </content>
         
         <footer>

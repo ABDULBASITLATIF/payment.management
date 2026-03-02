@@ -1,3 +1,5 @@
+//const { ODataRequest } = require("@sap-ux/ui5-middleware-fe-mockserver");
+
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/json/JSONModel",
@@ -384,6 +386,21 @@ _loadDraft: function (sDraftId) {
 
             // Switch button to Update
             that._updateSaveButton("edit");
+            //rRead Approval Hierarchy
+            debugger;
+            if (oHead.draftSt === "2" || oHead.draftSt === "4" ){
+                var apFilters = [ new Filter("draftID",FilterOperator.EQ,sDraftId)];
+                oDataModel.read("/aprvStatusSet",{
+                    filters: apFilters,
+                    success: function(oData,oResp){
+                        that.getView().setModel(new JSONModel(oData.results),"aprvrTab");
+                        debugger;
+                    },
+                    error: function(oErr){
+                        debugger;
+                    }
+                });
+            }
         },
         error: function () {
             that.getView().setBusy(false);
@@ -546,6 +563,8 @@ _applyDisplayMode: function (sDraftSt) {
     const oResubmitButton   = this.byId("resubmitButton");
     
     const openItemForm   = this.byId("openItemsForm");
+    
+    const aprvrTable   = this.byId("aprvrTable");
     if (bIsInApproval) {
         // Hide all buttons
         if (oSaveButton)   { oSaveButton.setVisible(false);              }
@@ -553,6 +572,7 @@ _applyDisplayMode: function (sDraftSt) {
         if (oPostButton)   { oPostButton.setVisible(false);               }
         if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
         if (openItemForm)   { openItemForm.setVisible(false);               }
+        if (aprvrTable)   { aprvrTable.setVisible(true);               }
 
     } else if (bIsApproved) {
         // Show Post only
@@ -561,6 +581,7 @@ _applyDisplayMode: function (sDraftSt) {
         if (oPostButton)   { oPostButton.setVisible(true);                }
         if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
         if (openItemForm)   { openItemForm.setVisible(false);               }
+        if (aprvrTable)   { aprvrTable.setVisible(true);               }
 
     } else if (bIsCreated) {
         // Show Update and Submit, hide Post
@@ -569,6 +590,7 @@ _applyDisplayMode: function (sDraftSt) {
         if (oPostButton)   { oPostButton.setVisible(false);               }
         if (oUpdateButton)   { oUpdateButton.setVisible(true);               }
         if (openItemForm)   { openItemForm.setVisible(true);               }
+        if (aprvrTable)   { aprvrTable.setVisible(false);               }
     } else if (bIsRejected) {
         // Show Update and Resubmit, hide Save and Post
         if (oSaveButton)   { oSaveButton.setVisible(false);               }
@@ -578,6 +600,7 @@ _applyDisplayMode: function (sDraftSt) {
         if (oResubmitButton)   { oResubmitButton.setVisible(true);               }
         
         if (openItemForm)   { openItemForm.setVisible(true);               }
+        if (aprvrTable)   { aprvrTable.setVisible(true);               }
     } else {
         // Create mode — show Save and Submit, hide Post
         if (oSaveButton)   { oSaveButton.setVisible(true);               }
@@ -587,6 +610,7 @@ _applyDisplayMode: function (sDraftSt) {
         if (oResubmitButton)   { oResubmitButton.setVisible(false);               }
         
         if (openItemForm)   { openItemForm.setVisible(true);               }
+        if (aprvrTable)   { aprvrTable.setVisible(false);               }
     }
 
     // ── Store display mode flag for handleStateChange ─────────────────────
@@ -644,7 +668,10 @@ _loadOpenItemsExcluding: function (sVendor, aItemsToBeCleared, aOriginalToItems)
     if (oTable) { oTable.setBusy(true); }
 
     const aFilters = [new Filter("vendorCode", FilterOperator.EQ, sVendor)];
-
+    var currCode = this.byId("currencyInput").getValue();
+    if  ( currCode != " "){
+        aFilters.push(new Filter("docCurr", FilterOperator.EQ, currCode));
+    }
     oDataModel.read("/openItems", {
         filters: aFilters,
         success: function (oData) {

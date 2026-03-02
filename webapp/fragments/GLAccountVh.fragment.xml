@@ -11,7 +11,8 @@
         items="{/bankGLS}">
         <StandardListItem id="_IDGenStandardListItem4"
             title="{GLAccount}"
-            description="Company: {CompanyCode}, Bank: {HouseBank}"
+            description="{glDesc}"
+            info="Company: {CompanyCode}, Bank: {HouseBank}"
             type="Active"/>
     </SelectDialog>
     

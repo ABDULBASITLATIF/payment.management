@@ -12,6 +12,7 @@ sap.ui.define([
         // ══════════════════════════════════════════════════════════════════
         onLoadCCVH: async function (oEvent) {
             const oView = this.getView();
+            var aFilters = [];
 
             this._pComCodeDialog ??= Fragment.load({
                 id: oView.getId(),
@@ -23,6 +24,8 @@ sap.ui.define([
             });
 
             const oDialog = await this._pComCodeDialog;
+            aFilters.push(new Filter("Country", FilterOperator.Contains, 'OM'));
+            oDialog.getBinding("items").filter(aFilters);
             oDialog.open();
         },
 
