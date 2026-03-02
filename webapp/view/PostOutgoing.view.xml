@@ -280,7 +280,7 @@
                     <items>
                     <ColumnListItem id="aprvColItem">
                         <cells>
-                            <Text id="levelCell" text="{aprvrTab>level}"></Text>
+                            <Text id="levelCell" text="{aprvrTab>aprevel}"></Text>
                             <Text id="userCell" text="{aprvrTab>aprvr}"></Text>
                             <Text id="statusCell" text="{aprvrTab>aprvrStatus}"></Text>
                         </cells>

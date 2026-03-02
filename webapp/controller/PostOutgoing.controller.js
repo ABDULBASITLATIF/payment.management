@@ -388,19 +388,29 @@ _loadDraft: function (sDraftId) {
             that._updateSaveButton("edit");
             //rRead Approval Hierarchy
             debugger;
-            if (oHead.draftSt === "2" || oHead.draftSt === "4" ){
-                var apFilters = [ new Filter("draftID",FilterOperator.EQ,sDraftId)];
-                oDataModel.read("/aprvStatusSet",{
-                    filters: apFilters,
-                    success: function(oData,oResp){
-                        that.getView().setModel(new JSONModel(oData.results),"aprvrTab");
-                        debugger;
-                    },
-                    error: function(oErr){
-                        debugger;
-                    }
-                });
-            }
+if (oHead.draftSt === "2" || oHead.draftSt === "4") {
+    var apFilters = [new Filter("draftID", FilterOperator.EQ, sDraftId)];
+    
+    console.log("Reading aprvrs with draftID:", sDraftId);
+    
+    oDataModel.read("/aprvrs", {
+        filters: apFilters,
+        success: function(oData, oResp) {
+            console.log("Approvers response:", JSON.stringify(oData));
+            console.log("Approvers count:", oData.results ? oData.results.length : 0);
+            
+            const oAprvrModel = new JSONModel(oData.results);
+            that.getView().setModel(oAprvrModel, "aprvrTab");
+            
+            // Force visibility
+            const oAprvrTable = that.byId("aprvrTable");
+            if (oAprvrTable) { oAprvrTable.setVisible(true); }
+        },
+        error: function(oErr) {
+            console.log("Approvers error:", JSON.stringify(oErr));
+        }
+    });
+}
         },
         error: function () {
             that.getView().setBusy(false);

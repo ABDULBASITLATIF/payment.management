@@ -32,6 +32,18 @@
     </edmx:Reference>
     <edmx:DataServices m:DataServiceVersion="2.0">
         <Schema Namespace="ZFI_PAYMENT_MANAGEMENT_SRV" xml:lang="en" sap:schema-version="1" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+            <EntityType Name="aprvStatus" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="draftID"/>
+                    <PropertyRef Name="level"/>
+                </Key>
+                <Property Name="draftID" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="level" Type="Edm.Int16" Nullable="false" sap:unicode="false" sap:label="Signed INT2 / int16" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="aprvr" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="aprvrName" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="aprvrStatus" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="aprvrDate" Type="Edm.String" Nullable="false" sap:unicode="false" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
             <EntityType Name="I_BankType" sap:label="Bank" sap:content-version="1">
                 <Key>
                     <PropertyRef Name="BankCountry"/>
@@ -195,7 +207,7 @@
                 <Key>
                     <PropertyRef Name="draftId"/>
                 </Key>
-                <Property Name="draftId" Type="Edm.Guid" Nullable="false" sap:label="Payment Draft ID"/>
+                <Property Name="draftId" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="Payment Draft ID"/>
                 <Property Name="compCode" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Company Code"/>
                 <Property Name="fiscYear" Type="Edm.String" MaxLength="4" sap:display-format="NonNegative" sap:label="Fiscal Year"/>
                 <Property Name="draftType" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Draft Type"/>
@@ -224,7 +236,7 @@
                     <PropertyRef Name="draftId"/>
                     <PropertyRef Name="itemId"/>
                 </Key>
-                <Property Name="draftId" Type="Edm.Guid" Nullable="false" sap:label="Payment Draft ID"/>
+                <Property Name="draftId" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="Payment Draft ID"/>
                 <Property Name="itemId" Type="Edm.String" Nullable="false" MaxLength="3" sap:display-format="NonNegative" sap:label="Item" sap:quickinfo="Number of Line Item Within Accounting Document"/>
                 <Property Name="itemTy" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Payment Item Type"/>
                 <Property Name="compCurr" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Currency" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
@@ -244,12 +256,22 @@
                 <Property Name="postKey" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="Posting Key"/>
                 <Property Name="postingDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Posting Date" sap:quickinfo="Posting Date in the Document"/>
             </EntityType>
+            <EntityType Name="aprvrsType" sap:label="CDS View to get payment draft approvers" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="draftID"/>
+                    <PropertyRef Name="aprLevel"/>
+                </Key>
+                <Property Name="draftID" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="Payment Draft ID"/>
+                <Property Name="aprLevel" Type="Edm.Byte" Nullable="false" sap:label="Approver Level"/>
+                <Property Name="aprvr" Type="Edm.String" MaxLength="12" sap:display-format="UpperCase" sap:label="User" sap:quickinfo="User Name in User Master Record"/>
+                <Property Name="aprvrStatus" Type="Edm.String" MaxLength="11"/>
+            </EntityType>
             <EntityType Name="aprvrDetailsType" sap:label="Payment Draft Approver Details" sap:content-version="1">
                 <Key>
                     <PropertyRef Name="draftIdC"/>
                 </Key>
-                <Property Name="draftIdC" Type="Edm.String" Nullable="false" MaxLength="32"/>
-                <Property Name="draftid" Type="Edm.Guid" sap:label="Payment Draft ID"/>
+                <Property Name="draftIdC" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="Payment Draft ID"/>
+                <Property Name="draftid" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Payment Draft ID"/>
                 <Property Name="compCode" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Company Code"/>
                 <Property Name="fiscYear" Type="Edm.String" MaxLength="4" sap:display-format="NonNegative" sap:label="Fiscal Year"/>
                 <Property Name="draftType" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Draft Type"/>
@@ -262,7 +284,8 @@
                 <Property Name="bankGL" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="G/L Account" sap:quickinfo="General Ledger Account"/>
                 <Property Name="vendor" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Supplier" sap:quickinfo="Account Number of Supplier"/>
                 <Property Name="name1" Type="Edm.String" MaxLength="35" sap:label="Supplier's Name"/>
-                <Property Name="payAmnt" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
+                <Property Name="curr" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Currency" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
+                <Property Name="payAmnt" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="curr" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
                 <NavigationProperty Name="to_item" Relationship="ZFI_PAYMENT_MANAGEMENT_SRV.assoc_E602B8A74B4D5B24C6231CC77718C3E8" FromRole="FromRole_assoc_E602B8A74B4D5B24C6231CC77718C3E8" ToRole="ToRole_assoc_E602B8A74B4D5B24C6231CC77718C3E8"/>
             </EntityType>
             <EntityType Name="openItemsType" sap:label="CDS View to fetch vendor open items" sap:content-version="1">
@@ -302,6 +325,7 @@
                 <Property Name="HouseBank" Type="Edm.String" Nullable="false" MaxLength="5" sap:display-format="UpperCase" sap:label="House Bank" sap:quickinfo="Short Key for a House Bank"/>
                 <Property Name="HouseBankAccount" Type="Edm.String" Nullable="false" MaxLength="5" sap:display-format="UpperCase" sap:label="House Bank Account"/>
                 <Property Name="GLAccount" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="G/L Account" sap:quickinfo="General Ledger Account"/>
+                <Property Name="glDesc" Type="Edm.String" MaxLength="50" sap:label="G/L Acct Long Text" sap:quickinfo="G/L Account Long Text"/>
             </EntityType>
             <Association Name="assoc_C4F40A6ED515AE33D9A7FC47F73E499C" sap:content-version="1">
                 <End Type="ZFI_PAYMENT_MANAGEMENT_SRV.I_HousebankType" Multiplicity="1" Role="FromRole_assoc_C4F40A6ED515AE33D9A7FC47F73E499C"/>
@@ -328,6 +352,7 @@
                 <End Type="ZFI_PAYMENT_MANAGEMENT_SRV.itemType" Multiplicity="*" Role="ToRole_assoc_E602B8A74B4D5B24C6231CC77718C3E8"/>
             </Association>
             <EntityContainer Name="ZFI_PAYMENT_MANAGEMENT_SRV_Entities" m:IsDefaultEntityContainer="true" sap:message-scope-supported="true" sap:supported-formats="atom json xlsx">
+                <EntitySet Name="aprvStatusSet" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.aprvStatus" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:addressable="false" sap:content-version="1"/>
                 <EntitySet Name="I_Bank" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.I_BankType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:searchable="true" sap:content-version="1"/>
                 <EntitySet Name="I_CompanyCode" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.I_CompanyCodeType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:searchable="true" sap:content-version="1"/>
                 <EntitySet Name="I_CompanyCodeStdVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.I_CompanyCodeStdVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:searchable="true" sap:content-version="1"/>
@@ -338,6 +363,7 @@
                 <EntitySet Name="I_Supplier_VH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.I_Supplier_VHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:searchable="true" sap:content-version="1"/>
                 <EntitySet Name="head" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.headType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="item" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.itemType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+                <EntitySet Name="aprvrs" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.aprvrsType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="aprvrDetails" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.aprvrDetailsType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="openItems" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.openItemsType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="bankGLS" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.bankGLSType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
