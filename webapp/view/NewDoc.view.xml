@@ -171,6 +171,9 @@
     </headerToolbar>
     
     <columns>
+       <Column id="_IDGenColumn2ww2" minScreenWidth="Tablet" demandPopin="true">
+            <Text id="draftID" text="Draft ID"/>
+        </Column>
         <Column id="_IDGenColumn" minScreenWidth="Tablet" demandPopin="true">
             <Text id="compCode" text="Company Code"/>
         </Column>
@@ -213,6 +216,7 @@
     type="Navigation"
     press=".onEditDraft">
             <cells>
+               <Text id="_IDGenTextid" text="{headModel>draftId}"/> 
                 <Text id="_IDGenText7" text="{headModel>compCode}"/>
                 <Text id="_IDGenText8" text="{headModel>fiscYear}"/>
                 <Text id="_IDGenText9" text="{headModel>draftType}"/>

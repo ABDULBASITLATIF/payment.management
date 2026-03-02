@@ -362,7 +362,7 @@ _loadDraft: function (sDraftId) {
 
     this.getView().setBusy(true);
 
-    oDataModel.read("/head(guid'" + sDraftId + "')", {
+    oDataModel.read("/head('" + sDraftId + "')", {
         urlParameters: { "$expand": "to_item" },
         success: function (oHead) {
             debugger;
