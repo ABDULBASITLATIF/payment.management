@@ -385,7 +385,7 @@ _loadDraft: function (sDraftId) {
             that._loadOpenItemsExcluding(sVendor, aItemsToBeCleared, aToItems);
 
             // Switch button to Update
-            that._updateSaveButton("edit");
+            //that._updateSaveButton("edit");
             //rRead Approval Hierarchy
             debugger;
         if (oHead.draftSt === "2" || oHead.draftSt === "4" || oHead.draftSt === "3") {
@@ -487,7 +487,8 @@ _applyDisplayMode: function (sDraftSt) {
     const bIsCreated    = sDraftSt === "1"; // Created — some fields locked
     const bIsApproved   = sDraftSt === "3"; // Approved — display mode + Post button
     const bIsRejected   = sDraftSt === "4"; // Rejected — editable + Update + Resubmit
-
+    const bIsPosted   = sDraftSt === "5";
+    const bIsPostErr   = sDraftSt === "6";
     // ── Toggle form visibility ─────────────────────────────────────────────
     const oEditFormBox    = this.byId("editFormBox");
     const oDisplayFormBox = this.byId("displayFormBox");
@@ -575,6 +576,7 @@ _applyDisplayMode: function (sDraftSt) {
     const openItemForm   = this.byId("openItemsForm");
     
     const aprvrTable   = this.byId("aprvrTable");
+    debugger;
     if (bIsInApproval) {
         // Hide all buttons
         if (oSaveButton)   { oSaveButton.setVisible(false);              }
@@ -611,6 +613,24 @@ _applyDisplayMode: function (sDraftSt) {
         
         if (openItemForm)   { openItemForm.setVisible(true);               }
         if (aprvrTable)   { aprvrTable.setVisible(true);               }
+    } else if (bIsPostErr) {
+        // Show Update and Resubmit, hide Save and Post
+        if (oSaveButton)   { oSaveButton.setVisible(false);              }
+        if (oSubmitButton) { oSubmitButton.setVisible(false);             }
+        if (oPostButton)   { oPostButton.setVisible(true);                }
+        if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
+        if (openItemForm)   { openItemForm.setVisible(false);               }
+        if (aprvrTable)   { aprvrTable.setVisible(true);               }
+    }
+    else if (bIsPosted) {
+        // Hide all buttons
+        if (oSaveButton)   { oSaveButton.setVisible(false);              }
+        if (oSubmitButton) { oSubmitButton.setVisible(false);             }
+        if (oPostButton)   { oPostButton.setVisible(false);               }
+        if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
+        if (openItemForm)   { openItemForm.setVisible(false);               }
+        if (aprvrTable)   { aprvrTable.setVisible(true);               }
+
     } else {
         // Create mode — show Save and Submit, hide Post
         if (oSaveButton)   { oSaveButton.setVisible(true);               }
@@ -1373,11 +1393,11 @@ onSubmit: function() {
     const sMode         = oPageModel.getProperty("/mode");
     const sSavedDraftId = oPageModel.getProperty("/draftId");
     const oDataModel    = this.getOwnerComponent().getModel();
-
+    debugger;
 const fnSubmit = function(sDraftId) {
     oDataModel.setUseBatch(false);
     that._setBusyDialog(true);
-    oDataModel.create("/head", { draftId: sDraftId, action: "S" }, {
+    oDataModel.create("/head", { draftId: sDraftId, action: "S"}, {
         success: function() {
             that._setBusyDialog(false);
             oDataModel.setUseBatch(true);

@@ -133,6 +133,8 @@
                 <core:Item id="_IDGenItem777"  key="2" text="In Approval"/>
                 <core:Item id="_IDGenItem888"  key="3" text="Approved"/>
                 <core:Item id="_IDGenItem966t" key="4" text="Rejected"/>
+                <core:Item id="_IDGenItem967t" key="5" text="Posted"/>
+                <core:Item id="_IDGenItem968t" key="6" text="Posted with Error"/>
             </Select>
             </fb:control>
         </fb:FilterGroupItem>
