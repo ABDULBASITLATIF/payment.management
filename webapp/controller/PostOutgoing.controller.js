@@ -388,7 +388,7 @@ _loadDraft: function (sDraftId) {
             //that._updateSaveButton("edit");
             //rRead Approval Hierarchy
             debugger;
-        if (oHead.draftSt === "2" || oHead.draftSt === "4" || oHead.draftSt === "3") {
+        if (oHead.draftSt === "2" || oHead.draftSt === "3" || oHead.draftSt === "4" || oHead.draftSt === "5" || oHead.draftSt === "6") {
             var apFilters = [new Filter("draftID", FilterOperator.EQ, sDraftId)];
             
             // console.log("Reading aprvrs with draftID:", sDraftId);
@@ -473,11 +473,12 @@ _populateFormFields: function (oHead) {
     
     fnSet("glAccountInput", oHead.bankGL);
     fnSet("_IDGenInput3",         oHead.payAmnt);
-
+   
     fnSetDate("documentDatePicker", oHead.docDate);
     fnSetDate("postingDatePicker",  oHead.postingDate);
     fnSet("currencyInput",  oHead.curr);
-
+    this.getView().getModel("pageModel").setProperty("/postDoc", oHead.postDoc || "");
+    this.getView().getModel("pageModel").setProperty("/msg",     oHead.msg     || "");
     this.getView().getModel("pageModel").setProperty("/draftSt", oHead.draftSt || "");
     this._applyDisplayMode(oHead.draftSt);
 },
@@ -492,11 +493,11 @@ _applyDisplayMode: function (sDraftSt) {
     // ── Toggle form visibility ─────────────────────────────────────────────
     const oEditFormBox    = this.byId("editFormBox");
     const oDisplayFormBox = this.byId("displayFormBox");
-    if (oEditFormBox)    { oEditFormBox.setVisible(!bIsInApproval && !bIsApproved); }
-    if (oDisplayFormBox) { oDisplayFormBox.setVisible(bIsInApproval || bIsApproved); }
+    if (oEditFormBox)    { oEditFormBox.setVisible(!bIsInApproval && !bIsApproved && !bIsPosted && !bIsPostErr); }
+    if (oDisplayFormBox) { oDisplayFormBox.setVisible(bIsInApproval || bIsApproved || bIsPosted || bIsPostErr); }
 
     // ── Populate pageModel for display fragment ────────────────────────────
-    if (bIsInApproval || bIsApproved) {
+    if (bIsInApproval || bIsApproved || bIsPosted || bIsPostErr) {
         const oPageModel = this.getView().getModel("pageModel");
 
         const fnGet = function (sId) {
@@ -529,6 +530,8 @@ _applyDisplayMode: function (sDraftSt) {
         oPageModel.setProperty("/balance",     fnGet("_IDGenInput2"));
         oPageModel.setProperty("/docDate",     fnGetDate("documentDatePicker"));
         oPageModel.setProperty("/postingDate", fnGetDate("postingDatePicker"));
+        
+
     }
 
     // ── Fields always locked (vendor, company code, bank fields) ──────────
@@ -585,6 +588,14 @@ _applyDisplayMode: function (sDraftSt) {
         if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
         if (openItemForm)   { openItemForm.setVisible(false);               }
         if (aprvrTable)   { aprvrTable.setVisible(true);               }
+        const oPostDocLabel = this.byId("postdoclabel");
+        const oPostDocText  = this.byId("postdocText");
+        const oPostMsgLabel = this.byId("postmsglabel");
+        const oPostMsgText  = this.byId("postmsgText");
+        if (oPostDocLabel) { oPostDocLabel.setVisible(false); }
+        if (oPostDocText)  { oPostDocText.setVisible(false);  }
+        if (oPostMsgLabel) { oPostMsgLabel.setVisible(false); }
+        if (oPostMsgText)  { oPostMsgText.setVisible(false);  }
 
     } else if (bIsApproved) {
         // Show Post only
@@ -595,6 +606,15 @@ _applyDisplayMode: function (sDraftSt) {
         if (openItemForm)   { openItemForm.setVisible(false);               }
         if (aprvrTable)   { aprvrTable.setVisible(true);               }
 
+        const oPostDocLabel = this.byId("postdoclabel");
+        const oPostDocText  = this.byId("postdocText");
+        const oPostMsgLabel = this.byId("postmsglabel");
+        const oPostMsgText  = this.byId("postmsgText");
+        if (oPostDocLabel) { oPostDocLabel.setVisible(false); }
+        if (oPostDocText)  { oPostDocText.setVisible(false);  }
+        if (oPostMsgLabel) { oPostMsgLabel.setVisible(false); }
+        if (oPostMsgText)  { oPostMsgText.setVisible(false);  }
+        
     } else if (bIsCreated) {
         // Show Update and Submit, hide Post
         if (oSaveButton)   { oSaveButton.setVisible(false);               }
@@ -614,22 +634,45 @@ _applyDisplayMode: function (sDraftSt) {
         if (openItemForm)   { openItemForm.setVisible(true);               }
         if (aprvrTable)   { aprvrTable.setVisible(true);               }
     } else if (bIsPostErr) {
-        // Show Update and Resubmit, hide Save and Post
-        if (oSaveButton)   { oSaveButton.setVisible(false);              }
-        if (oSubmitButton) { oSubmitButton.setVisible(false);             }
-        if (oPostButton)   { oPostButton.setVisible(true);                }
-        if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
-        if (openItemForm)   { openItemForm.setVisible(false);               }
-        if (aprvrTable)   { aprvrTable.setVisible(true);               }
+        if (oSaveButton)   { oSaveButton.setVisible(false);  }
+        if (oSubmitButton) { oSubmitButton.setVisible(false); }
+        if (oPostButton)   { oPostButton.setVisible(true);  }
+        if (oUpdateButton) { oUpdateButton.setVisible(false); }
+        if (openItemForm)  { openItemForm.setVisible(false);  }
+        if (aprvrTable)    { aprvrTable.setVisible(true);    }
+
+        // Hide posting document, show posting message
+        const oPostDocLabel = this.byId("postdoclabel");
+        const oPostDocText  = this.byId("postdocText");
+        const oPostMsgLabel = this.byId("postmsglabel");
+        const oPostMsgText  = this.byId("postmsgText");
+        if (oPostDocLabel) { oPostDocLabel.setVisible(false); }
+        if (oPostDocText)  { oPostDocText.setVisible(false);  }
+        if (oPostMsgLabel) { oPostMsgLabel.setVisible(true);  }
+        if (oPostMsgText)  { oPostMsgText.setVisible(true);   }
     }
     else if (bIsPosted) {
         // Hide all buttons
-        if (oSaveButton)   { oSaveButton.setVisible(false);              }
-        if (oSubmitButton) { oSubmitButton.setVisible(false);             }
-        if (oPostButton)   { oPostButton.setVisible(false);               }
-        if (oUpdateButton)   { oUpdateButton.setVisible(false);               }
-        if (openItemForm)   { openItemForm.setVisible(false);               }
-        if (aprvrTable)   { aprvrTable.setVisible(true);               }
+        if (oEditFormBox)    { oEditFormBox.setVisible(false);  }
+        if (oDisplayFormBox) { oDisplayFormBox.setVisible(true); }
+
+        // Hide all buttons
+        if (oSaveButton)     { oSaveButton.setVisible(false);   }
+        if (oSubmitButton)   { oSubmitButton.setVisible(false); }
+        if (oPostButton)     { oPostButton.setVisible(false);   }
+        if (oUpdateButton)   { oUpdateButton.setVisible(false); }
+        if (openItemForm)    { openItemForm.setVisible(false);  }
+        if (aprvrTable)      { aprvrTable.setVisible(true);    }
+
+        // Show posting document fields
+        const oPostDocLabel = this.byId("postdoclabel");
+        const oPostDocText  = this.byId("postdocText");
+        if (oPostDocLabel) { oPostDocLabel.setVisible(true);  }
+        if (oPostDocText)  { oPostDocText.setVisible(true);   }
+        const oPostMsgLabel = this.byId("postmsglabel");
+        const oPostMsgText  = this.byId("postmsgText");
+        if (oPostMsgLabel) { oPostMsgLabel.setVisible(false); }
+        if (oPostMsgText)  { oPostMsgText.setVisible(false);  }
 
     } else {
         // Create mode — show Save and Submit, hide Post
@@ -644,7 +687,7 @@ _applyDisplayMode: function (sDraftSt) {
     }
 
     // ── Store display mode flag for handleStateChange ─────────────────────
-    this._bDisplayMode = bIsInApproval || bIsApproved;
+    this._bDisplayMode = bIsInApproval || bIsApproved || bIsPosted || bIsPostErr;
 
     // ── Clear column in open items table ──────────────────────────────────
     const oClearColumn = this.byId("clearColumn");
@@ -728,6 +771,14 @@ _loadOpenItemsExcluding: function (sVendor, aItemsToBeCleared, aOriginalToItems)
             });
 
             that._updateTableTitles();
+            const sDraftSt = that.getView().getModel("pageModel").getProperty("/draftSt");
+            if (sDraftSt === "2" || sDraftSt === "3" || sDraftSt === "5" || sDraftSt === "6") {
+                const oPageModel = that.getView().getModel("pageModel");
+                const oInvoiceInput = that.byId("_IDGenInput1");
+                const oBalanceInput = that.byId("_IDGenInput2");
+                if (oInvoiceInput) { oPageModel.setProperty("/invoiceSum", oInvoiceInput.getValue()); }
+                if (oBalanceInput) { oPageModel.setProperty("/balance",    oBalanceInput.getValue()); }
+            }
             MessageToast.show(
                 "Loaded " + aFilteredOpenItems.length + " open items, " +
                 aItemsToBeCleared.length + " items to be cleared"

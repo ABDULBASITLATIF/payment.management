@@ -58,6 +58,11 @@
             <Label id="_IDGenLabelD3"     text="Balance"               width="auto"/>
             <Text id="balanceText"        text="{pageModel>/balance}"  width="auto"/>
 
+           <Label id="postdoclabel"     text="Posting Document"         width="auto" visible="false"/>
+            <Text id="postdocText"        text="{pageModel>/postDoc}"  width="auto" visible="false" />
+            <Label id="postmsglabel"     text="Posting Message"         width="auto" visible="false"/>
+            <TextArea id="postmsgText" value="{pageModel>/msg}"  width="auto" visible="false" editable="false"/> 
+
         </f:content>
     </f:SimpleForm>
 

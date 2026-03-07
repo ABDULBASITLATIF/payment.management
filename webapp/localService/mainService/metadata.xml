@@ -224,11 +224,11 @@
                 <Property Name="curr" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Currency" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
                 <Property Name="payMethod" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Payment Method"/>
                 <Property Name="draftSt" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Payment Draft Status"/>
-                <Property Name="draftStText" Type="Edm.String" MaxLength="11"/>
+                <Property Name="draftStText" Type="Edm.String" MaxLength="17"/>
                 <Property Name="action" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Character Length 1" sap:quickinfo="Character Field of Length 1"/>
                 <Property Name="procStat" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Character Length 1" sap:quickinfo="Character Field of Length 1"/>
-                <Property Name="msg" Type="Edm.String" MaxLength="255" sap:label="Text" sap:quickinfo="Text, 255 Characters"/>
-                <Property Name="postDoc" Type="Edm.String" MaxLength="50" sap:label="c" sap:quickinfo="Comment"/>
+                <Property Name="msg" Type="Edm.String" MaxLength="255" sap:label="Posting Message"/>
+                <Property Name="postDoc" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Clearing Document" sap:quickinfo="Document Number of the Clearing Document"/>
                 <NavigationProperty Name="to_item" Relationship="ZFI_PAYMENT_MANAGEMENT_SRV.assoc_B8016EAB107248EC709ECEAA8E01519B" FromRole="FromRole_assoc_B8016EAB107248EC709ECEAA8E01519B" ToRole="ToRole_assoc_B8016EAB107248EC709ECEAA8E01519B"/>
             </EntityType>
             <EntityType Name="itemType" sap:label="CDS View for Payment Draft Items" sap:content-version="1">
