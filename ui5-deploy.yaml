@@ -20,6 +20,6 @@ builder:
           name: ZPAY_MANAGE1
           description: A Payment Management Application
           package: ZFIORI_DEV
-          transport: DP4K902727
+          transport: DP4K902906
         exclude:
           - /test/
