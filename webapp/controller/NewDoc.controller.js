@@ -144,37 +144,69 @@ _onRouteMatched: function() {
                 console.log("Selected Draft ID: " + oData.draftId);
             });
         },
-        // onCreate: async function (oEvent) {
+       onCreate: async function () {
+            var oView = this.getView();
 
-        //     var oView = this.getView();
+            // Initialize a local model for the dialog selection
+            if (!oView.getModel("createModel")) {
+                oView.setModel(new JSONModel({ selectedView: "" }), "createModel");
+            } else {
+                oView.getModel("createModel").setProperty("/selectedView", "");
+            }
 
-        //     if (!this._pTablePostingDialog) {
-        //         this._pTablePostingDialog = sap.ui.core.Fragment.load({
-        //             id: oView.getId(),
-        //             name: "zfi.payment.management.fragments.Create",
-        //             controller: this
-        //         }).then(function (oDialog) {
-        //             oView.addDependent(oDialog);
-        //             return oDialog;
-        //         });
-        //     }
+            if (!this._pTablePostingDialog) {
+                this._pTablePostingDialog = sap.ui.core.Fragment.load({
+                    id: oView.getId(),
+                    name: "zfi.payment.management.fragments.Create",
+                    controller: this
+                }).then(function (oDialog) {
+                    oView.addDependent(oDialog);
+                    return oDialog;
+                });
+            }
 
-        //     var oDialogTP = await this._pTablePostingDialog;
-        //     oDialogTP.open();
+            var oDialog = await this._pTablePostingDialog;
+            oDialog.setModel(oView.getModel("createModel"));
+            oDialog.open();
+        },
 
-        // },
-        // onCloseCreateDialog() {
+        onGoCreate: function () {
+            var sSelectedKey = this.getView().getModel("createModel").getProperty("/selectedView");
+            var oRouter = this.getOwnerComponent().getRouter();
 
-        //     if (this._pTablePostingDialog) {
-        //         this._pTablePostingDialog.then(function (oDialog) {
-        //             oDialog.close();
-        //         });
-        //     }
-        // },
-   onCreate: function () {
-    var oRouter = this.getOwnerComponent().getRouter();
-    oRouter.navTo("RoutePostOutgoing", {});
-},
+            if (!sSelectedKey) {
+                MessageToast.show("Please select a payment type.");
+                return;
+            }
+
+            this.onCloseCreateDialog();
+
+            switch (sSelectedKey) {
+                case "v1":
+                    oRouter.navTo("RoutePostOutgoing", { draftId: "new" });
+                    break;
+                case "v2":
+                    oRouter.navTo("RouteDownPayment", { draftId: "new" });
+                    break;
+                case "v3":
+                    oRouter.navTo("RouteOpenAccountPayment", { draftId: "new" });
+                    break;
+                default:
+                    MessageToast.show("Please select a payment type.");
+            }
+        },
+        onCloseCreateDialog() {
+
+            if (this._pTablePostingDialog) {
+                this._pTablePostingDialog.then(function (oDialog) {
+                    oDialog.close();
+                });
+            }
+        },
+//    onCreate: function () {
+//     var oRouter = this.getOwnerComponent().getRouter();
+//     oRouter.navTo("RoutePostOutgoing", {});
+// },
 
 onEditDraft: function (oEvent) {
     var oItem = oEvent.getSource();

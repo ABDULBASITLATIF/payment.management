@@ -1,0 +1,32 @@
+<mvc:View
+    controllerName="zfi.payment.management.controller.OpenAccountPayment"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:l="sap.ui.layout"
+    height="100%">
+    
+    <Page id="openaccountpage"
+        title="Open Account Payment"
+        showNavButton="true"
+        navButtonPress="onNavBack">
+        
+        <customHeader>
+            <Bar id="_IDGenBar3">
+                <contentLeft>
+                    <Button id="_IDGenButton21" icon="sap-icon://nav-back" press="onNavBack"/>
+                </contentLeft>
+                <contentMiddle>
+                    <Title id="downpayment" text="Open Account Payment"/>
+                </contentMiddle>
+            </Bar>
+        </customHeader>
+        
+        <content>
+              
+        </content>
+        
+     
+    </Page>
+</mvc:View>

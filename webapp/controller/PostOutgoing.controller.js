@@ -35,11 +35,32 @@ onInit: function () {
     oRouter.getRoute("RoutePostOutgoing").attachMatched(this._onRouteMatched, this);
 },
 
+// _onRouteMatched: function (oEvent) {
+//     const oArgs = oEvent.getParameter("arguments");
+//     const sDraftId = oArgs.draftId;
+
+//     if (sDraftId) {
+//         // Edit mode
+//         this.getView().getModel("pageModel").setData({
+//             mode: "edit",
+//             draftId: sDraftId
+//         });
+//         this._loadDraft(sDraftId);
+//     } else {
+//         // Create mode
+//         this.getView().getModel("pageModel").setData({
+//             mode: "create",
+//             draftId: null
+//         });
+//         this._resetPage();
+//     }
+// },
 _onRouteMatched: function (oEvent) {
     const oArgs = oEvent.getParameter("arguments");
     const sDraftId = oArgs.draftId;
 
-    if (sDraftId) {
+    // "new" means create mode — not a real draft ID
+    if (sDraftId && sDraftId !== "new") {
         // Edit mode
         this.getView().getModel("pageModel").setData({
             mode: "edit",
@@ -55,7 +76,6 @@ _onRouteMatched: function (oEvent) {
         this._resetPage();
     }
 },
-
 //--------------------View Setting Menu---------------------
 onOpenViewSettings: function () {
     const that = this;

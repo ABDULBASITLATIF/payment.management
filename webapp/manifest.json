@@ -112,6 +112,16 @@
           "target": [
             "TargetPostOutgoing"
           ]
+        },
+        {
+          "name": "RouteDownPayment",
+          "pattern": "downpayment/:draftId:",
+          "target": ["TargetDownPayment"]
+        },
+        {
+          "name": "RouteOpenAccountPayment",
+          "pattern": "openaccountpayment/:draftId:",
+          "target": ["TargetOpenAccountPayment"]
         }
       ],
       "targets": {
@@ -122,6 +132,14 @@
         "TargetPostOutgoing": {
           "id": "PostOutgoing",
           "name": "PostOutgoing"
+        },
+        "TargetDownPayment": {
+          "id": "DownPayment",
+          "name": "DownPayment"
+        },
+        "TargetOpenAccountPayment": {
+          "id": "OpenAccountPayment",
+          "name": "OpenAccountPayment"
         }
       }
     },
