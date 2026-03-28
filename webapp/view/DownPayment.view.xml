@@ -13,20 +13,245 @@
         navButtonPress="onNavBack">
         
         <customHeader>
-            <Bar id="_IDGenBar2">
+            <Bar id="dp_bar">
                 <contentLeft>
-                    <Button id="_IDGenButton2" icon="sap-icon://nav-back" press="onNavBack"/>
+                    <Button id="dp_navBackBtn" icon="sap-icon://nav-back" press="onNavBack"/>
                 </contentLeft>
                 <contentMiddle>
-                    <Title id="_IDGenTitle12" text="Down Payments"/>
+                    <Title id="dp_title" text="Down Payments"/>
                 </contentMiddle>
             </Bar>
         </customHeader>
         
         <content>
-              
+            <VBox id="dp_vbox" class="sapUiSmallMargin">
+
+                <!-- Edit Form -->
+                <VBox id="dp_editFormBox">
+                    <core:Fragment fragmentName="zfi.payment.management.fragments.DpFrag.DownPaymentForm" type="XML"/>
+                </VBox>
+
+                <!-- Display Form -->
+                <VBox id="dp_displayFormBox" visible="false">
+                    <core:Fragment fragmentName="zfi.payment.management.fragments.DpFrag.DownPaymentDisplay" type="XML"/>
+                </VBox>
+
+                <!-- Open Items Table -->
+                <f:SimpleForm id="dp_openItemsForm"
+                    editable="false"
+                    layout="ResponsiveGridLayout"
+                    width="auto"
+                    columnsXL="1"
+                    columnsL="1"
+                    columnsM="1"
+                    class="sapUiSmallMarginTop">
+                    <f:content>
+                        <Table
+                            id="dp_openItemsTable"
+                            items="{path: 'openItems>/openItems'}"
+                            width="auto"
+                            fixedLayout="Strict"
+                            autoPopinMode="true"
+                            sticky="ColumnHeaders,HeaderToolbar">
+
+                            <headerToolbar>
+                                <OverflowToolbar id="dp_openItemsToolbar">
+                                    <Title id="dp_openItemsTitle" text="Open Items" level="H5"/>
+                                    <Button id="dp_openItemsInfoBtn" icon="sap-icon://information" type="Transparent"/>
+                                    <ToolbarSpacer id="dp_openItemsSpacer"/>
+                                    <SearchField id="dp_searchField" width="200px" search="onSearchOpenItems"/>
+                                    <Button id="dp_viewSettingsBtn" icon="sap-icon://action-settings" press="onOpenViewSettings" tooltip="View Settings"/>
+                                    <Button id="dp_refreshBtn" icon="sap-icon://refresh" press="onRefreshItems"/>
+                                </OverflowToolbar>
+                            </headerToolbar>
+
+                            <columns>
+                                <Column id="dp_col_compCode" width="auto" visible="false">
+                                    <header><Text id="dp_txt_compCode" text="Company Code"/></header>
+                                </Column>
+                                <Column id="dp_col_docNo" width="auto">
+                                    <Text id="dp_txt_docNo" text="Document Number"/>
+                                </Column>
+                                <Column id="dp_col_yearF" width="auto">
+                                    <Text id="dp_txt_yearF" text="Fiscal Year"/>
+                                </Column>
+                                <Column id="dp_col_lineItem" width="auto">
+                                    <Text id="dp_txt_lineItem" text="Line Item"/>
+                                </Column>
+                                <Column id="dp_col_vendor" width="auto" visible="false">
+                                    <Text id="dp_txt_vendor" text="Supplier"/>
+                                </Column>
+                                <Column id="dp_col_postingDate" width="auto">
+                                    <Text id="dp_txt_postingDate" text="Posting Date"/>
+                                </Column>
+                                <Column id="dp_col_docType" width="auto">
+                                    <Text id="dp_txt_docType" text="Document Type"/>
+                                </Column>
+                                <Column id="dp_col_amntLC" width="auto" hAlign="End">
+                                    <Text id="dp_txt_amntLC" text="Amount (Local)"/>
+                                </Column>
+                                <Column id="dp_col_amntDC" width="auto" hAlign="End">
+                                    <Text id="dp_txt_amntDC" text="Amount (Doc)"/>
+                                </Column>
+                                <Column id="dp_col_baseDate" width="auto">
+                                    <Text id="dp_txt_baseDate" text="Baseline Date"/>
+                                </Column>
+                                <Column id="dp_col_extRef" width="auto">
+                                    <Text id="dp_txt_extRef" text="Reference"/>
+                                </Column>
+                                <Column id="dp_col_assignNo" width="auto">
+                                    <Text id="dp_txt_assignNo" text="Assignment"/>
+                                </Column>
+                                <Column id="dp_col_spGl" width="auto" visible="false">
+                                    <Text id="dp_txt_spGl" text="Special G/L"/>
+                                </Column>
+                                <Column id="dp_col_debCred" width="auto" visible="false">
+                                    <Text id="dp_txt_debCred" text="D/C Ind."/>
+                                </Column>
+                                <Column id="dp_col_postKey" width="auto" visible="false">
+                                    <Text id="dp_txt_postKey" text="Posting Key"/>
+                                </Column>
+                                <Column id="dp_clearColumn" width="auto">
+                                    <Text id="dp_txt_clear" text="Clear"/>
+                                </Column>
+                            </columns>
+
+                            <items>
+                                <ColumnListItem id="dp_openItemsCLI">
+                                    <cells>
+                                        <Text id="dp_cell_compCode"    text="{openItems>compCode}"/>
+                                        <Link id="dp_cell_docNo"       text="{openItems>docNo}"/>
+                                        <Text id="dp_cell_yearF"       text="{openItems>yearF}"/>
+                                        <Text id="dp_cell_lineItem"    text="{openItems>lineItem}"/>
+                                        <Text id="dp_cell_vendorCode"  text="{openItems>vendorCode}"/>
+                                        <Text id="dp_cell_postingDate" text="{
+                                            path: 'openItems>postingDate',
+                                            type: 'sap.ui.model.type.Date',
+                                            formatOptions: { pattern: 'MM/dd/yyyy' }
+                                        }"/>
+                                        <Text id="dp_cell_docType"  text="{openItems>docType}"/>
+                                        <Text id="dp_cell_amntLC"   text="{openItems>amntLC}"/>
+                                        <Text id="dp_cell_amntDC"   text="{openItems>amntDC}"/>
+                                        <Text id="dp_cell_baseDate" text="{
+                                            path: 'openItems>baseDate',
+                                            type: 'sap.ui.model.type.Date',
+                                            formatOptions: { pattern: 'MM/dd/yyyy' }
+                                        }"/>
+                                        <Text id="dp_cell_extRef"      text="{openItems>extRef}"/>
+                                        <Text id="dp_cell_assignNo"    text="{openItems>assignNo}"/>
+                                        <Text id="dp_cell_spGl"        text="{openItems>spGl}"/>
+                                        <Text id="dp_cell_debCredInd"  text="{openItems>debCredInd}"/>
+                                        <Text id="dp_cell_postKey"     text="{openItems>postKey}"/>
+                                        <Button id="dp_clearItemBtn" icon="sap-icon://accept" type="Emphasized" press="onClearItem"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </f:content>
+                </f:SimpleForm>
+
+                <!-- Items to Be Cleared Table -->
+                <f:SimpleForm id="dp_itemsToClearForm"
+                    editable="false"
+                    layout="ResponsiveGridLayout"
+                    width="auto"
+                    columnsXL="1"
+                    columnsL="1"
+                    columnsM="1"
+                    class="sapUiSmallMarginTop">
+                    <f:content>
+                        <Table
+                            id="dp_itemsToClearTable"
+                            items="{path: 'openItems>/itemsToBeCleared'}"
+                            width="100%"
+                            growing="true"
+                            growingThreshold="100"
+                            growingScrollToLoad="true">
+
+                            <headerToolbar>
+                                <OverflowToolbar id="dp_itemsToClearToolbar">
+                                    <Title id="dp_itemsToClearTitle" text="Items to Be Cleared" level="H5"/>
+                                    <Button id="dp_itemsToClearInfoBtn" icon="sap-icon://information" type="Transparent"/>
+                                    <ToolbarSpacer id="dp_itemsToClearSpacer"/>
+                                </OverflowToolbar>
+                            </headerToolbar>
+
+                            <columns>
+                                <Column id="dp_itc_col_remove"      width="4rem"><Text id="dp_itc_txt_remove"   text="Remove"/></Column>
+                                <Column id="dp_itc_col_docNo"       width="7rem"><Text id="dp_itc_txt_docNo"    text="Document Number"/></Column>
+                                <Column id="dp_itc_col_yearF"       width="5rem"><Text id="dp_itc_txt_yearF"    text="Fiscal Year"/></Column>
+                                <Column id="dp_itc_col_lineItem"    width="4rem"><Text id="dp_itc_txt_lineItem" text="Line Item"/></Column>
+                                <Column id="dp_itc_col_postDate"    width="6rem"><Text id="dp_itc_txt_postDate" text="Posting Date"/></Column>
+                                <Column id="dp_itc_col_docType"     width="5rem"><Text id="dp_itc_txt_docType"  text="Document Type"/></Column>
+                                <Column id="dp_itc_col_amntLC"      width="7rem"><Text id="dp_itc_txt_amntLC"   text="Amount (Local)"/></Column>
+                                <Column id="dp_itc_col_amntDC"      width="7rem"><Text id="dp_itc_txt_amntDC"   text="Amount (Doc)"/></Column>
+                                <Column id="dp_itc_col_baseDate"    width="6rem"><Text id="dp_itc_txt_baseDate" text="Baseline Date"/></Column>
+                                <Column id="dp_itc_col_extRef"      width="7rem"><Text id="dp_itc_txt_extRef"   text="Reference"/></Column>
+                                <Column id="dp_itc_col_assignNo"    width="7rem"><Text id="dp_itc_txt_assignNo" text="Assignment"/></Column>
+                            </columns>
+
+                            <items>
+                                <ColumnListItem id="dp_itemsToClearCLI">
+                                    <cells>
+                                        <Button id="dp_removeItemBtn" icon="sap-icon://navigation-left-arrow" press="onRemoveItem"/>
+                                        <Link id="dp_itc_cell_docNo"    text="{openItems>docNo}"/>
+                                        <Text id="dp_itc_cell_yearF"    text="{openItems>yearF}"/>
+                                        <Text id="dp_itc_cell_lineItem" text="{openItems>lineItem}"/>
+                                        <Text id="dp_itc_cell_postDate" text="{path: 'openItems>postingDate', formatter: '.formatDate'}"/>
+                                        <Text id="dp_itc_cell_docType"  text="{openItems>docType}"/>
+                                        <Text id="dp_itc_cell_amntLC"   text="{path: 'openItems>amntLC', formatter: '.formatAmount'}"/>
+                                        <Text id="dp_itc_cell_amntDC"   text="{path: 'openItems>amntDC', formatter: '.formatAmount'}"/>
+                                        <Text id="dp_itc_cell_baseDate" text="{path: 'openItems>baseDate', formatter: '.formatDate'}"/>
+                                        <Text id="dp_itc_cell_extRef"   text="{openItems>extRef}"/>
+                                        <Text id="dp_itc_cell_assignNo" text="{openItems>assignNo}"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </f:content>
+                </f:SimpleForm>
+
+                <!-- Approver Table -->
+                <Table id="dp_aprvrTable"
+                    items="{path: 'aprvrTab>/'}"
+                    width="100%"
+                    growing="true"
+                    growingThreshold="100"
+                    growingScrollToLoad="true">
+                    <headerToolbar>
+                        <OverflowToolbar id="dp_aprvrToolbar">
+                            <Title id="dp_aprvrTitle" text="Approver Table" level="H5"/>
+                        </OverflowToolbar>
+                    </headerToolbar>
+                    <columns>
+                        <Column id="dp_aprvrLevelCol"  width="4rem"><Text id="dp_aprvrLevelTxt"  text="Approver Level"/></Column>
+                        <Column id="dp_aprvrUserCol"   width="7rem"><Text id="dp_aprvrUserTxt"   text="User Name"/></Column>
+                        <Column id="dp_aprvrStatusCol" width="5rem"><Text id="dp_aprvrStatusTxt" text="Status"/></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem id="dp_aprvrCLI">
+                            <cells>
+                                <Text id="dp_aprvrLevelCell"  text="{aprvrTab>aprLevel}"/>
+                                <Text id="dp_aprvrUserCell"   text="{aprvrTab>aprvr}"/>
+                                <Text id="dp_aprvrStatusCell" text="{aprvrTab>aprvrStatus}"/>
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+
+            </VBox>
         </content>
-        
-     
+
+        <footer>
+            <Toolbar id="dp_toolbar">
+                <ToolbarSpacer id="dp_toolbarSpacer"/>
+                <Button id="dp_saveButton"     text="Save"     type="Emphasized" press="onSave"/>
+                <Button id="dp_updateButton"   text="Update"   type="Emphasized" press="onUpdate"   visible="false"/>
+                <Button id="dp_submitButton"   text="Submit"   type="Emphasized" press="onSubmit"/>
+                <Button id="dp_postButton"     text="Post"     type="Emphasized" press="onPost"     visible="false"/>
+                <Button id="dp_resubmitButton" text="Resubmit" type="Emphasized" press="onResubmit" visible="false"/>
+            </Toolbar>
+        </footer>
+
     </Page>
 </mvc:View>

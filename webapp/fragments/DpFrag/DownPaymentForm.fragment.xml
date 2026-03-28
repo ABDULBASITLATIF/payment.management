@@ -1,0 +1,74 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    
+    <f:SimpleForm id="downPaymentForm"
+        editable="true"
+        title="Down Payment"
+        layout="ColumnLayout"
+        columnsM="2"
+        columnsL="3"
+        columnsXL="4">
+        <f:content>
+            <Label id="dp_draftidLabel" text="Draft ID" required="true" width="auto"/>
+            <Input id="dp_draftidInput" value="" editable="false" width="auto"/>
+            
+            <Label id="dp_companyCodeLabel" text="Company Code" required="true" width="auto"/>
+            <Input id="dp_companyCodeInput" value="" maxLength="4" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsDP.onLoadCCVH"/>
+            
+            <Label id="dp_fiscalYearLabel" text="Fiscal Year" required="true" width="auto"/>
+            <Input id="dp_fiscalYearInput" value="" maxLength="4" width="auto"/>
+            
+            <Label id="dp_documentDateLabel" text="Document Date" required="true" width="auto"/>
+            <DatePicker id="dp_documentDatePicker" 
+                value=""
+                displayFormat="dd/MM/yyyy"
+                width="auto"/>
+            
+            <Label id="dp_postingDateLabel" text="Posting Date" required="true" width="auto"/>
+            <DatePicker id="dp_postingDatePicker" 
+                value=""
+                displayFormat="dd/MM/yyyy"
+                width="auto"/>
+            
+            <Label id="dp_referenceLabel" text="Reference" width="auto"/>
+            <Input id="dp_referenceInput" value="" maxLength="16" width="auto"/>
+            
+            <Label id="dp_headerTextLabel" text="Header Text" width="auto"/>
+            <Input id="dp_headerTextInput" value="" maxLength="25" width="auto"/>
+            
+            <Label id="dp_houseBankLabel" text="House Bank" required="true" width="auto"/>
+            <Input id="dp_houseBankInput" value="" maxLength="5" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsDP.onLoadHouseBankVH"/>
+            
+            <Label id="dp_houseBankAccountLabel" text="House Bank Account ID" required="true" width="auto"/>
+            <Input id="dp_houseBankAccountInput" value="" maxLength="5" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsDP.onLoadHouseBankAccountVH"/>
+        
+            <Label id="dp_glAccountLabel" text="G/L Account" required="true" width="auto"/>
+            <Input id="dp_glAccountInput" value="" maxLength="10" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsDP.onLoadGLVH"/>
+            
+            <Label id="dp_supplierAccountLabel" text="Vendor" required="true" width="auto"/>
+            <Input id="dp_supplierAccountInput" 
+                value="" 
+                maxLength="10" 
+                width="auto"
+                submit="onVendorSubmit"
+                showValueHelp="true" 
+                valueHelpRequest=".InputHelpsDP.onLoadSupplierVH"/>
+            
+            <Label id="dp_currencyLabel" text="Currency" required="true" width="auto"/>
+            <Input id="dp_currencyInput" value="" maxLength="5" width="auto"/>
+            
+            <Label id="dp_payAmountLabel" text="Total Pay. Amount" width="auto"/>
+            <Input id="dp_payAmountInput" value="" width="auto" change="onPayAmountChange" liveChange="onPayAmountChange"/>
+
+            <Label id="dp_invoiceSumLabel" text="Total Invoice Sum" width="auto"/>
+            <Input id="dp_invoiceSumInput" value="" width="auto" editable="false"/>
+
+            <Label id="dp_balanceLabel" text="Balance" width="auto"/>
+            <Input id="dp_balanceInput" value="" width="auto" editable="false"/>
+        </f:content>
+    </f:SimpleForm>
+    
+</core:FragmentDefinition>

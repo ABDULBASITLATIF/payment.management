@@ -119,9 +119,9 @@
           "target": ["TargetDownPayment"]
         },
         {
-          "name": "RouteOpenAccountPayment",
-          "pattern": "openaccountpayment/:draftId:",
-          "target": ["TargetOpenAccountPayment"]
+          "name": "RouteOnAccountPayment",
+          "pattern": "onaccountpayment/:draftId:",
+          "target": ["TargetOnAccountPayment"]
         }
       ],
       "targets": {
@@ -137,9 +137,9 @@
           "id": "DownPayment",
           "name": "DownPayment"
         },
-        "TargetOpenAccountPayment": {
-          "id": "OpenAccountPayment",
-          "name": "OpenAccountPayment"
+        "TargetOnAccountPayment": {
+          "id": "OnAccountPayment",
+          "name": "OnAccountPayment"
         }
       }
     },

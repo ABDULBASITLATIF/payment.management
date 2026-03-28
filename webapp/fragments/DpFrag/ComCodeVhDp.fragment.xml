@@ -1,0 +1,21 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    
+    <SelectDialog
+        id="companyCodeVHDp"
+        title="Select Company Code"
+        search=".InputHelpsDP.onSearchComCode"
+        confirm=".InputHelpsDP.onConfirmComCode"
+        cancel=".InputHelpsDP.onCloseComCodeDialog"
+        items="{
+            path: '/I_CompanyCode',
+            sorter: { path: 'CompanyCode' }
+        }">
+        <StandardListItem id="_IDGenStandardListItemDp"
+            title="{CompanyCode}"
+            description="{CompanyCodeName}"
+            type="Active"/>
+    </SelectDialog>
+    
+</core:FragmentDefinition>

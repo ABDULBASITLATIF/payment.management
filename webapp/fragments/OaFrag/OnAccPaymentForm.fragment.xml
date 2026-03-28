@@ -1,0 +1,74 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    
+    <f:SimpleForm id="oa_paymentForm"
+        editable="true"
+        title="On Account Payment"
+        layout="ColumnLayout"
+        columnsM="2"
+        columnsL="3"
+        columnsXL="4">
+        <f:content>
+            <Label id="oa_draftidLabel" text="Draft ID" required="true" width="auto"/>
+            <Input id="oa_draftidInput" value="" editable="false" width="auto"/>
+            
+            <Label id="oa_companyCodeLabel" text="Company Code" required="true" width="auto"/>
+            <Input id="oa_companyCodeInput" value="" maxLength="4" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsOA.onLoadCCVH"/>
+            
+            <Label id="oa_fiscalYearLabel" text="Fiscal Year" required="true" width="auto"/>
+            <Input id="oa_fiscalYearInput" value="" maxLength="4" width="auto"/>
+            
+            <Label id="oa_documentDateLabel" text="Document Date" required="true" width="auto"/>
+            <DatePicker id="oa_documentDatePicker" 
+                value=""
+                displayFormat="dd/MM/yyyy"
+                width="auto"/>
+            
+            <Label id="oa_postingDateLabel" text="Posting Date" required="true" width="auto"/>
+            <DatePicker id="oa_postingDatePicker" 
+                value=""
+                displayFormat="dd/MM/yyyy"
+                width="auto"/>
+            
+            <Label id="oa_referenceLabel" text="Reference" width="auto"/>
+            <Input id="oa_referenceInput" value="" maxLength="16" width="auto"/>
+            
+            <Label id="oa_headerTextLabel" text="Header Text" width="auto"/>
+            <Input id="oa_headerTextInput" value="" maxLength="25" width="auto"/>
+            
+            <Label id="oa_houseBankLabel" text="House Bank" required="true" width="auto"/>
+            <Input id="oa_houseBankInput" value="" maxLength="5" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsOA.onLoadHouseBankVH"/>
+            
+            <Label id="oa_houseBankAccountLabel" text="House Bank Account ID" required="true" width="auto"/>
+            <Input id="oa_houseBankAccountInput" value="" maxLength="5" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsOA.onLoadHouseBankAccountVH"/>
+        
+            <Label id="oa_glAccountLabel" text="G/L Account" required="true" width="auto"/>
+            <Input id="oa_glAccountInput" value="" maxLength="10" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsOA.onLoadGLVH"/>
+            
+            <Label id="oa_supplierAccountLabel" text="Vendor" required="true" width="auto"/>
+            <Input id="oa_supplierAccountInput" 
+                value="" 
+                maxLength="10" 
+                width="auto"
+                submit="onVendorSubmit"
+                showValueHelp="true" 
+                valueHelpRequest=".InputHelpsOA.onLoadSupplierVH"/>
+            
+            <Label id="oa_currencyLabel" text="Currency" required="true" width="auto"/>
+            <Input id="oa_currencyInput" value="" maxLength="5" width="auto"/>
+            
+            <Label id="oa_payAmountLabel" text="Total Pay. Amount" width="auto"/>
+            <Input id="oa_payAmountInput" value="" width="auto" change="onPayAmountChange" liveChange="onPayAmountChange"/>
+
+            <Label id="oa_invoiceSumLabel" text="Total Invoice Sum" width="auto"/>
+            <Input id="oa_invoiceSumInput" value="" width="auto" editable="false"/>
+
+            <Label id="oa_balanceLabel" text="Balance" width="auto"/>
+            <Input id="oa_balanceInput" value="" width="auto" editable="false"/>
+        </f:content>
+    </f:SimpleForm>
+    
+</core:FragmentDefinition>

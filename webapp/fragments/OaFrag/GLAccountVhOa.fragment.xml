@@ -1,0 +1,19 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    
+    <SelectDialog
+        id="glAccountVHOA"
+        title="Select G/L Account"
+        search=".InputHelpsOA.onSearchGLAccount"
+        confirm=".InputHelpsOA.onConfirmGLAccount"
+        cancel=".InputHelpsOA.onCloseGLAccountDialog"
+        items="{/bankGLS}">
+        <StandardListItem id="_IDGenStandardListItem4OA"
+            title="{GLAccount}"
+            description="{glDesc}"
+            info="Company: {CompanyCode}, Bank: {HouseBank}"
+            type="Active"/>
+    </SelectDialog>
+    
+</core:FragmentDefinition>

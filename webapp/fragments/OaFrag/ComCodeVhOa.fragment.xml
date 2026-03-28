@@ -1,0 +1,21 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    
+    <SelectDialog
+        id="companyCodeVHOA"
+        title="Select Company Code"
+        confirm=".InputHelpsOA.onConfirmComCode"
+        search=".InputHelpsOA.onConfirmComCode"
+        cancel=".InputHelpsOA.onCloseComCodeDialog"
+        items="{
+            path: '/I_CompanyCode',
+            sorter: { path: 'CompanyCode' }
+        }">
+        <StandardListItem id="_IDGenStandardListItemOA"
+            title="{CompanyCode}"
+            description="{CompanyCodeName}"
+            type="Active"/>
+    </SelectDialog>
+    
+</core:FragmentDefinition>

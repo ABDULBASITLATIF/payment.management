@@ -1,0 +1,70 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    
+    <f:SimpleForm id="oa_paymentFormDisplay"
+        editable="false"
+        title="On Account Payment"
+        layout="ColumnLayout"
+        columnsM="2"
+        columnsL="3"
+        columnsXL="4">
+        <f:content>
+
+            <Label id="oa_draftidLabelD"      text="Draft ID"              width="auto"/>
+            <Text  id="oa_draftidText"         text="{pageModel>/draftId}"  width="auto"/>
+
+            <Label id="oa_companyCodeLabelD"   text="Company Code"          width="auto"/>
+            <Text  id="oa_companyCodeText"     text="{pageModel>/compCode}" width="auto"/>
+
+            <Label id="oa_fiscalYearLabelD"    text="Fiscal Year"           width="auto"/>
+            <Text  id="oa_fiscalYearText"      text="{pageModel>/fiscYear}" width="auto"/>
+
+            <Label id="oa_documentDateLabelD"  text="Document Date"         width="auto"/>
+            <Text  id="oa_documentDateText"    text="{pageModel>/docDate}"  width="auto"/>
+
+            <Label id="oa_postingDateLabelD"   text="Posting Date"          width="auto"/>
+            <Text  id="oa_postingDateText"     text="{pageModel>/postingDate}" width="auto"/>
+
+            <Label id="oa_referenceLabelD"     text="Reference"             width="auto"/>
+            <Text  id="oa_referenceText"       text="{pageModel>/reference}" width="auto"/>
+
+            <Label id="oa_headerTextLabelD"    text="Header Text"           width="auto"/>
+            <Text  id="oa_headTextText"        text="{pageModel>/headText}" width="auto"/>
+
+            <Label id="oa_houseBankLabelD"     text="House Bank"            width="auto"/>
+            <Text  id="oa_houseBankText"       text="{pageModel>/bankKey}"  width="auto"/>
+
+            <Label id="oa_houseBankAccLabelD"  text="House Bank Account ID" width="auto"/>
+            <Text  id="oa_houseBankAccText"    text="{pageModel>/bankAcc}"  width="auto"/>
+
+            <Label id="oa_glAccountLabelD"     text="G/L Account"           width="auto"/>
+            <Text  id="oa_glAccountText"       text="{pageModel>/bankGL}"   width="auto"/>
+
+            <Label id="oa_supplierLabelD"      text="Vendor"                width="auto"/>
+            <Text  id="oa_supplierText"        text="{pageModel>/vendor}"   width="auto"/>
+
+            <Label id="oa_currencyLabelD"      text="Currency"              width="auto"/>
+            <Text  id="oa_currencyText"        text="{pageModel>/curr}"     width="auto"/>
+
+            <Label id="oa_payAmountLabelD"     text="Total Pay. Amount"     width="auto"/>
+            <Text  id="oa_payAmntText"         text="{pageModel>/payAmnt}"  width="auto"/>
+
+            <Label id="oa_invoiceSumLabelD"    text="Total Invoice Sum"     width="auto"/>
+            <Text  id="oa_invoiceSumText"      text="{pageModel>/invoiceSum}" width="auto"/>
+
+            <Label id="oa_balanceLabelD"       text="Balance"               width="auto"/>
+            <Text  id="oa_balanceText"         text="{pageModel>/balance}"  width="auto"/>
+
+            <Label id="oa_postdoclabel"        text="Posting Document"      width="auto" visible="false"/>
+            <Text  id="oa_postdocText"         text="{pageModel>/postDoc}"  width="auto" visible="false"/>
+
+            <Label id="oa_postmsglabel"        text="Posting Message"       width="auto" visible="false"/>
+            <TextArea id="oa_postmsgText"      value="{pageModel>/msg}"     width="auto" visible="false" editable="false"/>
+
+        </f:content>
+    </f:SimpleForm>
+
+</core:FragmentDefinition>

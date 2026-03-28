@@ -1,0 +1,50 @@
+<mvc:View
+    controllerName="zfi.payment.management.controller.OnAccountPayment"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:l="sap.ui.layout"
+    height="100%">
+    
+    <Page id="openaccountpage"
+        title="On Account Payment"
+        showNavButton="true"
+        navButtonPress="onNavBack">
+        
+        <customHeader>
+            <Bar id="_IDGenBar3">
+                <contentLeft>
+                    <Button id="_IDGenButton21" icon="sap-icon://nav-back" press="onNavBack"/>
+                </contentLeft>
+                <contentMiddle>
+                    <Title id="downpayment" text="On Account Payment"/>
+                </contentMiddle>
+            </Bar>
+        </customHeader>
+        
+        <content>
+           <VBox id="_IDGenVBox22" class="sapUiSmallMargin">
+                <VBox id="oa_editFormBox">
+                    <core:Fragment fragmentName="zfi.payment.management.fragments.OaFrag.OnAccPaymentForm" type="XML"/>
+                </VBox>
+
+                <!-- Display Form -->
+                <!-- <VBox id="oa_displayFormBox" visible="false">
+                    <core:Fragment fragmentName="zfi.payment.management.fragments.OaFrag.OnAccPaymentDisplay" type="XML" />
+                </VBox> -->
+                </VBox>
+        </content>
+        <footer>
+            <Toolbar id="_IDGenToolbaroa">
+                <ToolbarSpacer id="_IDGenToolbarSpaceroa"/>
+                <Button id="_IDGenButton25oa" text="Save" type="Emphasized" press="onSave"/>
+                <Button id="_IDGenButton27oa" text="Update" type="Emphasized" press="onUpdate"/>
+                <Button id="_IDGenButton26oa" text="Submit" press="onSubmit" type="Emphasized"/>
+                <Button id="_IDGenButton2622oa" text="Post" press="onPost" visible="false" type="Emphasized"/>
+                <Button id="resubmitButtonoa" text="Resubmit" press="onResubmit" visible="false" type="Emphasized"></Button>
+            </Toolbar>
+        </footer>
+     
+    </Page>
+</mvc:View>

@@ -189,7 +189,7 @@ _onRouteMatched: function() {
                     oRouter.navTo("RouteDownPayment", { draftId: "new" });
                     break;
                 case "v3":
-                    oRouter.navTo("RouteOpenAccountPayment", { draftId: "new" });
+                    oRouter.navTo("RouteOnAccountPayment", { draftId: "new" });
                     break;
                 default:
                     MessageToast.show("Please select a payment type.");

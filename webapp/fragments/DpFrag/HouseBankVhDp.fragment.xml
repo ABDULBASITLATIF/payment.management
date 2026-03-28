@@ -1,0 +1,18 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    
+    <SelectDialog
+        id="houseBankVHdp"
+        title="Select House Bank"
+        search=".InputHelpsDP.onSearchHouseBank"
+        confirm=".InputHelpsDP.onConfirmHouseBank"
+        cancel=".InputHelpsDP.onCloseHouseBankDialog"
+        items="{/I_Housebank}">
+        <StandardListItem id="_IDGenStandardListItem2dp"
+            title="{HouseBank}"
+            description="{CompanyCode}"
+            type="Active"/>
+    </SelectDialog>
+    
+</core:FragmentDefinition>
