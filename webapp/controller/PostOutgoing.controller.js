@@ -930,18 +930,71 @@ _updateTableTitles: function() {
         oBalanceInput.setValueStateText("Balance must be zero to save");
     }
 },
+_normalizeDates: function(aItems) {
+    return aItems.map(function(oItem) {
+        ["postingDate", "baseDate"].forEach(function(sField) {
+            const val = oItem[sField];
+            if (!val) { return; }
+            if (val instanceof Date) { return; } // already fine
 
+            let oDate = null;
+            if (typeof val === "string" && val.indexOf("/Date(") === 0) {
+                const ts = val.replace("/Date(", "").replace(")/", "").split("+")[0];
+                oDate = new Date(parseInt(ts));
+            } else if (typeof val === "string") {
+                oDate = new Date(val);
+            }
+
+            if (oDate && !isNaN(oDate.getTime())) {
+                oItem[sField] = oDate;
+            } else {
+                oItem[sField] = null;
+            }
+        });
+        return oItem;
+    });
+},
  
 
 
+// onClearItem: function(oEvt) {
+//     const oButton = oEvt.getSource();
+//     const oContext = oButton.getBindingContext("openItems");
+
+//     if (!oContext) {
+//         return;
+//     }
+//     debugger;
+//     const oModel = this.getView().getModel("openItems");
+//     const sPath = oContext.getPath();
+//     const iIndex = parseInt(sPath.split("/").pop());
+
+//     const aOpenItems = JSON.parse(JSON.stringify(oModel.getProperty("/openItems")));
+//     const aItemsToBeCleared = JSON.parse(JSON.stringify(oModel.getProperty("/itemsToBeCleared")));
+
+//     if (iIndex < 0 || iIndex >= aOpenItems.length) {
+//         MessageToast.show("Invalid item index");
+//         return;
+//     }
+
+//     const oItem = aOpenItems.splice(iIndex, 1)[0];
+//     aItemsToBeCleared.push(oItem);
+
+//     oModel.setData({
+//         openItems: aOpenItems,
+//         itemsToBeCleared: aItemsToBeCleared
+//     });
+
+//     this._updateTableTitles();
+//     // this._rebindOpenItemsTable();
+
+//     MessageToast.show("Item moved to clearing: " + oItem.docNo);
+// },
 onClearItem: function(oEvt) {
     const oButton = oEvt.getSource();
     const oContext = oButton.getBindingContext("openItems");
+    if (!oContext) { return; }
 
-    if (!oContext) {
-        return;
-    }
-    debugger;
     const oModel = this.getView().getModel("openItems");
     const sPath = oContext.getPath();
     const iIndex = parseInt(sPath.split("/").pop());
@@ -957,60 +1010,93 @@ onClearItem: function(oEvt) {
     const oItem = aOpenItems.splice(iIndex, 1)[0];
     aItemsToBeCleared.push(oItem);
 
+    // ── Normalize dates back to Date objects after JSON.parse destroys them ──
     oModel.setData({
-        openItems: aOpenItems,
-        itemsToBeCleared: aItemsToBeCleared
+        openItems: this._normalizeDates(aOpenItems),
+        itemsToBeCleared: this._normalizeDates(aItemsToBeCleared)
     });
 
     this._updateTableTitles();
-    // this._rebindOpenItemsTable();
-
     MessageToast.show("Item moved to clearing: " + oItem.docNo);
 },
 
-// NEW METHOD - Move item back to "Open Items"
+
 onRemoveItem: function(oEvt) {
     const oButton = oEvt.getSource();
     const oContext = oButton.getBindingContext("openItems");
-
-    if (!oContext) {
-        return;
-    }
+    if (!oContext) { return; }
 
     const oModel = this.getView().getModel("openItems");
     const sPath = oContext.getPath();
     const iIndex = parseInt(sPath.split("/").pop());
 
-    // Deep copy both arrays to avoid reference mutation issues
     const aItemsToBeCleared = JSON.parse(JSON.stringify(oModel.getProperty("/itemsToBeCleared")));
     const aOpenItems = JSON.parse(JSON.stringify(oModel.getProperty("/openItems")));
 
-    // Guard against invalid index
     if (iIndex < 0 || iIndex >= aItemsToBeCleared.length) {
         MessageToast.show("Invalid item index");
         return;
     }
 
-    // Cleanly splice out item and push to openItems
     const oItem = aItemsToBeCleared.splice(iIndex, 1)[0];
     aOpenItems.push(oItem);
 
-    // Use setData to replace the entire model cleanly
+    // ── Normalize dates back to Date objects after JSON.parse destroys them ──
     oModel.setData({
-        openItems: aOpenItems,
-        itemsToBeCleared: aItemsToBeCleared
+        openItems: this._normalizeDates(aOpenItems),
+        itemsToBeCleared: this._normalizeDates(aItemsToBeCleared)
     });
 
-    // Explicitly refresh the p13n-bound table's item binding
     const oTable = this.byId("openItemsTable");
     const oBinding = oTable.getBinding("items");
-    if (oBinding) {
-        oBinding.refresh();
-    }
+    if (oBinding) { oBinding.refresh(); }
 
     this._updateTableTitles();
     MessageToast.show("Item moved back to open items: " + oItem.docNo);
 },
+// NEW METHOD - Move item back to "Open Items"
+// onRemoveItem: function(oEvt) {
+//     const oButton = oEvt.getSource();
+//     const oContext = oButton.getBindingContext("openItems");
+
+//     if (!oContext) {
+//         return;
+//     }
+
+//     const oModel = this.getView().getModel("openItems");
+//     const sPath = oContext.getPath();
+//     const iIndex = parseInt(sPath.split("/").pop());
+
+//     // Deep copy both arrays to avoid reference mutation issues
+//     const aItemsToBeCleared = JSON.parse(JSON.stringify(oModel.getProperty("/itemsToBeCleared")));
+//     const aOpenItems = JSON.parse(JSON.stringify(oModel.getProperty("/openItems")));
+
+//     // Guard against invalid index
+//     if (iIndex < 0 || iIndex >= aItemsToBeCleared.length) {
+//         MessageToast.show("Invalid item index");
+//         return;
+//     }
+
+//     // Cleanly splice out item and push to openItems
+//     const oItem = aItemsToBeCleared.splice(iIndex, 1)[0];
+//     aOpenItems.push(oItem);
+
+//     // Use setData to replace the entire model cleanly
+//     oModel.setData({
+//         openItems: aOpenItems,
+//         itemsToBeCleared: aItemsToBeCleared
+//     });
+
+//     // Explicitly refresh the p13n-bound table's item binding
+//     const oTable = this.byId("openItemsTable");
+//     const oBinding = oTable.getBinding("items");
+//     if (oBinding) {
+//         oBinding.refresh();
+//     }
+
+//     this._updateTableTitles();
+//     MessageToast.show("Item moved back to open items: " + oItem.docNo);
+// },
 // ADD THESE FORMATTER METHODS
 formatDate: function(value) {
     if (value) {
