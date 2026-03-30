@@ -11,23 +11,24 @@
                             <Label id="_IDGenLabeldp" text="Sort By"/>
                             <Select id="sortFieldSelectdp">
                                 <items>
-                                    <core:Item id="_IDGenItem2dp" key="" text="None"/>
-                                    <core:Item id="_IDGenItem5dp" key="docNo" text="Document Number"/>
-                                    <core:Item id="_IDGenItem6dp" key="yearF" text="Fiscal Year"/>
-                                    <core:Item id="_IDGenItem7dp" key="postingDate" text="Posting Date"/>
-                                    <core:Item id="_IDGenItem8dp" key="docType" text="Document Type"/>
-                                    <core:Item id="_IDGenItem9dp" key="amntLC" text="Amount (Local)"/>
-                                    <core:Item id="_IDGenItem10dp" key="amntDC" text="Amount (Doc)"/>
-                                    <core:Item id="_IDGenItem11dp" key="baseDate" text="Baseline Date"/>
-                                    <core:Item id="_IDGenItem12dp" key="extRef" text="Reference"/>
-                                    <core:Item id="_IDGenItem13dp" key="assignNo" text="Assignment"/>
+                                    <core:Item id="_IDGenItem" key=""         text="None"/>
+                                    <core:Item id="_IDGenItem29" key="docNo"    text="Document Number"/>
+                                    <core:Item id="_IDGenItem30" key="year1"    text="Fiscal Year"/>
+                                    <core:Item id="_IDGenItem31" key="lineItem" text="Line Item"/>
+                                    <core:Item id="_IDGenItem32" key="vendor"   text="Supplier"/>
+                                    <core:Item id="_IDGenItem33" key="amntLC"   text="Amount (Local)"/>
+                                    <core:Item id="_IDGenItem34" key="amntDC"   text="Amount (Doc)"/>
+                                    <core:Item id="_IDGenItem35" key="curr"     text="Currency"/>
+                                    <core:Item id="_IDGenItem36" key="refNo"    text="Reference"/>
+                                    <core:Item id="_IDGenItem37" key="assignNo" text="Assignment"/>
+                                    <core:Item id="_IDGenItem38" key="compCode" text="Company Code"/>
                                 </items>
                             </Select>
                             <Label id="_IDGenLabel5dp" text="Order" class="sapUiSmallMarginTop"/>
                             <SegmentedButton id="sortOrderBtndp" selectedKey="asc">
                                 <items>
-                                    <SegmentedButtonItem id="_IDGenSegmentedButtonItemdp" key="asc" text="Ascending"/>
-                                    <SegmentedButtonItem id="_IDGenSegmentedButtonItem1dp" key="desc" text="Descending"/>
+                                    <SegmentedButtonItem id="_IDGenSegmentedButtonItem2" key="asc"  text="Ascending"/>
+                                    <SegmentedButtonItem id="_IDGenSegmentedButtonItem3" key="desc" text="Descending"/>
                                 </items>
                             </SegmentedButton>
                         </VBox>
@@ -38,42 +39,40 @@
                             <Label id="_IDGenLabel6dp" text="Filter By"/>
                             <Select id="filterFieldSelectdp" change="onFilterFieldChange">
                                 <items>
-                                    <core:Item id="_IDGenItem14dp" key="" text="Select Field"/>
-                                    <core:Item id="_IDGenItem15dp" key="docNo" text="Document Number"/>
-                                    <core:Item id="_IDGenItem16dp" key="yearF" text="Fiscal Year"/>
-                                    <core:Item id="_IDGenItem17dp" key="docType" text="Document Type"/>
-                                    <core:Item id="_IDGenItem18dp" key="extRef" text="Reference"/>
-                                    <core:Item id="_IDGenItem19dp" key="assignNo" text="Assignment"/>
-                                    <core:Item id="_IDGenItem20dp" key="vendorCode" text="Supplier"/>
-                                    <core:Item id="_IDGenItem21dp" key="debCredInd" text="D/C Indicator"/>
-                                    <core:Item id="_IDGenItem22dp" key="compCode" text="Company Code"/>
-                                    <core:Item id="_IDGenItem23dp" key="postingDate" text="Posting Date"/>
-                                    <core:Item id="_IDGenItem24dp" key="baseDate" text="Baseline Date"/>
+                                    <core:Item id="_IDGenItem39" key=""         text="Select Field"/>
+                                    <core:Item id="_IDGenItem40" key="docNo"    text="Document Number"/>
+                                    <core:Item id="_IDGenItem41" key="year1"    text="Fiscal Year"/>
+                                    <core:Item id="_IDGenItem42" key="lineItem" text="Line Item"/>
+                                    <core:Item id="_IDGenItem43" key="vendor"   text="Supplier"/>
+                                    <core:Item id="_IDGenItem44" key="amntLC"   text="Amount (Local)"/>
+                                    <core:Item id="_IDGenItem45" key="amntDC"   text="Amount (Doc)"/>
+                                    <core:Item id="_IDGenItem46" key="curr"     text="Currency"/>
+                                    <core:Item id="_IDGenItem47" key="refNo"    text="Reference"/>
+                                    <core:Item id="_IDGenItem48" key="assignNo" text="Assignment"/>
+                                    <core:Item id="_IDGenItem49" key="compCode" text="Company Code"/>
                                 </items>
                             </Select>
                             <Label id="_IDGenLabel7dp" text="Operator" class="sapUiSmallMarginTop"/>
                             <Select id="filterOperatorSelectdp">
                                 <items>
-                                    <core:Item id="_IDGenItem25dp" key="Contains" text="Contains"/>
-                                    <core:Item id="_IDGenItem26dp" key="EQ" text="Equals"/>
-                                    <core:Item id="_IDGenItem27dp" key="StartsWith" text="Starts With"/>
-                                    <core:Item id="_IDGenItem28dp" key="EndsWith" text="Ends With"/>
+                                    <core:Item id="_IDGenItem50" key="Contains"   text="Contains"/>
+                                    <core:Item id="_IDGenItem51" key="EQ"         text="Equals"/>
+                                    <core:Item id="_IDGenItem52" key="StartsWith" text="Starts With"/>
+                                    <core:Item id="_IDGenItem53" key="EndsWith"   text="Ends With"/>
                                 </items>
                             </Select>
                             <Label id="_IDGenLabel8dp" text="Value" class="sapUiSmallMarginTop"/>
-                            <!-- Text input — shown for non-date fields -->
-                            <Input id="filterValueInputdp" placeholder="Enter filter value..." width="100%"/>
-                            <!-- Date picker — shown for date fields, hidden by default -->
-                            <DatePicker id="filterDatePickerdp" visible="false" width="100%" placeholder="Select date..." displayFormat="MM/dd/yyyy"/>
+                            <Input      id="filterValueInputdp"  placeholder="Enter filter value..." width="100%"/>
+                            <DatePicker id="filterDatePickerdp"  visible="false" width="100%" placeholder="Select date..." displayFormat="MM/dd/yyyy"/>
                         </VBox>
                     </IconTabFilter>
                 </items>
             </IconTabBar>
         </content>
         <buttons>
-            <Button id="_IDGenButton5dp" text="OK" type="Emphasized" press="onViewSettingsConfirm"/>
-            <Button id="_IDGenButton6dp" text="Reset" press="onViewSettingsReset"/>
-            <Button id="_IDGenButton7dp" text="Cancel" press="onViewSettingsCancel"/>
+            <Button id="_IDGenButton9" text="OK"     type="Emphasized" press="onViewSettingsConfirm"/>
+            <Button id="_IDGenButton10" text="Reset"                    press="onViewSettingsReset"/>
+            <Button id="_IDGenButton12" text="Cancel"                   press="onViewSettingsCancel"/>
         </buttons>
     </Dialog>
 

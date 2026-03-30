@@ -309,26 +309,35 @@ sap.ui.define([
                 }.bind(this));
             }
         },
+        
+        formatAmount: function (value) {
+            if (value !== null && value !== undefined && value !== "") {
+                return parseFloat(value).toFixed(3);
+            }
+            return "";
+        },
 
         _mapItemToUIFormat: function (oItem) {
+            const fnAmt = function (v) {
+                if (v === null || v === undefined || v === "") { return "0.000"; }
+                const f = parseFloat(v);
+                return isNaN(f) ? "0.000" : f.toFixed(3);
+            };
+
             return {
                 docNo:       oItem.refDoc,
-                yearF:       oItem.refYear,
+                year1:       oItem.refYear,
                 lineItem:    oItem.refLine,
                 compCode:    oItem.compCode    || "",
-                amntLC:      oItem.amntLC      || "0.000",
-                amntDC:      oItem.amntDC      || "0.000",
+                amntLC:      fnAmt(oItem.amntLC),   // ← safe parse
+                amntDC:      fnAmt(oItem.amntDC),   // ← safe parse
                 docType:     oItem.docType     || "",
                 baseDate:    oItem.baseDate    || null,
                 postingDate: oItem.postingDate || null,
-                extRef:      oItem.extRef      || "",
+                refNo:       oItem.extRef      || "",
                 assignNo:    oItem.assignNo    || "",
-                spGl:        oItem.spGl        || "",
-                debCredInd:  oItem.debCredInd  || "",
-                postKey:     oItem.postKey     || "",
-                vendorCode:  oItem.vendorCode  || "",
-                docCurr:     oItem.docCurr     || "",
-                compCurr:    oItem.compCurr    || ""
+                vendor:      oItem.vendorCode  || "",
+                curr:        oItem.docCurr     || ""
             };
         },
 
@@ -340,11 +349,11 @@ sap.ui.define([
             const oTable = this.byId("dp_openItemsTable");
             if (oTable) { oTable.setBusy(true); }
 
-            const aFilters = [new Filter("vendorCode", FilterOperator.EQ, sVendor)];
             const sCurr = this.byId("dp_currencyInput").getValue();
-            if (sCurr) { aFilters.push(new Filter("docCurr", FilterOperator.EQ, sCurr)); }
+            const aFilters = [new Filter("vendor", FilterOperator.EQ, sVendor)];   // ← vendor
+            if (sCurr) { aFilters.push(new Filter("curr", FilterOperator.EQ, sCurr)); }  // ← curr
 
-            oDataModel.read("/openItems", {
+            oDataModel.read("/dprItems", {                                           // ← changed entity set
                 filters: aFilters,
                 success: function (oData) {
                     if (oTable) { oTable.setBusy(false); }
@@ -354,8 +363,9 @@ sap.ui.define([
                             return oItem.refDoc + "|" + oItem.refYear + "|" + oItem.refLine;
                         })
                     );
+                    // key fields from dprItems: docNo, year1, lineItem
                     const aFiltered = aAllOpenItems.filter(function (oItem) {
-                        return !oClearedSet.has(oItem.docNo + "|" + oItem.yearF + "|" + oItem.lineItem);
+                        return !oClearedSet.has(oItem.docNo + "|" + oItem.year1 + "|" + oItem.lineItem);
                     });
                     oJSONModel.setData({ openItems: aFiltered, itemsToBeCleared: aItemsToBeCleared });
                     that._updateTableTitles();
@@ -370,22 +380,46 @@ sap.ui.define([
 
         onVendorSubmit: function (oEvt) {
             const sVendor = oEvt.getSource().getValue().trim();
+            const sCurr   = this.byId("dp_currencyInput") ? this.byId("dp_currencyInput").getValue().trim() : "";
+
             if (!sVendor) {
                 this.getView().getModel("openItems").setData({ openItems: [], itemsToBeCleared: [] });
                 this._updateTableTitles();
                 return;
             }
-            this._loadOpenItems(sVendor);
+
+            if (!sCurr) {
+                MessageToast.show("Please enter Currency before loading open items");
+                return;
+            }
+
+            this._loadOpenItems(sVendor, sCurr);
         },
 
-        _loadOpenItems: function (sVendor) {
+        onCurrencyChange: function () {
+            const sVendor = this.byId("dp_supplierAccountInput") 
+                ? this.byId("dp_supplierAccountInput").getValue().trim() : "";
+            const sCurr   = this.byId("dp_currencyInput") 
+                ? this.byId("dp_currencyInput").getValue().trim() : "";
+
+            if (!sVendor || !sCurr) { return; }
+
+            this._loadOpenItems(sVendor, sCurr);
+        },
+
+        _loadOpenItems: function (sVendor, sCurr) {
             const oDataModel = this.getOwnerComponent().getModel();
             const that = this;
             const oTable = this.byId("dp_openItemsTable");
             if (oTable) { oTable.setBusy(true); }
 
-            oDataModel.read("/openItems", {
-                filters: [new Filter("vendorCode", FilterOperator.EQ, sVendor)],
+            const aFilters = [
+                new Filter("vendor", FilterOperator.EQ, sVendor),
+                new Filter("curr",   FilterOperator.EQ, sCurr)
+            ];
+
+            oDataModel.read("/dprItems", {
+                filters: aFilters,
                 success: function (oData) {
                     const oJSONModel = that.getView().getModel("openItems");
                     const aResults = oData && oData.results ? oData.results : [];
@@ -394,7 +428,7 @@ sap.ui.define([
                     MessageToast.show("Loaded " + aResults.length + " items");
                     if (oTable) { oTable.setBusy(false); }
                 },
-                error: function (oError) {
+                error: function () {
                     if (oTable) { oTable.setBusy(false); }
                     MessageBox.error("Failed to load open items");
                 }
@@ -403,8 +437,8 @@ sap.ui.define([
 
         _updateTableTitles: function () {
             const oModel = this.getView().getModel("openItems");
-            const aOpenItems        = oModel.getProperty("/openItems");
-            const aItemsToBeCleared = oModel.getProperty("/itemsToBeCleared");
+            const aOpenItems        = oModel.getProperty("/openItems")        || [];
+            const aItemsToBeCleared = oModel.getProperty("/itemsToBeCleared") || [];
 
             const oOpenTitle  = this.byId("dp_openItemsTitle");
             const oClearTitle = this.byId("dp_itemsToClearTitle");
@@ -412,7 +446,8 @@ sap.ui.define([
             if (oClearTitle) { oClearTitle.setText("Items to Be Cleared (" + aItemsToBeCleared.length + ")"); }
 
             const fTotalInvoiceSum = aItemsToBeCleared.reduce(function (fSum, oItem) {
-                return fSum + (parseFloat(oItem.amntLC) || 0);
+                const f = parseFloat(oItem.amntLC);
+                return fSum + (isNaN(f) ? 0 : f);   // ← safe parse
             }, 0);
 
             const oPayInput = this.byId("dp_payAmountInput");
@@ -426,7 +461,9 @@ sap.ui.define([
             if (oBalanceInput) {
                 oBalanceInput.setValue(fBalance.toFixed(3));
                 oBalanceInput.setValueState(
-                    Math.abs(fBalance) < 0.001 ? sap.ui.core.ValueState.None : sap.ui.core.ValueState.Error
+                    Math.abs(fBalance) < 0.001
+                        ? sap.ui.core.ValueState.None
+                        : sap.ui.core.ValueState.Error
                 );
                 oBalanceInput.setValueStateText("Balance must be zero to save");
             }
@@ -464,30 +501,31 @@ sap.ui.define([
             MessageToast.show("Item moved back to open items: " + oItem.docNo);
         },
 
-onRefreshItems: function () {
-    const oSearchField = this.byId("dp_searchField");
-    if (oSearchField) { oSearchField.setValue(""); }
+        onRefreshItems: function () {
+            const oSearchField = this.byId("dp_searchField");
+            if (oSearchField) { oSearchField.setValue(""); }
 
-    // ── Clear any binding-level filters and sorters ───────────────────────
-    const oTable = this.byId("dp_openItemsTable");
-    if (oTable) {
-        const oBinding = oTable.getBinding("items");
-        if (oBinding) {
-            oBinding.filter([]);
-            oBinding.sort([]);
-        }
-    }
+            const oTable = this.byId("dp_openItemsTable");
+            if (oTable) {
+                const oBinding = oTable.getBinding("items");
+                if (oBinding) {
+                    oBinding.filter([]);
+                    oBinding.sort([]);
+                }
+            }
 
-    // ── Clear the in-memory snapshot used by search/date-filter ──────────
-    this._aOriginalOpenItems = null;
+            this._aOriginalOpenItems = null;
 
-    const sVendor = this.byId("dp_supplierAccountInput")
-        ? this.byId("dp_supplierAccountInput").getValue().trim()
-        : "";
-    if (!sVendor) { MessageToast.show("Please enter a vendor first"); return; }
+            const sVendor = this.byId("dp_supplierAccountInput")
+                ? this.byId("dp_supplierAccountInput").getValue().trim() : "";
+            const sCurr = this.byId("dp_currencyInput")
+                ? this.byId("dp_currencyInput").getValue().trim() : "";
 
-    this._refreshOpenItemsOnly(sVendor);
-},
+            if (!sVendor) { MessageToast.show("Please enter a vendor first"); return; }
+            if (!sCurr)   { MessageToast.show("Please enter a currency first"); return; }
+
+            this._refreshOpenItemsOnly(sVendor);
+        },
 
         _refreshOpenItemsOnly: function (sVendor) {
             const oDataModel = this.getOwnerComponent().getModel();
@@ -496,14 +534,34 @@ onRefreshItems: function () {
             const oTable = this.byId("dp_openItemsTable");
             if (oTable) { oTable.setBusy(true); }
 
-            oDataModel.read("/openItems", {
-                filters: [new Filter("vendorCode", FilterOperator.EQ, sVendor)],
+            const sCurr = this.byId("dp_currencyInput") 
+                ? this.byId("dp_currencyInput").getValue().trim() : "";
+
+            if (!sCurr) {
+                if (oTable) { oTable.setBusy(false); }
+                MessageToast.show("Currency is missing, cannot refresh");
+                return;
+            }
+
+            const aFilters = [
+                new Filter("vendor", FilterOperator.EQ, sVendor),
+                new Filter("curr",   FilterOperator.EQ, sCurr)
+            ];
+
+            oDataModel.read("/dprItems", {
+                filters: aFilters,
                 success: function (oData) {
                     if (oTable) { oTable.setBusy(false); }
                     const aAll     = oData.results || [];
                     const aCleared = oJSONModel.getProperty("/itemsToBeCleared") || [];
-                    const oSet     = new Set(aCleared.map(function (o) { return o.docNo + "|" + o.yearF + "|" + o.lineItem; }));
-                    const aFiltered = aAll.filter(function (o) { return !oSet.has(o.docNo + "|" + o.yearF + "|" + o.lineItem); });
+                    const oSet = new Set(
+                        aCleared.map(function (o) {
+                            return o.docNo + "|" + o.year1 + "|" + o.lineItem;
+                        })
+                    );
+                    const aFiltered = aAll.filter(function (o) {
+                        return !oSet.has(o.docNo + "|" + o.year1 + "|" + o.lineItem);
+                    });
                     oJSONModel.setProperty("/openItems", aFiltered);
                     that._updateTableTitles();
                     MessageToast.show("Refreshed " + aFiltered.length + " open items");
@@ -528,76 +586,73 @@ onRefreshItems: function () {
             const aAll = oModel.getProperty("/openItems");
             const sQ   = sQuery.toLowerCase();
             const aFiltered = aAll.filter(function (o) {
-                return (o.docNo      && String(o.docNo).toLowerCase().indexOf(sQ)      > -1)
-                    || (o.yearF      && String(o.yearF).toLowerCase().indexOf(sQ)      > -1)
-                    || (o.lineItem   && String(o.lineItem).toLowerCase().indexOf(sQ)   > -1)
-                    || (o.compCode   && String(o.compCode).toLowerCase().indexOf(sQ)   > -1)
-                    || (o.vendorCode && String(o.vendorCode).toLowerCase().indexOf(sQ) > -1)
-                    || (o.docType    && String(o.docType).toLowerCase().indexOf(sQ)    > -1)
-                    || (o.extRef     && String(o.extRef).toLowerCase().indexOf(sQ)     > -1)
-                    || (o.assignNo   && String(o.assignNo).toLowerCase().indexOf(sQ)   > -1)
-                    || (o.amntLC     && String(o.amntLC).toLowerCase().indexOf(sQ)     > -1)
-                    || (o.amntDC     && String(o.amntDC).toLowerCase().indexOf(sQ)     > -1);
+                return (o.docNo    && String(o.docNo).toLowerCase().indexOf(sQ)    > -1)
+                    || (o.year1    && String(o.year1).toLowerCase().indexOf(sQ)    > -1)  // ← year1
+                    || (o.lineItem && String(o.lineItem).toLowerCase().indexOf(sQ) > -1)
+                    || (o.compCode && String(o.compCode).toLowerCase().indexOf(sQ) > -1)
+                    || (o.vendor   && String(o.vendor).toLowerCase().indexOf(sQ)   > -1)  // ← vendor
+                    || (o.refNo    && String(o.refNo).toLowerCase().indexOf(sQ)    > -1)  // ← refNo
+                    || (o.assignNo && String(o.assignNo).toLowerCase().indexOf(sQ) > -1)
+                    || (o.amntLC   && String(o.amntLC).toLowerCase().indexOf(sQ)   > -1)
+                    || (o.amntDC   && String(o.amntDC).toLowerCase().indexOf(sQ)   > -1)
+                    || (o.curr     && String(o.curr).toLowerCase().indexOf(sQ)     > -1); // ← curr
             });
             this._aOriginalOpenItems = aAll;
             oModel.setProperty("/openItems", aFiltered);
         },
 
       onOpenViewSettings: function () {
-    const that = this;
-    if (!this._oViewSettingsDialogDP) {
-        this.loadFragment({
-            name: "zfi.payment.management.fragments.DpFrag.ViewSettingsDialogDP"
-        }).then(function (oDialog) {
-            that._oViewSettingsDialogDP = oDialog;
-            that.getView().addDependent(oDialog);
-            oDialog.open();
-        });
-    } else {
-        this._oViewSettingsDialogDP.open();
-    }
-},
-    onFilterFieldChange: function () {
-        const sKey         = this.byId("filterFieldSelectdp").getSelectedKey();
-        const aDateFields  = ["postingDate", "baseDate"];
-        const bIsDate      = aDateFields.indexOf(sKey) > -1;
-
-        const oInput       = this.byId("filterValueInputdp");
-        const oDatePicker  = this.byId("filterDatePickerdp");
-        const oOperator    = this.byId("filterOperatorSelectdp");
-
-        // ── Reset data whenever field changes ─────────────────────────────────
-        const oModel = this.getView().getModel("openItems");
-        if (this._aOriginalOpenItems) {
-            oModel.setProperty("/openItems", this._aOriginalOpenItems);
-            this._aOriginalOpenItems = null;
-        }
-        const oBinding = this.byId("dp_openItemsTable").getBinding("items");
-        oBinding.filter([]);
-
-        // Show date picker or text input depending on field
-        oInput.setVisible(!bIsDate);
-        oDatePicker.setVisible(bIsDate);
-
-        // For date fields force EQ operator and disable operator select
-        if (bIsDate) {
-            oOperator.setSelectedKey("EQ");
-            oOperator.setEnabled(false);
+        const that = this;
+        if (!this._oViewSettingsDialogDP) {
+            this.loadFragment({
+                name: "zfi.payment.management.fragments.DpFrag.ViewSettingsDialogDP"
+            }).then(function (oDialog) {
+                that._oViewSettingsDialogDP = oDialog;
+                that.getView().addDependent(oDialog);
+                oDialog.open();
+            });
         } else {
-            oOperator.setEnabled(true);
+            this._oViewSettingsDialogDP.open();
         }
-
-        // Clear values on field switch
-        oInput.setValue("");
-        oDatePicker.setDateValue(null);
     },
+        onFilterFieldChange: function () {
+            const sKey        = this.byId("filterFieldSelectdp").getSelectedKey();
+            // No date fields in dprItems entity — kept for future use
+            const aDateFields = [];
+            const bIsDate     = aDateFields.indexOf(sKey) > -1;
 
-    onViewSettingsConfirm: function () {
+            const oInput      = this.byId("filterValueInputdp");
+            const oDatePicker = this.byId("filterDatePickerdp");
+            const oOperator   = this.byId("filterOperatorSelectdp");
+
+            // Restore original items before resetting filter
+            const oModel = this.getView().getModel("openItems");
+            if (this._aOriginalOpenItems) {
+                oModel.setProperty("/openItems", this._aOriginalOpenItems);
+                this._aOriginalOpenItems = null;
+            }
+            const oBinding = this.byId("dp_openItemsTable").getBinding("items");
+            if (oBinding) { oBinding.filter([]); }
+
+            oInput.setVisible(!bIsDate);
+            oDatePicker.setVisible(bIsDate);
+
+            if (bIsDate) {
+                oOperator.setSelectedKey("EQ");
+                oOperator.setEnabled(false);
+            } else {
+                oOperator.setEnabled(true);
+            }
+
+            oInput.setValue("");
+            oDatePicker.setDateValue(null);
+        },
+        onViewSettingsConfirm: function () {
         const oTable   = this.byId("dp_openItemsTable");
         const oBinding = oTable.getBinding("items");
         const oModel   = this.getView().getModel("openItems");
 
-        // ── Always restore original items before applying new filter ──────────
+        // Restore original items before applying new filter
         if (this._aOriginalOpenItems) {
             oModel.setProperty("/openItems", this._aOriginalOpenItems);
             this._aOriginalOpenItems = null;
@@ -613,76 +668,31 @@ onRefreshItems: function () {
         // ── Filter ────────────────────────────────────────────────────────────
         const sFilterField    = this.byId("filterFieldSelectdp").getSelectedKey();
         const sFilterOperator = this.byId("filterOperatorSelectdp").getSelectedKey();
-        const aDateFields     = ["postingDate", "baseDate"];
-        const bIsDate         = aDateFields.indexOf(sFilterField) > -1;
+        const sFilterValue    = this.byId("filterValueInputdp").getValue().trim();
 
         let aFilters = [];
 
-        if (sFilterField) {
-            if (bIsDate) {
-                const oSelectedDate = this.byId("filterDatePickerdp").getDateValue();
-
-                if (oSelectedDate) {
-                    // Always read from current full model data
-                    const aAllItems = oModel.getProperty("/openItems");
-
-                    const aFiltered = aAllItems.filter(function (oItem) {
-                        const oValue = oItem[sFilterField];
-                        if (!oValue) { return false; }
-
-                        let oDate = null;
-                        if (oValue instanceof Date) {
-                            oDate = oValue;
-                        } else if (typeof oValue === "string" && oValue.indexOf("/Date(") === 0) {
-                            const ts = oValue.replace("/Date(", "").replace(")/", "").split("+")[0];
-                            oDate = new Date(parseInt(ts));
-                        } else if (typeof oValue === "string") {
-                            oDate = new Date(oValue);
-                        }
-
-                        if (!oDate || isNaN(oDate.getTime())) { return false; }
-
-                        return oDate.getUTCDate()     === oSelectedDate.getDate()
-                            && oDate.getUTCMonth()    === oSelectedDate.getMonth()
-                            && oDate.getUTCFullYear() === oSelectedDate.getFullYear();
-                    });
-
-                    // Store original before replacing
-                    this._aOriginalOpenItems = aAllItems;
-                    oModel.setProperty("/openItems", aFiltered);
-
-                    oBinding.sort(aSorters);
-                    this._oViewSettingsDialogDP.close();
-                    return;
-                }
-            } else {
-                const sFilterValue = this.byId("filterValueInputdp").getValue().trim();
-                if (sFilterValue) {
-                    const oOperator = sap.ui.model.FilterOperator[sFilterOperator];
-                    aFilters.push(new sap.ui.model.Filter(sFilterField, oOperator, sFilterValue));
-                }
-            }
+        if (sFilterField && sFilterValue) {
+            const oOperator = sap.ui.model.FilterOperator[sFilterOperator];
+            aFilters.push(new sap.ui.model.Filter(sFilterField, oOperator, sFilterValue));
         }
 
         oBinding.sort(aSorters);
         oBinding.filter(aFilters);
-        this._oViewSettingsDialogDp.close();
+        this._oViewSettingsDialogDP.close();   // ← fixed capital P typo
     },
 
     onViewSettingsReset: function () {
         const oModel = this.getView().getModel("openItems");
 
-        // Restore original items if date filter was applied
         if (this._aOriginalOpenItems) {
             oModel.setProperty("/openItems", this._aOriginalOpenItems);
             this._aOriginalOpenItems = null;
         }
 
-        // Reset sort controls
         this.byId("sortFieldSelectdp").setSelectedKey("");
         this.byId("sortOrderBtndp").setSelectedKey("asc");
 
-        // Reset filter controls
         this.byId("filterFieldSelectdp").setSelectedKey("");
         this.byId("filterOperatorSelectdp").setSelectedKey("Contains");
         this.byId("filterOperatorSelectdp").setEnabled(true);
@@ -691,10 +701,11 @@ onRefreshItems: function () {
         this.byId("filterDatePickerdp").setDateValue(null);
         this.byId("filterDatePickerdp").setVisible(false);
 
-        // Clear binding sort and filter
         const oBinding = this.byId("dp_openItemsTable").getBinding("items");
-        oBinding.sort([]);
-        oBinding.filter([]);
+        if (oBinding) {
+            oBinding.sort([]);
+            oBinding.filter([]);
+        }
 
         this._oViewSettingsDialogDP.close();
     },
@@ -714,9 +725,7 @@ onRefreshItems: function () {
             return "";
         },
 
-        formatAmount: function (value) {
-            return (value !== null && value !== undefined) ? parseFloat(value).toFixed(2) : "";
-        },
+  
 
         _setBusyDialog: function (bOpen) {
             if (bOpen) {
@@ -764,29 +773,27 @@ onRefreshItems: function () {
         _buildToItems: function (aItemsToBeCleared, sCompCode) {
             const that = this;
             return aItemsToBeCleared.map(function (oItem, iIndex) {
+                const fnAmt = function (v) {
+                    const f = parseFloat(v);
+                    return isNaN(f) ? "0.000" : f.toFixed(3);
+                };
                 return {
                     itemId:      String(iIndex + 1).padStart(3, "0"),
-                    itemTy:      "2", // Down Payment item type
-                    amntLC:      oItem.amntLC      || "0.000",
-                    amntDC:      oItem.amntDC      || "0.000",
-                    compCode:    oItem.compCode    || sCompCode,
+                    itemTy:      "2",
+                    amntLC:      fnAmt(oItem.amntLC),   // ← consistent 3dp string
+                    amntDC:      fnAmt(oItem.amntDC),   // ← consistent 3dp string
+                    compCode:    oItem.compCode || sCompCode,
                     refDoc:      oItem.docNo,
-                    refYear:     oItem.yearF,
+                    refYear:     oItem.year1,
                     refLine:     oItem.lineItem,
-                    docType:     oItem.docType     || "",
+                    docType:     oItem.docType  || "",
                     baseDate:    that._toODataDate(oItem.baseDate),
-                    extRef:      oItem.extRef      || "",
-                    assignNo:    oItem.assignNo    || "",
-                    spGl:        oItem.spGl        || "",
-                    debCredInd:  oItem.debCredInd  || "",
-                    postKey:     oItem.postKey     || "",
-                    docCurr:     oItem.docCurr     || "",
-                    compCurr:    oItem.compCurr    || "",
+                    extRef:      oItem.refNo    || "",
+                    assignNo:    oItem.assignNo || "",
                     postingDate: that._toODataDate(oItem.postingDate)
                 };
             });
         },
-
         _validateAndGetData: function (sAction) {
             const f = this._collectFormValues();
             if (!f.sCompCode || !f.sFiscYear || !f.sVendor || !f.sBankKey || !f.sBankAcc || !f.oDocDate || !f.oPostDate) {

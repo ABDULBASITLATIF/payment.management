@@ -208,12 +208,33 @@ _onRouteMatched: function() {
 //     oRouter.navTo("RoutePostOutgoing", {});
 // },
 
+// onEditDraft: function (oEvent) {
+//     var oItem = oEvent.getSource();
+//     var oContext = oItem.getBindingContext("headModel");
+//     var sDraftId = oContext.getProperty("draftId");
+//     var oRouter = this.getOwnerComponent().getRouter();
+//     oRouter.navTo("RoutePostOutgoing", { draftId: sDraftId });
+// },
 onEditDraft: function (oEvent) {
     var oItem = oEvent.getSource();
     var oContext = oItem.getBindingContext("headModel");
     var sDraftId = oContext.getProperty("draftId");
+    var sDraftType = oContext.getProperty("draftType"); // Get draftType from row
     var oRouter = this.getOwnerComponent().getRouter();
-    oRouter.navTo("RoutePostOutgoing", { draftId: sDraftId });
+
+    switch (sDraftType) {
+        case "1":
+            oRouter.navTo("RoutePostOutgoing", { draftId: sDraftId });
+            break;
+        case "2":
+            oRouter.navTo("RouteDownPayment", { draftId: sDraftId });
+            break;
+        case "3":
+            oRouter.navTo("RouteOnAccountPayment", { draftId: sDraftId });
+            break;
+        default:
+            MessageToast.show("Unknown draft type: " + sDraftType);
+    }
 },
 
     });

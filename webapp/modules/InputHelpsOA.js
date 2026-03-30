@@ -99,10 +99,6 @@ sap.ui.define([
                 const sSupplier = oSelectedItem.getTitle();
                
                 this.byId("oa_supplierAccountInput").setValue(sSupplier);
-
-                // Trigger vendor submit to load open items
-                this.onVendorSubmit({ getSource: () => ({ getValue: () => sSupplier }) });
-
                 MessageToast.show("Supplier selected: " + sSupplier);
             }
         },

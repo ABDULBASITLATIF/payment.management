@@ -58,7 +58,7 @@
                 valueHelpRequest=".InputHelpsDP.onLoadSupplierVH"/>
             
             <Label id="dp_currencyLabel" text="Currency" required="true" width="auto"/>
-            <Input id="dp_currencyInput" value="" maxLength="5" width="auto"/>
+            <Input id="dp_currencyInput" value="" maxLength="5" width="auto" change="onCurrencyChange"/>
             
             <Label id="dp_payAmountLabel" text="Total Pay. Amount" width="auto"/>
             <Input id="dp_payAmountInput" value="" width="auto" change="onPayAmountChange" liveChange="onPayAmountChange"/>

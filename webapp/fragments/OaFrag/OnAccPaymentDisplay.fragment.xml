@@ -52,11 +52,11 @@
             <Label id="oa_payAmountLabelD"     text="Total Pay. Amount"     width="auto"/>
             <Text  id="oa_payAmntText"         text="{pageModel>/payAmnt}"  width="auto"/>
 
-            <Label id="oa_invoiceSumLabelD"    text="Total Invoice Sum"     width="auto"/>
-            <Text  id="oa_invoiceSumText"      text="{pageModel>/invoiceSum}" width="auto"/>
+            <Label id="oa_invoiceSumLabelD"    text="Total Invoice Sum"     width="auto" visible="false"/>
+            <Text  id="oa_invoiceSumText"      text="{pageModel>/invoiceSum}" width="auto" visible="false"/>
 
-            <Label id="oa_balanceLabelD"       text="Balance"               width="auto"/>
-            <Text  id="oa_balanceText"         text="{pageModel>/balance}"  width="auto"/>
+            <Label id="oa_balanceLabelD"       text="Balance"               width="auto" visible="false"/>
+            <Text  id="oa_balanceText"         text="{pageModel>/balance}"  width="auto" visible="false"/>
 
             <Label id="oa_postdoclabel"        text="Posting Document"      width="auto" visible="false"/>
             <Text  id="oa_postdocText"         text="{pageModel>/postDoc}"  width="auto" visible="false"/>

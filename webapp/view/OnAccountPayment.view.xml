@@ -6,12 +6,12 @@
     xmlns:core="sap.ui.core"
     xmlns:l="sap.ui.layout"
     height="100%">
-    
+
     <Page id="openaccountpage"
         title="On Account Payment"
         showNavButton="true"
         navButtonPress="onNavBack">
-        
+
         <customHeader>
             <Bar id="_IDGenBar3">
                 <contentLeft>
@@ -22,29 +22,77 @@
                 </contentMiddle>
             </Bar>
         </customHeader>
-        
+
         <content>
-           <VBox id="_IDGenVBox22" class="sapUiSmallMargin">
+            <VBox id="_IDGenVBox22" class="sapUiSmallMargin">
+
+                <!-- Edit Form -->
                 <VBox id="oa_editFormBox">
-                    <core:Fragment fragmentName="zfi.payment.management.fragments.OaFrag.OnAccPaymentForm" type="XML"/>
+                    <core:Fragment
+                        fragmentName="zfi.payment.management.fragments.OaFrag.OnAccPaymentForm"
+                        type="XML"/>
                 </VBox>
 
-                <!-- Display Form -->
-                <!-- <VBox id="oa_displayFormBox" visible="false">
-                    <core:Fragment fragmentName="zfi.payment.management.fragments.OaFrag.OnAccPaymentDisplay" type="XML" />
-                </VBox> -->
+                <!-- Display Form (In Approval / Approved / Posted / Post Error) -->
+                <VBox id="oa_displayFormBox" visible="false">
+                    <core:Fragment
+                        fragmentName="zfi.payment.management.fragments.OaFrag.OnAccPaymentDisplay"
+                        type="XML"/>
                 </VBox>
+
+                <!-- Approver Table -->
+                <Table
+                    id="oa_aprvrTable"
+                    visible="false"
+                    items="{path: 'aprvrTab>/'}"
+                    width="100%"
+                    growing="true"
+                    growingThreshold="100"
+                    growingScrollToLoad="true"
+                    class="sapUiSmallMarginTop">
+
+                    <headerToolbar>
+                        <OverflowToolbar id="oa_aprvrTabTool">
+                            <Title id="oa_aprvrTabTitle" text="Approver Table" level="H5"/>
+                        </OverflowToolbar>
+                    </headerToolbar>
+
+                    <columns>
+                        <Column id="oa_levelCol" width="4rem">
+                            <Text id="oa_levelCT" text="Approver Level"/>
+                        </Column>
+                        <Column id="oa_UserCol" width="7rem">
+                            <Text id="oa_UserCT" text="User Name"/>
+                        </Column>
+                        <Column id="oa_StatusCol" width="5rem">
+                            <Text id="oa_StatusCT" text="Status"/>
+                        </Column>
+                    </columns>
+
+                    <items>
+                        <ColumnListItem id="oa_aprvColItem">
+                            <cells>
+                                <Text id="oa_levelCell"  text="{aprvrTab>aprLevel}"/>
+                                <Text id="oa_userCell"   text="{aprvrTab>aprvr}"/>
+                                <Text id="oa_statusCell" text="{aprvrTab>aprvrStatus}"/>
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+
+            </VBox>
         </content>
+
         <footer>
             <Toolbar id="_IDGenToolbaroa">
                 <ToolbarSpacer id="_IDGenToolbarSpaceroa"/>
-                <Button id="_IDGenButton25oa" text="Save" type="Emphasized" press="onSave"/>
-                <Button id="_IDGenButton27oa" text="Update" type="Emphasized" press="onUpdate"/>
-                <Button id="_IDGenButton26oa" text="Submit" press="onSubmit" type="Emphasized"/>
-                <Button id="_IDGenButton2622oa" text="Post" press="onPost" visible="false" type="Emphasized"/>
-                <Button id="resubmitButtonoa" text="Resubmit" press="onResubmit" visible="false" type="Emphasized"></Button>
+                <Button id="_IDGenButton25oa"  text="Save"      type="Emphasized" press="onSave"/>
+                <Button id="_IDGenButton27oa"  text="Update"    type="Emphasized" press="onUpdate"/>
+                <Button id="_IDGenButton26oa"  text="Submit"    type="Emphasized" press="onSubmit"/>
+                <Button id="_IDGenButton2622oa" text="Post"     type="Emphasized" press="onPost"      visible="false"/>
+                <Button id="resubmitButtonoa"  text="Resubmit" type="Emphasized" press="onResubmit"  visible="false"/>
             </Toolbar>
         </footer>
-     
+
     </Page>
 </mvc:View>

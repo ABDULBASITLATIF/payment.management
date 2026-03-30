@@ -97,12 +97,18 @@ sap.ui.define([
             const oSelectedItem = oEvent.getParameter("selectedItem");
             if (oSelectedItem) {
                 const sSupplier = oSelectedItem.getTitle();
-                debugger;    
                 this.byId("dp_supplierAccountInput").setValue(sSupplier);
 
-                // Trigger vendor submit to load open items
-                this.onVendorSubmit({ getSource: () => ({ getValue: () => sSupplier }) });
+                const sCurr = this.byId("dp_currencyInput") 
+                    ? this.byId("dp_currencyInput").getValue().trim() : "";
 
+                if (!sCurr) {
+                    MessageToast.show("Supplier selected. Please enter Currency to load open items.");
+                    return;
+                }
+
+                // Trigger load with both vendor and currency
+                this._loadOpenItems(sSupplier, sCurr);
                 MessageToast.show("Supplier selected: " + sSupplier);
             }
         },

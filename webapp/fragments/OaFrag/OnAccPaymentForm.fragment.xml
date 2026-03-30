@@ -63,11 +63,11 @@
             <Label id="oa_payAmountLabel" text="Total Pay. Amount" width="auto"/>
             <Input id="oa_payAmountInput" value="" width="auto" change="onPayAmountChange" liveChange="onPayAmountChange"/>
 
-            <Label id="oa_invoiceSumLabel" text="Total Invoice Sum" width="auto"/>
-            <Input id="oa_invoiceSumInput" value="" width="auto" editable="false"/>
+            <Label id="oa_invoiceSumLabel" text="Total Invoice Sum" width="auto" visible="false"/>
+            <Input id="oa_invoiceSumInput" value="" width="auto" editable="false" visible="false"/>
 
-            <Label id="oa_balanceLabel" text="Balance" width="auto"/>
-            <Input id="oa_balanceInput" value="" width="auto" editable="false"/>
+            <Label id="oa_balanceLabel" text="Balance" width="auto" visible="false" />
+            <Input id="oa_balanceInput" value="" width="auto" editable="false" visible="false"/>
         </f:content>
     </f:SimpleForm>
     

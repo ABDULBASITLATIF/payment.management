@@ -26,7 +26,7 @@
                     <items>
                         <core:Item id="_IDGenItem1" key="v1" text="Post Outgoing Payment"/>
                         <core:Item id="_IDGenItem3" key="v2" text="Down Payment"/>
-                        <core:Item id="_IDGenItem4" key="v3" text="Open Account Payment"/>
+                        <core:Item id="_IDGenItem4" key="v3" text="On Account Payment"/>
                     </items>
                 </ComboBox>
             </VBox>

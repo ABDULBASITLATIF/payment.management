@@ -116,12 +116,16 @@
         {
           "name": "RouteDownPayment",
           "pattern": "downpayment/:draftId:",
-          "target": ["TargetDownPayment"]
+          "target": [
+            "TargetDownPayment"
+          ]
         },
         {
           "name": "RouteOnAccountPayment",
           "pattern": "onaccountpayment/:draftId:",
-          "target": ["TargetOnAccountPayment"]
+          "target": [
+            "TargetOnAccountPayment"
+          ]
         }
       ],
       "targets": {

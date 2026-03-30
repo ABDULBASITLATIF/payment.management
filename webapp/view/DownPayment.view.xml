@@ -64,88 +64,39 @@
                                     <Button id="dp_refreshBtn" icon="sap-icon://refresh" press="onRefreshItems"/>
                                 </OverflowToolbar>
                             </headerToolbar>
+                                <columns>
+                                    <Column id="dp_col_compCode"    width="auto" visible="false"><header><Text id="dp_txt_compCode"    text="Company Code"/></header></Column>
+                                    <Column id="dp_col_docNo"       width="auto"><Text id="dp_txt_docNo"       text="Document Number"/></Column>
+                                    <Column id="dp_col_year1"       width="auto"><Text id="dp_txt_year1"       text="Fiscal Year"/></Column>
+                                    <Column id="dp_col_lineItem"    width="auto"><Text id="dp_txt_lineItem"    text="Line Item"/></Column>
+                                    <Column id="dp_col_vendor"      width="auto" visible="false"><Text id="dp_txt_vendor"      text="Supplier"/></Column>
+                                    <Column id="dp_col_purchDoc"    width="auto"><Text id="dp_txt_purchDoc"    text="Purch. Doc"/></Column>
+                                    <Column id="dp_col_amntLC"      width="auto" hAlign="End"><Text id="dp_txt_amntLC"      text="Amount (Local)"/></Column>
+                                    <Column id="dp_col_amntDC"      width="auto" hAlign="End"><Text id="dp_txt_amntDC"      text="Amount (Doc)"/></Column>
+                                    <Column id="dp_col_curr"        width="auto"><Text id="dp_txt_curr"        text="Currency"/></Column>
+                                    <Column id="dp_col_refNo"       width="auto"><Text id="dp_txt_refNo"       text="Reference"/></Column>
+                                    <Column id="dp_col_assignNo"    width="auto"><Text id="dp_txt_assignNo"    text="Assignment"/></Column>
+                                    <Column id="dp_clearColumn"     width="auto"><Text id="dp_txt_clear"       text="Clear"/></Column>
+                                </columns>
 
-                            <columns>
-                                <Column id="dp_col_compCode" width="auto" visible="false">
-                                    <header><Text id="dp_txt_compCode" text="Company Code"/></header>
-                                </Column>
-                                <Column id="dp_col_docNo" width="auto">
-                                    <Text id="dp_txt_docNo" text="Document Number"/>
-                                </Column>
-                                <Column id="dp_col_yearF" width="auto">
-                                    <Text id="dp_txt_yearF" text="Fiscal Year"/>
-                                </Column>
-                                <Column id="dp_col_lineItem" width="auto">
-                                    <Text id="dp_txt_lineItem" text="Line Item"/>
-                                </Column>
-                                <Column id="dp_col_vendor" width="auto" visible="false">
-                                    <Text id="dp_txt_vendor" text="Supplier"/>
-                                </Column>
-                                <Column id="dp_col_postingDate" width="auto">
-                                    <Text id="dp_txt_postingDate" text="Posting Date"/>
-                                </Column>
-                                <Column id="dp_col_docType" width="auto">
-                                    <Text id="dp_txt_docType" text="Document Type"/>
-                                </Column>
-                                <Column id="dp_col_amntLC" width="auto" hAlign="End">
-                                    <Text id="dp_txt_amntLC" text="Amount (Local)"/>
-                                </Column>
-                                <Column id="dp_col_amntDC" width="auto" hAlign="End">
-                                    <Text id="dp_txt_amntDC" text="Amount (Doc)"/>
-                                </Column>
-                                <Column id="dp_col_baseDate" width="auto">
-                                    <Text id="dp_txt_baseDate" text="Baseline Date"/>
-                                </Column>
-                                <Column id="dp_col_extRef" width="auto">
-                                    <Text id="dp_txt_extRef" text="Reference"/>
-                                </Column>
-                                <Column id="dp_col_assignNo" width="auto">
-                                    <Text id="dp_txt_assignNo" text="Assignment"/>
-                                </Column>
-                                <Column id="dp_col_spGl" width="auto" visible="false">
-                                    <Text id="dp_txt_spGl" text="Special G/L"/>
-                                </Column>
-                                <Column id="dp_col_debCred" width="auto" visible="false">
-                                    <Text id="dp_txt_debCred" text="D/C Ind."/>
-                                </Column>
-                                <Column id="dp_col_postKey" width="auto" visible="false">
-                                    <Text id="dp_txt_postKey" text="Posting Key"/>
-                                </Column>
-                                <Column id="dp_clearColumn" width="auto">
-                                    <Text id="dp_txt_clear" text="Clear"/>
-                                </Column>
-                            </columns>
-
-                            <items>
-                                <ColumnListItem id="dp_openItemsCLI">
-                                    <cells>
-                                        <Text id="dp_cell_compCode"    text="{openItems>compCode}"/>
-                                        <Link id="dp_cell_docNo"       text="{openItems>docNo}"/>
-                                        <Text id="dp_cell_yearF"       text="{openItems>yearF}"/>
-                                        <Text id="dp_cell_lineItem"    text="{openItems>lineItem}"/>
-                                        <Text id="dp_cell_vendorCode"  text="{openItems>vendorCode}"/>
-                                        <Text id="dp_cell_postingDate" text="{
-                                            path: 'openItems>postingDate',
-                                            type: 'sap.ui.model.type.Date',
-                                            formatOptions: { pattern: 'MM/dd/yyyy' }
-                                        }"/>
-                                        <Text id="dp_cell_docType"  text="{openItems>docType}"/>
-                                        <Text id="dp_cell_amntLC"   text="{openItems>amntLC}"/>
-                                        <Text id="dp_cell_amntDC"   text="{openItems>amntDC}"/>
-                                        <Text id="dp_cell_baseDate" text="{
-                                            path: 'openItems>baseDate',
-                                            type: 'sap.ui.model.type.Date',
-                                            formatOptions: { pattern: 'MM/dd/yyyy' }
-                                        }"/>
-                                        <Text id="dp_cell_extRef"      text="{openItems>extRef}"/>
-                                        <Text id="dp_cell_assignNo"    text="{openItems>assignNo}"/>
-                                        <Text id="dp_cell_spGl"        text="{openItems>spGl}"/>
-                                        <Text id="dp_cell_debCredInd"  text="{openItems>debCredInd}"/>
-                                        <Text id="dp_cell_postKey"     text="{openItems>postKey}"/>
-                                        <Button id="dp_clearItemBtn" icon="sap-icon://accept" type="Emphasized" press="onClearItem"/>
-                                    </cells>
-                                </ColumnListItem>
-                            </items>
+                                <items>
+                                    <ColumnListItem id="dp_openItemsCLI">
+                                        <cells>
+                                            <Text id="dp_cell_compCode"  text="{openItems>compCode}"/>
+                                            <Link id="dp_cell_docNo"     text="{openItems>docNo}"/>
+                                            <Text id="dp_cell_year1"     text="{openItems>year1}"/>
+                                            <Text id="dp_cell_lineItem"  text="{openItems>lineItem}"/>
+                                            <Text id="dp_cell_vendor"    text="{openItems>vendor}"/>
+                                            <Text id="dp_cell_purchDoc"  text="{openItems>purchDoc}"/>
+                                            <Text id="dp_cell_amntLC"    text="{openItems>amntLC}"/>
+                                            <Text id="dp_cell_amntDC"    text="{openItems>amntDC}"/>
+                                            <Text id="dp_cell_curr"      text="{openItems>curr}"/>
+                                            <Text id="dp_cell_refNo"     text="{openItems>refNo}"/>
+                                            <Text id="dp_cell_assignNo"  text="{openItems>assignNo}"/>
+                                            <Button id="dp_clearItemBtn" icon="sap-icon://accept" type="Emphasized" press="onClearItem"/>
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
                         </Table>
                     </f:content>
                 </f:SimpleForm>
@@ -177,33 +128,34 @@
                             </headerToolbar>
 
                             <columns>
-                                <Column id="dp_itc_col_remove"      width="4rem"><Text id="dp_itc_txt_remove"   text="Remove"/></Column>
-                                <Column id="dp_itc_col_docNo"       width="7rem"><Text id="dp_itc_txt_docNo"    text="Document Number"/></Column>
-                                <Column id="dp_itc_col_yearF"       width="5rem"><Text id="dp_itc_txt_yearF"    text="Fiscal Year"/></Column>
-                                <Column id="dp_itc_col_lineItem"    width="4rem"><Text id="dp_itc_txt_lineItem" text="Line Item"/></Column>
-                                <Column id="dp_itc_col_postDate"    width="6rem"><Text id="dp_itc_txt_postDate" text="Posting Date"/></Column>
-                                <Column id="dp_itc_col_docType"     width="5rem"><Text id="dp_itc_txt_docType"  text="Document Type"/></Column>
-                                <Column id="dp_itc_col_amntLC"      width="7rem"><Text id="dp_itc_txt_amntLC"   text="Amount (Local)"/></Column>
-                                <Column id="dp_itc_col_amntDC"      width="7rem"><Text id="dp_itc_txt_amntDC"   text="Amount (Doc)"/></Column>
-                                <Column id="dp_itc_col_baseDate"    width="6rem"><Text id="dp_itc_txt_baseDate" text="Baseline Date"/></Column>
-                                <Column id="dp_itc_col_extRef"      width="7rem"><Text id="dp_itc_txt_extRef"   text="Reference"/></Column>
-                                <Column id="dp_itc_col_assignNo"    width="7rem"><Text id="dp_itc_txt_assignNo" text="Assignment"/></Column>
+                                <Column id="dp_itc_col_remove"   width="4rem"><Text id="dp_itc_txt_remove"   text="Remove"/></Column>
+                                <Column id="dp_itc_col_docNo"    width="7rem"><Text id="dp_itc_txt_docNo"    text="Document Number"/></Column>
+                                <Column id="dp_itc_col_year1"    width="5rem"><Text id="dp_itc_txt_year1"    text="Fiscal Year"/></Column>
+                                <Column id="dp_itc_col_lineItem" width="4rem"><Text id="dp_itc_txt_lineItem" text="Line Item"/></Column>
+                                <Column id="dp_itc_col_vendor"   width="7rem"><Text id="dp_itc_txt_vendor"   text="Supplier"/></Column>
+                                <Column id="dp_itc_col_purchDoc" width="7rem"><Text id="dp_itc_txt_purchDoc" text="Purch. Doc"/></Column>
+                                <Column id="dp_itc_col_amntLC"   width="7rem"><Text id="dp_itc_txt_amntLC"   text="Amount (Local)"/></Column>
+                                <Column id="dp_itc_col_amntDC"   width="7rem"><Text id="dp_itc_txt_amntDC"   text="Amount (Doc)"/></Column>
+                                <Column id="dp_itc_col_curr"     width="5rem"><Text id="dp_itc_txt_curr"     text="Currency"/></Column>
+                                <Column id="dp_itc_col_refNo"    width="7rem"><Text id="dp_itc_txt_refNo"    text="Reference"/></Column>
+                                <Column id="dp_itc_col_assignNo" width="7rem"><Text id="dp_itc_txt_assignNo" text="Assignment"/></Column>
                             </columns>
 
                             <items>
                                 <ColumnListItem id="dp_itemsToClearCLI">
                                     <cells>
-                                        <Button id="dp_removeItemBtn" icon="sap-icon://navigation-left-arrow" press="onRemoveItem"/>
-                                        <Link id="dp_itc_cell_docNo"    text="{openItems>docNo}"/>
-                                        <Text id="dp_itc_cell_yearF"    text="{openItems>yearF}"/>
-                                        <Text id="dp_itc_cell_lineItem" text="{openItems>lineItem}"/>
-                                        <Text id="dp_itc_cell_postDate" text="{path: 'openItems>postingDate', formatter: '.formatDate'}"/>
-                                        <Text id="dp_itc_cell_docType"  text="{openItems>docType}"/>
-                                        <Text id="dp_itc_cell_amntLC"   text="{path: 'openItems>amntLC', formatter: '.formatAmount'}"/>
-                                        <Text id="dp_itc_cell_amntDC"   text="{path: 'openItems>amntDC', formatter: '.formatAmount'}"/>
-                                        <Text id="dp_itc_cell_baseDate" text="{path: 'openItems>baseDate', formatter: '.formatDate'}"/>
-                                        <Text id="dp_itc_cell_extRef"   text="{openItems>extRef}"/>
-                                        <Text id="dp_itc_cell_assignNo" text="{openItems>assignNo}"/>
+                                        <Button id="dp_removeItemBtn"       icon="sap-icon://navigation-left-arrow" press="onRemoveItem"/>
+                                        <Link   id="dp_itc_cell_docNo"      text="{openItems>docNo}"/>
+                                        <Text   id="dp_itc_cell_year1"      text="{openItems>year1}"/>
+                                        <Text   id="dp_itc_cell_lineItem"   text="{openItems>lineItem}"/>
+                                        <Text   id="dp_itc_cell_vendor"     text="{openItems>vendor}"/>
+                                        <Text   id="dp_itc_cell_purchDoc"   text="{openItems>purchDoc}"/>
+                                        <!-- Items to Be Cleared table cells - use formatter -->
+                                        <Text id="dp_itc_cell_amntLC" text="{path: 'openItems>amntLC', formatter: '.formatAmount'}"/>
+                                        <Text id="dp_itc_cell_amntDC" text="{path: 'openItems>amntDC', formatter: '.formatAmount'}"/>
+                                        <Text   id="dp_itc_cell_curr"       text="{openItems>curr}"/>
+                                        <Text   id="dp_itc_cell_refNo"      text="{openItems>refNo}"/>
+                                        <Text   id="dp_itc_cell_assignNo"   text="{openItems>assignNo}"/>
                                     </cells>
                                 </ColumnListItem>
                             </items>

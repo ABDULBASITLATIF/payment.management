@@ -288,6 +288,25 @@
                 <Property Name="payAmnt" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="curr" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
                 <NavigationProperty Name="to_item" Relationship="ZFI_PAYMENT_MANAGEMENT_SRV.assoc_E602B8A74B4D5B24C6231CC77718C3E8" FromRole="FromRole_assoc_E602B8A74B4D5B24C6231CC77718C3E8" ToRole="ToRole_assoc_E602B8A74B4D5B24C6231CC77718C3E8"/>
             </EntityType>
+            <EntityType Name="dprItemsType" sap:label="CDS view for vendor Down Payment Requests" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="compCode"/>
+                    <PropertyRef Name="docNo"/>
+                    <PropertyRef Name="year1"/>
+                    <PropertyRef Name="lineItem"/>
+                </Key>
+                <Property Name="compCode" Type="Edm.String" Nullable="false" MaxLength="4" sap:display-format="UpperCase" sap:label="Company Code"/>
+                <Property Name="docNo" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="Document Number" sap:quickinfo="Document Number of an Accounting Document"/>
+                <Property Name="year1" Type="Edm.String" Nullable="false" MaxLength="4" sap:display-format="NonNegative" sap:label="Fiscal Year"/>
+                <Property Name="lineItem" Type="Edm.String" Nullable="false" MaxLength="3" sap:display-format="NonNegative" sap:label="Item" sap:quickinfo="Number of Line Item Within Accounting Document"/>
+                <Property Name="refNo" Type="Edm.String" MaxLength="16" sap:display-format="UpperCase" sap:label="Reference" sap:quickinfo="Reference Document Number"/>
+                <Property Name="assignNo" Type="Edm.String" MaxLength="18" sap:label="Assignment" sap:quickinfo="Assignment Number"/>
+                <Property Name="vendor" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Supplier" sap:quickinfo="Account Number of Supplier"/>
+                <Property Name="purchDoc" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Purchasing Document" sap:quickinfo="Purchasing Document Number"/>
+                <Property Name="amntLC" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
+                <Property Name="amntDC" Type="Edm.Decimal" Precision="24" Scale="3" sap:label="Amount" sap:quickinfo="Amount in document currency"/>
+                <Property Name="curr" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Currency" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
+            </EntityType>
             <EntityType Name="openItemsType" sap:label="CDS View to fetch vendor open items" sap:content-version="1">
                 <Key>
                     <PropertyRef Name="compCode"/>
@@ -365,6 +384,7 @@
                 <EntitySet Name="item" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.itemType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="aprvrs" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.aprvrsType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="aprvrDetails" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.aprvrDetailsType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+                <EntitySet Name="dprItems" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.dprItemsType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="openItems" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.openItemsType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="bankGLS" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.bankGLSType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <AssociationSet Name="assoc_E602B8A74B4D5B24C6231CC77718C3E8" Association="ZFI_PAYMENT_MANAGEMENT_SRV.assoc_E602B8A74B4D5B24C6231CC77718C3E8" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
