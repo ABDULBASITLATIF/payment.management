@@ -90,7 +90,7 @@
                                             <Text id="dp_cell_purchDoc"  text="{openItems>purchDoc}"/>
                                             <Text id="dp_cell_amntLC"    text="{openItems>amntLC}"/>
                                             <Text id="dp_cell_amntDC"    text="{openItems>amntDC}"/>
-                                            <Text id="dp_cell_curr"      text="{openItems>curr}"/>
+                                            <Text id="dp_cell_curr"      text="{openItems>docCurr}"/>
                                             <Text id="dp_cell_refNo"     text="{openItems>refNo}"/>
                                             <Text id="dp_cell_assignNo"  text="{openItems>assignNo}"/>
                                             <Button id="dp_clearItemBtn" icon="sap-icon://accept" type="Emphasized" press="onClearItem"/>
@@ -153,7 +153,7 @@
                                         <!-- Items to Be Cleared table cells - use formatter -->
                                         <Text id="dp_itc_cell_amntLC" text="{path: 'openItems>amntLC', formatter: '.formatAmount'}"/>
                                         <Text id="dp_itc_cell_amntDC" text="{path: 'openItems>amntDC', formatter: '.formatAmount'}"/>
-                                        <Text   id="dp_itc_cell_curr"       text="{openItems>curr}"/>
+                                        <Text   id="dp_itc_cell_curr"       text="{openItems>docCurr}"/>
                                         <Text   id="dp_itc_cell_refNo"      text="{openItems>refNo}"/>
                                         <Text   id="dp_itc_cell_assignNo"   text="{openItems>assignNo}"/>
                                     </cells>

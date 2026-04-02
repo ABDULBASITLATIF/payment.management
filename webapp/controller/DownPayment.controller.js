@@ -337,7 +337,8 @@ sap.ui.define([
                 refNo:       oItem.extRef      || "",
                 assignNo:    oItem.assignNo    || "",
                 vendor:      oItem.vendorCode  || "",
-                curr:        oItem.docCurr     || ""
+                docCurr:        oItem.docCurr     || "",
+                compCurr:        oItem.compCurr     || ""
             };
         },
 
@@ -351,7 +352,7 @@ sap.ui.define([
 
             const sCurr = this.byId("dp_currencyInput").getValue();
             const aFilters = [new Filter("vendor", FilterOperator.EQ, sVendor)];   // ← vendor
-            if (sCurr) { aFilters.push(new Filter("curr", FilterOperator.EQ, sCurr)); }  // ← curr
+            if (sCurr) { aFilters.push(new Filter("docCurr", FilterOperator.EQ, sCurr)); }  // ← curr
 
             oDataModel.read("/dprItems", {                                           // ← changed entity set
                 filters: aFilters,
@@ -415,7 +416,7 @@ sap.ui.define([
 
             const aFilters = [
                 new Filter("vendor", FilterOperator.EQ, sVendor),
-                new Filter("curr",   FilterOperator.EQ, sCurr)
+                new Filter("docCurr",   FilterOperator.EQ, sCurr)
             ];
 
             oDataModel.read("/dprItems", {
@@ -545,7 +546,7 @@ sap.ui.define([
 
             const aFilters = [
                 new Filter("vendor", FilterOperator.EQ, sVendor),
-                new Filter("curr",   FilterOperator.EQ, sCurr)
+                new Filter("docCurr",   FilterOperator.EQ, sCurr)
             ];
 
             oDataModel.read("/dprItems", {
@@ -739,6 +740,7 @@ sap.ui.define([
         },
 
         _toODataDate: function (value) {
+            
             if (!value) { return null; }
             if (value instanceof Date) { return "/Date(" + value.getTime() + ")/"; }
             if (typeof value === "string" && value.indexOf("/Date(") === 0) { return value; }
@@ -747,6 +749,22 @@ sap.ui.define([
                 if (!isNaN(d.getTime())) { return "/Date(" + d.getTime() + ")/"; }
             }
             return null;
+        },
+
+        _toODataDate2: function (value) {
+            if (!value) { return null; }
+            var date1 = value.toDateString();
+            var time1 = new Date().toTimeString();
+            var timest1 = date1 + " " + time1;
+            return new Date(timest1);
+            //value.setTime(new Date().getTime());
+            // if (value instanceof Date) { return "/Date(" + value.getTime() + ")/"; }
+            // if (typeof value === "string" && value.indexOf("/Date(") === 0) { return value; }
+            // if (typeof value === "string" && value.indexOf("T") > -1) {
+            //     const d = new Date(value);
+            //     if (!isNaN(d.getTime())) { return "/Date(" + d.getTime() + ")/"; }
+            // }
+            // return null;
         },
 
         _collectFormValues: function () {
@@ -790,6 +808,8 @@ sap.ui.define([
                     baseDate:    that._toODataDate(oItem.baseDate),
                     extRef:      oItem.refNo    || "",
                     assignNo:    oItem.assignNo || "",
+                    docCurr:      oItem.docCurr,
+                    compCurr:      oItem.compCurr,  
                     postingDate: that._toODataDate(oItem.postingDate)
                 };
             });
@@ -818,8 +838,8 @@ sap.ui.define([
                     compCode:    f.sCompCode,
                     fiscYear:    f.sFiscYear,
                     draftType:   "2",
-                    docDate:     this._toODataDate(f.oDocDate),
-                    postingDate: this._toODataDate(f.oPostDate),
+                    docDate:     this._toODataDate2(f.oDocDate),
+                    postingDate: this._toODataDate2(f.oPostDate),
                     reference:   f.sReference,
                     headText:    f.sHeadText,
                     bankKey:     f.sBankKey,
