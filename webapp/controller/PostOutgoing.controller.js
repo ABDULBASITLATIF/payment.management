@@ -990,70 +990,70 @@ _normalizeDates: function(aItems) {
 
 //     MessageToast.show("Item moved to clearing: " + oItem.docNo);
 // },
-onClearItem: function(oEvt) {
-    const oButton = oEvt.getSource();
-    const oContext = oButton.getBindingContext("openItems");
-    if (!oContext) { return; }
+        onClearItem: function(oEvt) {
+            const oButton = oEvt.getSource();
+            const oContext = oButton.getBindingContext("openItems");
+            if (!oContext) { return; }
 
-    const oModel = this.getView().getModel("openItems");
-    const sPath = oContext.getPath();
-    const iIndex = parseInt(sPath.split("/").pop());
+            const oModel = this.getView().getModel("openItems");
+            const sPath = oContext.getPath();
+            const iIndex = parseInt(sPath.split("/").pop());
 
-    const aOpenItems = JSON.parse(JSON.stringify(oModel.getProperty("/openItems")));
-    const aItemsToBeCleared = JSON.parse(JSON.stringify(oModel.getProperty("/itemsToBeCleared")));
+            const aOpenItems = JSON.parse(JSON.stringify(oModel.getProperty("/openItems")));
+            const aItemsToBeCleared = JSON.parse(JSON.stringify(oModel.getProperty("/itemsToBeCleared")));
 
-    if (iIndex < 0 || iIndex >= aOpenItems.length) {
-        MessageToast.show("Invalid item index");
-        return;
-    }
+            if (iIndex < 0 || iIndex >= aOpenItems.length) {
+                MessageToast.show("Invalid item index");
+                return;
+            }
 
-    const oItem = aOpenItems.splice(iIndex, 1)[0];
-    aItemsToBeCleared.push(oItem);
+            const oItem = aOpenItems.splice(iIndex, 1)[0];
+            aItemsToBeCleared.push(oItem);
 
-    // ── Normalize dates back to Date objects after JSON.parse destroys them ──
-    oModel.setData({
-        openItems: this._normalizeDates(aOpenItems),
-        itemsToBeCleared: this._normalizeDates(aItemsToBeCleared)
-    });
+            // ── Normalize dates back to Date objects after JSON.parse destroys them ──
+            oModel.setData({
+                openItems: this._normalizeDates(aOpenItems),
+                itemsToBeCleared: this._normalizeDates(aItemsToBeCleared)
+            });
 
-    this._updateTableTitles();
-    MessageToast.show("Item moved to clearing: " + oItem.docNo);
-},
+            this._updateTableTitles();
+            MessageToast.show("Item moved to clearing: " + oItem.docNo);
+        },
 
 
-onRemoveItem: function(oEvt) {
-    const oButton = oEvt.getSource();
-    const oContext = oButton.getBindingContext("openItems");
-    if (!oContext) { return; }
+        onRemoveItem: function(oEvt) {
+            const oButton = oEvt.getSource();
+            const oContext = oButton.getBindingContext("openItems");
+            if (!oContext) { return; }
 
-    const oModel = this.getView().getModel("openItems");
-    const sPath = oContext.getPath();
-    const iIndex = parseInt(sPath.split("/").pop());
+            const oModel = this.getView().getModel("openItems");
+            const sPath = oContext.getPath();
+            const iIndex = parseInt(sPath.split("/").pop());
 
-    const aItemsToBeCleared = JSON.parse(JSON.stringify(oModel.getProperty("/itemsToBeCleared")));
-    const aOpenItems = JSON.parse(JSON.stringify(oModel.getProperty("/openItems")));
+            const aItemsToBeCleared = JSON.parse(JSON.stringify(oModel.getProperty("/itemsToBeCleared")));
+            const aOpenItems = JSON.parse(JSON.stringify(oModel.getProperty("/openItems")));
 
-    if (iIndex < 0 || iIndex >= aItemsToBeCleared.length) {
-        MessageToast.show("Invalid item index");
-        return;
-    }
+            if (iIndex < 0 || iIndex >= aItemsToBeCleared.length) {
+                MessageToast.show("Invalid item index");
+                return;
+            }
 
-    const oItem = aItemsToBeCleared.splice(iIndex, 1)[0];
-    aOpenItems.push(oItem);
+            const oItem = aItemsToBeCleared.splice(iIndex, 1)[0];
+            aOpenItems.push(oItem);
 
-    // ── Normalize dates back to Date objects after JSON.parse destroys them ──
-    oModel.setData({
-        openItems: this._normalizeDates(aOpenItems),
-        itemsToBeCleared: this._normalizeDates(aItemsToBeCleared)
-    });
+            // ── Normalize dates back to Date objects after JSON.parse destroys them ──
+            oModel.setData({
+                openItems: this._normalizeDates(aOpenItems),
+                itemsToBeCleared: this._normalizeDates(aItemsToBeCleared)
+            });
 
-    const oTable = this.byId("openItemsTable");
-    const oBinding = oTable.getBinding("items");
-    if (oBinding) { oBinding.refresh(); }
+            const oTable = this.byId("openItemsTable");
+            const oBinding = oTable.getBinding("items");
+            if (oBinding) { oBinding.refresh(); }
 
-    this._updateTableTitles();
-    MessageToast.show("Item moved back to open items: " + oItem.docNo);
-},
+            this._updateTableTitles();
+            MessageToast.show("Item moved back to open items: " + oItem.docNo);
+        },
 // NEW METHOD - Move item back to "Open Items"
 // onRemoveItem: function(oEvt) {
 //     const oButton = oEvt.getSource();
@@ -1098,402 +1098,242 @@ onRemoveItem: function(oEvt) {
 //     MessageToast.show("Item moved back to open items: " + oItem.docNo);
 // },
 // ADD THESE FORMATTER METHODS
-formatDate: function(value) {
-    if (value) {
-        const oDateFormat = sap.ui.core.format.DateFormat.getDateInstance({
-            pattern: "MM/dd/yyyy"
-        });
-        return oDateFormat.format(new Date(value));
-    }
-    return "";
-},
+        formatDate: function(value) {
+            if (value) {
+                const oDateFormat = sap.ui.core.format.DateFormat.getDateInstance({
+                    pattern: "MM/dd/yyyy"
+                });
+                return oDateFormat.format(new Date(value));
+            }
+            return "";
+        },
 
-formatAmount: function(value) {
-    if (value !== null && value !== undefined) {
-        return parseFloat(value).toFixed(2);
-    }
-    return "";
-},
-onRefreshItems: function() {
+        formatAmount: function(value) {
+            if (value !== null && value !== undefined) {
+                return parseFloat(value).toFixed(2);
+            }
+            return "";
+        },
+        onRefreshItems: function() {
 
-       // Clear search field
-    const oSearchField = this.byId("_IDGenSearchField");
-    if (oSearchField) { oSearchField.setValue(""); }
+            // Clear search field
+            const oSearchField = this.byId("_IDGenSearchField");
+            if (oSearchField) { oSearchField.setValue(""); }
 
-    // Clear original items cache
-    this._aOriginalOpenItems = null;
+            // Clear original items cache
+            this._aOriginalOpenItems = null;
 
-    const oVendorInput = this.byId("supplierAccountInput");
-    const sVendor = oVendorInput ? oVendorInput.getValue().trim() : "";
+            const oVendorInput = this.byId("supplierAccountInput");
+            const sVendor = oVendorInput ? oVendorInput.getValue().trim() : "";
 
-    if (!sVendor) {
-        MessageToast.show("Please enter a vendor first");
-        return;
-    }
+            if (!sVendor) {
+                MessageToast.show("Please enter a vendor first");
+                return;
+            }
 
-    this._refreshOpenItemsOnly(sVendor);
-    this.onViewSettingsReset();
-},
+            this._refreshOpenItemsOnly(sVendor);
+            this.onViewSettingsReset();
+        },
 
-        onNavBack: function() {
+         onNavBack: function() {
             const oRouter = this.getOwnerComponent().getRouter();
             oRouter.navTo("RouteNewDoc");
         },
 
 
-_refreshOpenItemsOnly: function (sVendor) {
-    const oDataModel = this.getOwnerComponent().getModel();
-    const oJSONModel = this.getView().getModel("openItems");
-    const that       = this;
+        _refreshOpenItemsOnly: function (sVendor) {
+            const oDataModel = this.getOwnerComponent().getModel();
+            const oJSONModel = this.getView().getModel("openItems");
+            const that       = this;
 
-    const oTable = this.byId("openItemsTable");
-    if (oTable) { oTable.setBusy(true); }
+            const oTable = this.byId("openItemsTable");
+            if (oTable) { oTable.setBusy(true); }
 
-    const aFilters = [new Filter("vendorCode", FilterOperator.EQ, sVendor)];
+            const aFilters = [new Filter("vendorCode", FilterOperator.EQ, sVendor)];
 
-    oDataModel.read("/openItems", {
-        filters: aFilters,
-        success: function (oData) {
-            if (oTable) { oTable.setBusy(false); }
+            oDataModel.read("/openItems", {
+                filters: aFilters,
+                success: function (oData) {
+                    if (oTable) { oTable.setBusy(false); }
 
-            const aAllOpenItems = oData.results || [];
+                    const aAllOpenItems = oData.results || [];
 
-            // Get current itemsToBeCleared — preserve them
-            const aItemsToBeCleared = oJSONModel.getProperty("/itemsToBeCleared") || [];
+                    // Get current itemsToBeCleared — preserve them
+                    const aItemsToBeCleared = oJSONModel.getProperty("/itemsToBeCleared") || [];
 
-            // Build lookup set from itemsToBeCleared to exclude them from open items
-            const oClearedSet = new Set(
-                aItemsToBeCleared.map(function (oItem) {
-                    return oItem.docNo + "|" + oItem.yearF + "|" + oItem.lineItem;
-                })
-            );
+                    // Build lookup set from itemsToBeCleared to exclude them from open items
+                    const oClearedSet = new Set(
+                        aItemsToBeCleared.map(function (oItem) {
+                            return oItem.docNo + "|" + oItem.yearF + "|" + oItem.lineItem;
+                        })
+                    );
 
-            // Exclude already cleared items from fresh open items
-            const aFilteredOpenItems = aAllOpenItems.filter(function (oItem) {
-                const sKey = oItem.docNo + "|" + oItem.yearF + "|" + oItem.lineItem;
-                return !oClearedSet.has(sKey);
+                    // Exclude already cleared items from fresh open items
+                    const aFilteredOpenItems = aAllOpenItems.filter(function (oItem) {
+                        const sKey = oItem.docNo + "|" + oItem.yearF + "|" + oItem.lineItem;
+                        return !oClearedSet.has(sKey);
+                    });
+
+                    // Only update openItems, keep itemsToBeCleared intact
+                    oJSONModel.setProperty("/openItems", aFilteredOpenItems);
+
+                    that._updateTableTitles();
+                    MessageToast.show("Refreshed " + aFilteredOpenItems.length + " open items");
+                },
+                error: function () {
+                    if (oTable) { oTable.setBusy(false); }
+                    MessageBox.error("Failed to refresh open items for vendor: " + sVendor);
+                }
             });
+        },        
 
-            // Only update openItems, keep itemsToBeCleared intact
-            oJSONModel.setProperty("/openItems", aFilteredOpenItems);
-
-            that._updateTableTitles();
-            MessageToast.show("Refreshed " + aFilteredOpenItems.length + " open items");
-        },
-        error: function () {
-            if (oTable) { oTable.setBusy(false); }
-            MessageBox.error("Failed to refresh open items for vendor: " + sVendor);
-        }
-    });
-},        
-
-_setBusyDialog: function(bOpen) {
-    if (bOpen) {
-        if (!this._oBusyDialog) {
-            this._oBusyDialog = new sap.m.BusyDialog({
-                title: "Please Wait",
-                text:  "Processing..."
-            });
-        }
-        this._oBusyDialog.open();
-    } else {
-        if (this._oBusyDialog) {
-            this._oBusyDialog.close();
-        }
-    }
-},
-
-
-
-onSave: function() {
-    const that = this;
-
-    // ── 1. Collect form field values ──────────────────────────────────────
-    const sCompCode  = this.byId("companyCodeInput")     ? this.byId("companyCodeInput").getValue().trim()     : "";
-    const sFiscYear  = this.byId("fiscalYearInput")      ? this.byId("fiscalYearInput").getValue().trim()      : "";
-    const sReference = this.byId("referenceInput")       ? this.byId("referenceInput").getValue().trim()       : "";
-    const sHeadText  = this.byId("_IDGenInput")          ? this.byId("_IDGenInput").getValue().trim()          : "";
-    const sBankKey   = this.byId("houseBankInput")       ? this.byId("houseBankInput").getValue().trim()       : "";
-    const sBankAcc   = this.byId("houseBankAccountInput") ? this.byId("houseBankAccountInput").getValue().trim() : "";
-    const sVendor    = this.byId("supplierAccountInput") ? this.byId("supplierAccountInput").getValue().trim() : "";
-    const sPayAmnt   = this.byId("_IDGenInput3")         ? this.byId("_IDGenInput3").getValue().trim()         : "0";
-
-    const oDocDatePicker  = this.byId("documentDatePicker");
-    const oPostDatePicker = this.byId("postingDatePicker");
-    const oDocDate        = oDocDatePicker  ? oDocDatePicker.getDateValue()  : null;
-    const oPostDate       = oPostDatePicker ? oPostDatePicker.getDateValue() : null;
-
-    const sBankGL   = this.byId("glAccountInput")     ? this.byId("glAccountInput").getValue().trim()     : "";
-    const sCurrency = this.byId("currencyInput")       ? this.byId("currencyInput").getValue().trim()       : "";
-
-    // ── 2. Required field validation ──────────────────────────────────────
-    if (!sCompCode || !sFiscYear || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
-        MessageBox.error("Please fill all required fields before saving.");
-        return;
-    }
-
-    // ── 3. Balance validation ─────────────────────────────────────────────
-    const oModel            = this.getView().getModel("openItems");
-    const aItemsToBeCleared = oModel.getProperty("/itemsToBeCleared");
-
-    if (aItemsToBeCleared.length === 0) {
-        MessageBox.error("Please move at least one item to the 'Items to Be Cleared' table before saving.");
-        return;
-    }
-
-    const fTotalInvoiceSum = aItemsToBeCleared.reduce(function(fSum, oItem) {
-        return fSum + (parseFloat(oItem.amntLC) || 0);
-    }, 0);
-
-    const fPayAmnt = parseFloat(sPayAmnt) || 0;
-    const fBalance = fPayAmnt - fTotalInvoiceSum;
-
-    if (Math.abs(fBalance) >= 0.001) {
-        MessageBox.error(
-            "Balance must be zero before saving.\n" +
-            "Total Payment Amount: " + fPayAmnt.toFixed(3) + "\n" +
-            "Total Invoice Sum:    " + fTotalInvoiceSum.toFixed(3) + "\n" +
-            "Balance:              " + fBalance.toFixed(3)
-        );
-        return;
-    }
-
-    // ── 4. Date conversion helper ─────────────────────────────────────────
-    function toODataDate(value) {
-        if (!value) { return null; }
-        if (value instanceof Date) {
-            return "/Date(" + value.getTime() + ")/";
-        }
-        if (typeof value === "string" && value.indexOf("/Date(") === 0) {
-            return value;
-        }
-        if (typeof value === "string" && value.indexOf("T") > -1) {
-            const oDate = new Date(value);
-            if (!isNaN(oDate.getTime())) {
-                return "/Date(" + oDate.getTime() + ")/";
-            }
-        }
-        if (typeof value === "string" && value.indexOf("/") > -1 && value.length === 10) {
-            const aParts = value.split("/");
-            const oDate = new Date(
-                parseInt(aParts[2]),
-                parseInt(aParts[0]) - 1,
-                parseInt(aParts[1])
-            );
-            if (!isNaN(oDate.getTime())) {
-                return "/Date(" + oDate.getTime() + ")/";
-            }
-        }
-        return null;
-    }
-
-    // ── 5. Build to_item deep entity array ────────────────────────────────
-    const aToItems = aItemsToBeCleared.map(function(oItem, iIndex) {
-        const sItemId = String(iIndex + 1).padStart(3, "0");
-        return {
-            itemId:      sItemId,
-            itemTy:      "1",
-            amntLC:      oItem.amntLC      || "0.000",
-            amntDC:      oItem.amntDC      || "0.000",
-            compCode:    oItem.compCode    || sCompCode,
-            refDoc:      oItem.docNo,
-            refYear:     oItem.yearF,
-            refLine:     oItem.lineItem,
-            docType:     oItem.docType     || "",
-            baseDate:    toODataDate(oItem.baseDate),
-            extRef:      oItem.extRef      || "",
-            assignNo:    oItem.assignNo    || "",
-            spGl:        oItem.spGl        || "",
-            debCredInd:  oItem.debCredInd  || "",
-            postKey:     oItem.postKey     || "",
-            docCurr:     oItem.docCurr     || "",
-            compCurr:     oItem.compCurr     || "",
-            postingDate: toODataDate(oItem.postingDate)
-        };
-    });
-
-    // ── 6. Build head payload ─────────────────────────────────────────────
-const oPayload = {
-    compCode:    sCompCode,
-    fiscYear:    sFiscYear,
-    draftType:   "1",
-    docDate:     toODataDate(oDocDate),
-    postingDate: toODataDate(oPostDate),
-    reference:   sReference,
-    headText:    sHeadText,
-    bankKey:     sBankKey,
-    bankAcc:     sBankAcc,
-    bankGL:      sBankGL,
-    vendor:      sVendor,
-    curr:        sCurrency,
-    payAmnt:     parseFloat(sPayAmnt).toFixed(3),
-    action:      "I",
-    to_item:     aToItems
-};
-
-    // ── 7. POST to backend ────────────────────────────────────────────────
-    const oDataModel = this.getOwnerComponent().getModel();
-    delete oPayload.draftId;
-
-    oDataModel.setUseBatch(false);
-    this._setBusyDialog(true);
-    oDataModel.create("/head", oPayload, {
-        success: function(oCreatedData) {
-            that._setBusyDialog(false);
-            const sDraftId = oCreatedData.draftId;
-
-            const oDraftIdInput = that.byId("draftidInput");
-            if (oDraftIdInput && sDraftId) {
-                oDraftIdInput.setValue(sDraftId);
-            }
-
-            that.getView().getModel("pageModel").setData({
-                mode: "edit",
-                draftId: sDraftId
-            });
-            that._updateSaveButton("edit");
-
-            oDataModel.setUseBatch(true);
-
-            MessageToast.show("Saved successfully. Draft ID: " + sDraftId);
-        },
-        error: function(oError) {
-            that._setBusyDialog(false);
-            oDataModel.setUseBatch(true);
-
-            let sErrorMessage = "Failed to save payment";
-            if (oError && oError.responseText) {
-                try {
-                    const oErrorResponse = JSON.parse(oError.responseText);
-                    if (oErrorResponse.error && oErrorResponse.error.message && oErrorResponse.error.message.value) {
-                        sErrorMessage = oErrorResponse.error.message.value;
-                    }
-                } catch (e) {
-                    sErrorMessage = oError.message || sErrorMessage;
+        _setBusyDialog: function(bOpen) {
+            if (bOpen) {
+                if (!this._oBusyDialog) {
+                    this._oBusyDialog = new sap.m.BusyDialog({
+                        title: "Please Wait",
+                        text:  "Processing..."
+                    });
+                }
+                this._oBusyDialog.open();
+            } else {
+                if (this._oBusyDialog) {
+                    this._oBusyDialog.close();
                 }
             }
-            MessageBox.error(sErrorMessage);
-        }
-    });
-},
+        },
 
-onUpdate: function() {
-    const that = this;
-    const oPageModel    = this.getView().getModel("pageModel");
-    const sSavedDraftId = oPageModel.getProperty("/draftId");
+ 
 
-    // ── 1. Collect form field values ──────────────────────────────────────
-    const sCompCode  = this.byId("companyCodeInput")     ? this.byId("companyCodeInput").getValue().trim()     : "";
-    const sFiscYear  = this.byId("fiscalYearInput")      ? this.byId("fiscalYearInput").getValue().trim()      : "";
-    const sReference = this.byId("referenceInput")       ? this.byId("referenceInput").getValue().trim()       : "";
-    const sHeadText  = this.byId("_IDGenInput")          ? this.byId("_IDGenInput").getValue().trim()          : "";
-    const sBankKey   = this.byId("houseBankInput")       ? this.byId("houseBankInput").getValue().trim()       : "";
-    const sBankAcc   = this.byId("houseBankAccountInput") ? this.byId("houseBankAccountInput").getValue().trim() : "";
-    const sVendor    = this.byId("supplierAccountInput") ? this.byId("supplierAccountInput").getValue().trim() : "";
-    const sPayAmnt   = this.byId("_IDGenInput3")         ? this.byId("_IDGenInput3").getValue().trim()         : "0";
+        onSave: function() {
+            const that = this;
 
-    const oDocDatePicker  = this.byId("documentDatePicker");
-    const oPostDatePicker = this.byId("postingDatePicker");
-    const oDocDate        = oDocDatePicker  ? oDocDatePicker.getDateValue()  : null;
-    const oPostDate       = oPostDatePicker ? oPostDatePicker.getDateValue() : null;
+            // ── 1. Collect form field values ──────────────────────────────────────
+            const sCompCode  = this.byId("companyCodeInput")     ? this.byId("companyCodeInput").getValue().trim()     : "";
+            const sFiscYear  = this.byId("fiscalYearInput")      ? this.byId("fiscalYearInput").getValue().trim()      : "";
+            const sReference = this.byId("referenceInput")       ? this.byId("referenceInput").getValue().trim()       : "";
+            const sHeadText  = this.byId("_IDGenInput")          ? this.byId("_IDGenInput").getValue().trim()          : "";
+            const sBankKey   = this.byId("houseBankInput")       ? this.byId("houseBankInput").getValue().trim()       : "";
+            const sBankAcc   = this.byId("houseBankAccountInput") ? this.byId("houseBankAccountInput").getValue().trim() : "";
+            const sVendor    = this.byId("supplierAccountInput") ? this.byId("supplierAccountInput").getValue().trim() : "";
+            const sPayAmnt   = this.byId("_IDGenInput3")         ? this.byId("_IDGenInput3").getValue().trim()         : "0";
 
-    const sBankGL   = this.byId("glAccountInput")     ? this.byId("glAccountInput").getValue().trim()     : "";
-    const sCurrency = this.byId("currencyInput")       ? this.byId("currencyInput").getValue().trim()       : "";
+            const oDocDatePicker  = this.byId("documentDatePicker");
+            const oPostDatePicker = this.byId("postingDatePicker");
+            const oDocDate        = oDocDatePicker  ? oDocDatePicker.getDateValue()  : null;
+            const oPostDate       = oPostDatePicker ? oPostDatePicker.getDateValue() : null;
 
-    // ── 2. Required field validation ──────────────────────────────────────
-    if (!sCompCode || !sFiscYear || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
-        MessageBox.error("Please fill all required fields before updating.");
-        return;
-    }
+            const sBankGL   = this.byId("glAccountInput")     ? this.byId("glAccountInput").getValue().trim()     : "";
+            const sCurrency = this.byId("currencyInput")       ? this.byId("currencyInput").getValue().trim()       : "";
 
-    // ── 3. Balance validation ─────────────────────────────────────────────
-    const oModel            = this.getView().getModel("openItems");
-    const aItemsToBeCleared = oModel.getProperty("/itemsToBeCleared");
-
-    if (aItemsToBeCleared.length === 0) {
-        MessageBox.error("Please move at least one item to the 'Items to Be Cleared' table before updating.");
-        return;
-    }
-
-    const fTotalInvoiceSum = aItemsToBeCleared.reduce(function(fSum, oItem) {
-        return fSum + (parseFloat(oItem.amntLC) || 0);
-    }, 0);
-
-    const fPayAmnt = parseFloat(sPayAmnt) || 0;
-    const fBalance = fPayAmnt - fTotalInvoiceSum;
-
-    if (Math.abs(fBalance) >= 0.001) {
-        MessageBox.error(
-            "Balance must be zero before updating.\n" +
-            "Total Payment Amount: " + fPayAmnt.toFixed(3) + "\n" +
-            "Total Invoice Sum:    " + fTotalInvoiceSum.toFixed(3) + "\n" +
-            "Balance:              " + fBalance.toFixed(3)
-        );
-        return;
-    }
-
-    // ── 4. Date conversion helper ─────────────────────────────────────────
-    function toODataDate(value) {
-        if (!value) { return null; }
-        if (value instanceof Date) {
-            return "/Date(" + value.getTime() + ")/";
-        }
-        if (typeof value === "string" && value.indexOf("/Date(") === 0) {
-            return value;
-        }
-        if (typeof value === "string" && value.indexOf("T") > -1) {
-            const oDate = new Date(value);
-            if (!isNaN(oDate.getTime())) {
-                return "/Date(" + oDate.getTime() + ")/";
+            // ── 2. Required field validation ──────────────────────────────────────
+            if (!sCompCode || !sFiscYear || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
+                MessageBox.error("Please fill all required fields before saving.");
+                return;
             }
-        }
-        if (typeof value === "string" && value.indexOf("/") > -1 && value.length === 10) {
-            const aParts = value.split("/");
-            const oDate = new Date(
-                parseInt(aParts[2]),
-                parseInt(aParts[0]) - 1,
-                parseInt(aParts[1])
-            );
-            if (!isNaN(oDate.getTime())) {
-                return "/Date(" + oDate.getTime() + ")/";
+
+            // ── 3. Balance validation ─────────────────────────────────────────────
+            const oModel            = this.getView().getModel("openItems");
+            const aItemsToBeCleared = oModel.getProperty("/itemsToBeCleared");
+
+            if (aItemsToBeCleared.length === 0) {
+                MessageBox.error("Please move at least one item to the 'Items to Be Cleared' table before saving.");
+                return;
             }
+
+            const fTotalInvoiceSum = aItemsToBeCleared.reduce(function(fSum, oItem) {
+                return fSum + (parseFloat(oItem.amntLC) || 0);
+            }, 0);
+
+            const fPayAmnt = parseFloat(sPayAmnt) || 0;
+            const fBalance = fPayAmnt - fTotalInvoiceSum;
+
+            if (Math.abs(fBalance) >= 0.001) {
+                MessageBox.error(
+                    "Balance must be zero before saving.\n" +
+                    "Total Payment Amount: " + fPayAmnt.toFixed(3) + "\n" +
+                    "Total Invoice Sum:    " + fTotalInvoiceSum.toFixed(3) + "\n" +
+                    "Balance:              " + fBalance.toFixed(3)
+                );
+                return;
+            }
+
+            // ── 4. Date conversion helper ─────────────────────────────────────────
+            function toODataDate(value) {
+                if (!value) { return null; }
+                if (value instanceof Date) {
+                    return "/Date(" + value.getTime() + ")/";
+                }
+                if (typeof value === "string" && value.indexOf("/Date(") === 0) {
+                    return value;
+                }
+                if (typeof value === "string" && value.indexOf("T") > -1) {
+                    const oDate = new Date(value);
+                    if (!isNaN(oDate.getTime())) {
+                        return "/Date(" + oDate.getTime() + ")/";
+                    }
+                }
+                if (typeof value === "string" && value.indexOf("/") > -1 && value.length === 10) {
+                    const aParts = value.split("/");
+                    const oDate = new Date(
+                        parseInt(aParts[2]),
+                        parseInt(aParts[0]) - 1,
+                        parseInt(aParts[1])
+                    );
+                    if (!isNaN(oDate.getTime())) {
+                        return "/Date(" + oDate.getTime() + ")/";
+                    }
+                }
+                return null;
+            }
+             function  _toODataDate2(value) {
+            if (!value) { return null; }
+            var date1 = value.toDateString();
+            var time1 = new Date().toTimeString();
+            var timest1 = date1 + " " + time1;
+            return new Date(timest1);
+            //value.setTime(new Date().getTime());
+            // if (value instanceof Date) { return "/Date(" + value.getTime() + ")/"; }
+            // if (typeof value === "string" && value.indexOf("/Date(") === 0) { return value; }
+            // if (typeof value === "string" && value.indexOf("T") > -1) {
+            //     const d = new Date(value);
+            //     if (!isNaN(d.getTime())) { return "/Date(" + d.getTime() + ")/"; }
+            // }
+            // return null;
         }
-        return null;
-    }
 
-    // ── 5. Build to_item deep entity array ────────────────────────────────
-    const aToItems = aItemsToBeCleared.map(function(oItem, iIndex) {
-        const sItemId = String(iIndex + 1).padStart(3, "0");
-        return {
-            itemId:      sItemId,
-            itemTy:      "1",
-            amntLC:      oItem.amntLC      || "0.000",
-            amntDC:      oItem.amntDC      || "0.000",
-            compCode:    oItem.compCode    || sCompCode,
-            refDoc:      oItem.docNo,
-            refYear:     oItem.yearF,
-            refLine:     oItem.lineItem,
-            docType:     oItem.docType     || "",
-            baseDate:    toODataDate(oItem.baseDate),
-            extRef:      oItem.extRef      || "",
-            assignNo:    oItem.assignNo    || "",
-            spGl:        oItem.spGl        || "",
-            debCredInd:  oItem.debCredInd  || "",
-            postKey:     oItem.postKey     || "",
-            docCurr :  oItem.docCurr  || "",
-            compCurr:     oItem.compCurr     || "",
-            postingDate: toODataDate(oItem.postingDate)
-        };
-    });
+            // ── 5. Build to_item deep entity array ────────────────────────────────
+            const aToItems = aItemsToBeCleared.map(function(oItem, iIndex) {
+                const sItemId = String(iIndex + 1).padStart(3, "0");
+                return {
+                    itemId:      sItemId,
+                    itemTy:      "1",
+                    amntLC:      oItem.amntLC      || "0.000",
+                    amntDC:      oItem.amntDC      || "0.000",
+                    compCode:    oItem.compCode    || sCompCode,
+                    refDoc:      oItem.docNo,
+                    refYear:     oItem.yearF,
+                    refLine:     oItem.lineItem,
+                    docType:     oItem.docType     || "",
+                    baseDate:    toODataDate(oItem.baseDate),
+                    extRef:      oItem.extRef      || "",
+                    assignNo:    oItem.assignNo    || "",
+                    spGl:        oItem.spGl        || "",
+                    debCredInd:  oItem.debCredInd  || "",
+                    postKey:     oItem.postKey     || "",
+                    docCurr:     oItem.docCurr     || "",
+                    compCurr:     oItem.compCurr     || "",
+                    postingDate: toODataDate(oItem.postingDate)
+                };
+            });
 
-    // ── 6. Build head payload ─────────────────────────────────────────────
+            // ── 6. Build head payload ─────────────────────────────────────────────
         const oPayload = {
-            draftId:     sSavedDraftId,
             compCode:    sCompCode,
             fiscYear:    sFiscYear,
             draftType:   "1",
-            docDate:     toODataDate(oDocDate),
-            postingDate: toODataDate(oPostDate),
+            docDate:     _toODataDate2(oDocDate),
+            postingDate: _toODataDate2(oPostDate),
             reference:   sReference,
             headText:    sHeadText,
             bankKey:     sBankKey,
@@ -1502,41 +1342,231 @@ onUpdate: function() {
             vendor:      sVendor,
             curr:        sCurrency,
             payAmnt:     parseFloat(sPayAmnt).toFixed(3),
-            action:      "U",
+            action:      "I",
             to_item:     aToItems
         };
 
-    // ── 7. POST to backend (Action "U" tells backend to update) ───────────
-    const oDataModel = this.getOwnerComponent().getModel();
+            // ── 7. POST to backend ────────────────────────────────────────────────
+            const oDataModel = this.getOwnerComponent().getModel();
+            delete oPayload.draftId;
 
-    oDataModel.setUseBatch(false);
-    this._setBusyDialog(true);
-    oDataModel.create("/head", oPayload, {
-        success: function(oUpdatedData) {
-            that._setBusyDialog(false);
-            oDataModel.setUseBatch(true);
+            oDataModel.setUseBatch(false);
+            this._setBusyDialog(true);
+            oDataModel.create("/head", oPayload, {
+                success: function(oCreatedData) {
+                    that._setBusyDialog(false);
+                    const sDraftId = oCreatedData.draftId;
 
-            MessageToast.show("Updated successfully. Draft ID: " + sSavedDraftId);
-        },
-        error: function(oError) {
-            that._setBusyDialog(false);
-            oDataModel.setUseBatch(true);
-
-            let sErrorMessage = "Failed to update payment";
-            if (oError && oError.responseText) {
-                try {
-                    const oErrorResponse = JSON.parse(oError.responseText);
-                    if (oErrorResponse.error && oErrorResponse.error.message && oErrorResponse.error.message.value) {
-                        sErrorMessage = oErrorResponse.error.message.value;
+                    const oDraftIdInput = that.byId("draftidInput");
+                    if (oDraftIdInput && sDraftId) {
+                        oDraftIdInput.setValue(sDraftId);
                     }
-                } catch (e) {
-                    sErrorMessage = oError.message || sErrorMessage;
+
+                    that.getView().getModel("pageModel").setData({
+                        mode: "edit",
+                        draftId: sDraftId
+                    });
+                    that._updateSaveButton("edit");
+
+                    oDataModel.setUseBatch(true);
+
+                    MessageToast.show("Saved successfully. Draft ID: " + sDraftId);
+                },
+                error: function(oError) {
+                    that._setBusyDialog(false);
+                    oDataModel.setUseBatch(true);
+
+                    let sErrorMessage = "Failed to save payment";
+                    if (oError && oError.responseText) {
+                        try {
+                            const oErrorResponse = JSON.parse(oError.responseText);
+                            if (oErrorResponse.error && oErrorResponse.error.message && oErrorResponse.error.message.value) {
+                                sErrorMessage = oErrorResponse.error.message.value;
+                            }
+                        } catch (e) {
+                            sErrorMessage = oError.message || sErrorMessage;
+                        }
+                    }
+                    MessageBox.error(sErrorMessage);
                 }
+            });
+        },
+
+        onUpdate: function() {
+            const that = this;
+            const oPageModel    = this.getView().getModel("pageModel");
+            const sSavedDraftId = oPageModel.getProperty("/draftId");
+
+            // ── 1. Collect form field values ──────────────────────────────────────
+            const sCompCode  = this.byId("companyCodeInput")     ? this.byId("companyCodeInput").getValue().trim()     : "";
+            const sFiscYear  = this.byId("fiscalYearInput")      ? this.byId("fiscalYearInput").getValue().trim()      : "";
+            const sReference = this.byId("referenceInput")       ? this.byId("referenceInput").getValue().trim()       : "";
+            const sHeadText  = this.byId("_IDGenInput")          ? this.byId("_IDGenInput").getValue().trim()          : "";
+            const sBankKey   = this.byId("houseBankInput")       ? this.byId("houseBankInput").getValue().trim()       : "";
+            const sBankAcc   = this.byId("houseBankAccountInput") ? this.byId("houseBankAccountInput").getValue().trim() : "";
+            const sVendor    = this.byId("supplierAccountInput") ? this.byId("supplierAccountInput").getValue().trim() : "";
+            const sPayAmnt   = this.byId("_IDGenInput3")         ? this.byId("_IDGenInput3").getValue().trim()         : "0";
+
+            const oDocDatePicker  = this.byId("documentDatePicker");
+            const oPostDatePicker = this.byId("postingDatePicker");
+            const oDocDate        = oDocDatePicker  ? oDocDatePicker.getDateValue()  : null;
+            const oPostDate       = oPostDatePicker ? oPostDatePicker.getDateValue() : null;
+
+            const sBankGL   = this.byId("glAccountInput")     ? this.byId("glAccountInput").getValue().trim()     : "";
+            const sCurrency = this.byId("currencyInput")       ? this.byId("currencyInput").getValue().trim()       : "";
+
+            // ── 2. Required field validation ──────────────────────────────────────
+            if (!sCompCode || !sFiscYear || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
+                MessageBox.error("Please fill all required fields before updating.");
+                return;
             }
-            MessageBox.error(sErrorMessage);
+
+            // ── 3. Balance validation ─────────────────────────────────────────────
+            const oModel            = this.getView().getModel("openItems");
+            const aItemsToBeCleared = oModel.getProperty("/itemsToBeCleared");
+
+            if (aItemsToBeCleared.length === 0) {
+                MessageBox.error("Please move at least one item to the 'Items to Be Cleared' table before updating.");
+                return;
+            }
+
+            const fTotalInvoiceSum = aItemsToBeCleared.reduce(function(fSum, oItem) {
+                return fSum + (parseFloat(oItem.amntLC) || 0);
+            }, 0);
+
+            const fPayAmnt = parseFloat(sPayAmnt) || 0;
+            const fBalance = fPayAmnt - fTotalInvoiceSum;
+
+            if (Math.abs(fBalance) >= 0.001) {
+                MessageBox.error(
+                    "Balance must be zero before updating.\n" +
+                    "Total Payment Amount: " + fPayAmnt.toFixed(3) + "\n" +
+                    "Total Invoice Sum:    " + fTotalInvoiceSum.toFixed(3) + "\n" +
+                    "Balance:              " + fBalance.toFixed(3)
+                );
+                return;
+            }
+
+            // ── 4. Date conversion helper ─────────────────────────────────────────
+            function toODataDate(value) {
+                if (!value) { return null; }
+                if (value instanceof Date) {
+                    return "/Date(" + value.getTime() + ")/";
+                }
+                if (typeof value === "string" && value.indexOf("/Date(") === 0) {
+                    return value;
+                }
+                if (typeof value === "string" && value.indexOf("T") > -1) {
+                    const oDate = new Date(value);
+                    if (!isNaN(oDate.getTime())) {
+                        return "/Date(" + oDate.getTime() + ")/";
+                    }
+                }
+                if (typeof value === "string" && value.indexOf("/") > -1 && value.length === 10) {
+                    const aParts = value.split("/");
+                    const oDate = new Date(
+                        parseInt(aParts[2]),
+                        parseInt(aParts[0]) - 1,
+                        parseInt(aParts[1])
+                    );
+                    if (!isNaN(oDate.getTime())) {
+                        return "/Date(" + oDate.getTime() + ")/";
+                    }
+                }
+                return null;
+            }
+              function _toODataDate2(value) {
+            if (!value) { return null; }
+            var date1 = value.toDateString();
+            var time1 = new Date().toTimeString();
+            var timest1 = date1 + " " + time1;
+            return new Date(timest1);
+            //value.setTime(new Date().getTime());
+            // if (value instanceof Date) { return "/Date(" + value.getTime() + ")/"; }
+            // if (typeof value === "string" && value.indexOf("/Date(") === 0) { return value; }
+            // if (typeof value === "string" && value.indexOf("T") > -1) {
+            //     const d = new Date(value);
+            //     if (!isNaN(d.getTime())) { return "/Date(" + d.getTime() + ")/"; }
+            // }
+            // return null;
         }
-    });
-},
+
+            // ── 5. Build to_item deep entity array ────────────────────────────────
+            const aToItems = aItemsToBeCleared.map(function(oItem, iIndex) {
+                const sItemId = String(iIndex + 1).padStart(3, "0");
+                return {
+                    itemId:      sItemId,
+                    itemTy:      "1",
+                    amntLC:      oItem.amntLC      || "0.000",
+                    amntDC:      oItem.amntDC      || "0.000",
+                    compCode:    oItem.compCode    || sCompCode,
+                    refDoc:      oItem.docNo,
+                    refYear:     oItem.yearF,
+                    refLine:     oItem.lineItem,
+                    docType:     oItem.docType     || "",
+                    baseDate:    toODataDate(oItem.baseDate),
+                    extRef:      oItem.extRef      || "",
+                    assignNo:    oItem.assignNo    || "",
+                    spGl:        oItem.spGl        || "",
+                    debCredInd:  oItem.debCredInd  || "",
+                    postKey:     oItem.postKey     || "",
+                    docCurr :  oItem.docCurr  || "",
+                    compCurr:     oItem.compCurr     || "",
+                    postingDate: toODataDate(oItem.postingDate)
+                };
+            });
+
+            // ── 6. Build head payload ─────────────────────────────────────────────
+                const oPayload = {
+                    draftId:     sSavedDraftId,
+                    compCode:    sCompCode,
+                    fiscYear:    sFiscYear,
+                    draftType:   "1",
+                    docDate: _toODataDate2(oDocDate),
+                    postingDate: _toODataDate2(oPostDate),
+                    reference:   sReference,
+                    headText:    sHeadText,
+                    bankKey:     sBankKey,
+                    bankAcc:     sBankAcc,
+                    bankGL:      sBankGL,
+                    vendor:      sVendor,
+                    curr:        sCurrency,
+                    payAmnt:     parseFloat(sPayAmnt).toFixed(3),
+                    action:      "U",
+                    to_item:     aToItems
+                };
+
+            // ── 7. POST to backend (Action "U" tells backend to update) ───────────
+            const oDataModel = this.getOwnerComponent().getModel();
+
+            oDataModel.setUseBatch(false);
+            this._setBusyDialog(true);
+            oDataModel.create("/head", oPayload, {
+                success: function(oUpdatedData) {
+                    that._setBusyDialog(false);
+                    oDataModel.setUseBatch(true);
+
+                    MessageToast.show("Updated successfully. Draft ID: " + sSavedDraftId);
+                },
+                error: function(oError) {
+                    that._setBusyDialog(false);
+                    oDataModel.setUseBatch(true);
+
+                    let sErrorMessage = "Failed to update payment";
+                    if (oError && oError.responseText) {
+                        try {
+                            const oErrorResponse = JSON.parse(oError.responseText);
+                            if (oErrorResponse.error && oErrorResponse.error.message && oErrorResponse.error.message.value) {
+                                sErrorMessage = oErrorResponse.error.message.value;
+                            }
+                        } catch (e) {
+                            sErrorMessage = oError.message || sErrorMessage;
+                        }
+                    }
+                    MessageBox.error(sErrorMessage);
+                }
+            });
+        },
 
  
 onPayAmountChange: function() {

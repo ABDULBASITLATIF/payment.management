@@ -434,6 +434,21 @@ sap.ui.define([
             }
             return null;
         },
+        _toODataDate2: function (value) {
+            if (!value) { return null; }
+            var date1 = value.toDateString();
+            var time1 = new Date().toTimeString();
+            var timest1 = date1 + " " + time1;
+            return new Date(timest1);
+            //value.setTime(new Date().getTime());
+            // if (value instanceof Date) { return "/Date(" + value.getTime() + ")/"; }
+            // if (typeof value === "string" && value.indexOf("/Date(") === 0) { return value; }
+            // if (typeof value === "string" && value.indexOf("T") > -1) {
+            //     const d = new Date(value);
+            //     if (!isNaN(d.getTime())) { return "/Date(" + d.getTime() + ")/"; }
+            // }
+            // return null;
+        },
 
         // ─────────────────────────────────────────────────────────────────────
         // Busy dialog
@@ -501,8 +516,8 @@ sap.ui.define([
                 compCode:    oVals.sCompCode,
                 fiscYear:    oVals.sFiscYear,
                 draftType:   "3",
-                docDate:     this._toODataDate(oVals.oDocDate),
-                postingDate: this._toODataDate(oVals.oPostDate),
+                docDate:     this._toODataDate2(oVals.oDocDate),
+                postingDate: this._toODataDate2(oVals.oPostDate),
                 reference:   oVals.sReference,
                 headText:    oVals.sHeadText,
                 bankKey:     oVals.sBankKey,
@@ -555,8 +570,8 @@ sap.ui.define([
                 compCode:    oVals.sCompCode,
                 fiscYear:    oVals.sFiscYear,
                 draftType:   "3",
-                docDate:     this._toODataDate(oVals.oDocDate),
-                postingDate: this._toODataDate(oVals.oPostDate),
+                docDate:     this._toODataDate2(oVals.oDocDate),
+                postingDate: this._toODataDate2(oVals.oPostDate),
                 reference:   oVals.sReference,
                 headText:    oVals.sHeadText,
                 bankKey:     oVals.sBankKey,
