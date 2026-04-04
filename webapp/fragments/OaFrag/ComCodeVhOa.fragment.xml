@@ -6,7 +6,7 @@
         id="companyCodeVHOA"
         title="Select Company Code"
         confirm=".InputHelpsOA.onConfirmComCode"
-        search=".InputHelpsOA.onConfirmComCode"
+        search=".InputHelpsOA.onSearchComCode"
         cancel=".InputHelpsOA.onCloseComCodeDialog"
         items="{
             path: '/I_CompanyCode',
