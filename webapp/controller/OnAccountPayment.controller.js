@@ -406,10 +406,10 @@ sap.ui.define([
         //   amntLC  → Total Payment Amount from oa_payAmountInput
         //   compCode → Company Code from oa_companyCodeInput
         // ─────────────────────────────────────────────────────────────────────
-        _buildToItems: function (sCompCode, sPayAmnt) {
+        _buildToItems: function (sCompCode, sPayAmnt, sCurr) {
             const sAmnt = parseFloat(sPayAmnt || "0").toFixed(3);
             return [
-                { itemId: "001", itemTy: "1", amntLC: sAmnt, compCode: sCompCode },
+                { itemId: "001", itemTy: "1", amntLC: sAmnt, compCode: sCompCode, compCurr: sCurr, docCurr   : sCurr },
                 // { itemId: "002", itemTy: "1", amntLC: sAmnt, compCode: sCompCode },
                 // { itemId: "003", itemTy: "1", amntLC: sAmnt, compCode: sCompCode },
                 // { itemId: "004", itemTy: "1", amntLC: sAmnt, compCode: sCompCode }
@@ -527,7 +527,7 @@ sap.ui.define([
                 curr:        oVals.sCurrency,
                 payAmnt:     parseFloat(oVals.sPayAmnt || "0").toFixed(3),
                 action:      "I",
-                to_item:     this._buildToItems(oVals.sCompCode, oVals.sPayAmnt)
+                to_item:     this._buildToItems(oVals.sCompCode, oVals.sPayAmnt,oVals.sCurrency)
             };
 
             const oDataModel = this.getOwnerComponent().getModel();
@@ -581,7 +581,7 @@ sap.ui.define([
                 curr:        oVals.sCurrency,
                 payAmnt:     parseFloat(oVals.sPayAmnt || "0").toFixed(3),
                 action:      "U",
-                to_item:     this._buildToItems(oVals.sCompCode, oVals.sPayAmnt)
+                to_item:     this._buildToItems(oVals.sCompCode, oVals.sPayAmnt, oVals.sCurrency)
             };
 
             const oDataModel = this.getOwnerComponent().getModel();
