@@ -109,9 +109,9 @@
                 forceSelection="false"
                 selectedKey=""
             >
-                <core:Item id="_IDGenItem66w" key="" text="All"/>
-                <core:Item id="_IDGenItem666w" key="1" text="Created"/>
-                <core:Item id="_IDGenItem966tw" key="4" text="Rejected, ReSubmit"/>
+                <core:Item id="_IDGenItem66w" key="1" text="Open Invoices Payment"/>
+                <core:Item id="_IDGenItem666w" key="2" text="Down Payment"/>
+                <core:Item id="_IDGenItem966tw" key="3" text="On Account Payment"/>
             </Select>
             </fb:control>
         </fb:FilterGroupItem>
