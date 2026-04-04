@@ -211,6 +211,7 @@
                 <Property Name="compCode" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Company Code"/>
                 <Property Name="fiscYear" Type="Edm.String" MaxLength="4" sap:display-format="NonNegative" sap:label="Fiscal Year"/>
                 <Property Name="draftType" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Draft Type"/>
+                <Property Name="draftTypeTxt" Type="Edm.String" MaxLength="21"/>
                 <Property Name="docDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Document Date" sap:quickinfo="Document Date in Document"/>
                 <Property Name="postingDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Posting Date" sap:quickinfo="Posting Date in the Document"/>
                 <Property Name="reference" Type="Edm.String" MaxLength="16" sap:display-format="UpperCase" sap:label="Reference" sap:quickinfo="Reference Document Number"/>

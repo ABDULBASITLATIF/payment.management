@@ -114,6 +114,10 @@
                         <PropertyValue Property="Data">
                             <Collection>
                                 <Record Type="UI.DataField">
+                                    <PropertyValue Property="Value" Path="draftId"/>
+                                    <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                                </Record>
+                                <Record Type="UI.DataField">
                                     <PropertyValue Property="Value" Path="compCode"/>
                                     <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
                                 </Record>
@@ -156,6 +160,10 @@
                                 </Record>
                                 <Record Type="UI.DataField">
                                     <PropertyValue Property="Value" Path="bankKey"/>
+                                    <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+                                </Record>
+                                <Record Type="UI.DataField">
+                                    <PropertyValue Property="Value" Path="draftTypeTxt"/>
                                     <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
                                 </Record>
                             </Collection>

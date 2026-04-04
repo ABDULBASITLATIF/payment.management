@@ -436,6 +436,39 @@ sap.ui.define([
             });
         },
 
+        // _updateTableTitles: function () {
+        //     const oModel = this.getView().getModel("openItems");
+        //     const aOpenItems        = oModel.getProperty("/openItems")        || [];
+        //     const aItemsToBeCleared = oModel.getProperty("/itemsToBeCleared") || [];
+
+        //     const oOpenTitle  = this.byId("dp_openItemsTitle");
+        //     const oClearTitle = this.byId("dp_itemsToClearTitle");
+        //     if (oOpenTitle)  { oOpenTitle.setText("Open Items (" + aOpenItems.length + ")"); }
+        //     if (oClearTitle) { oClearTitle.setText("Items to Be Cleared (" + aItemsToBeCleared.length + ")"); }
+
+        //     const fTotalInvoiceSum = aItemsToBeCleared.reduce(function (fSum, oItem) {
+        //         const f = parseFloat(oItem.amntLC);
+        //         return fSum + (isNaN(f) ? 0 : f);   // ← safe parse
+        //     }, 0);
+
+        //     const oPayInput = this.byId("dp_payAmountInput");
+        //     const fPayAmnt  = oPayInput ? (parseFloat(oPayInput.getValue()) || 0) : 0;
+        //     const fBalance  = fPayAmnt - fTotalInvoiceSum;
+
+        //     const oInvoiceInput = this.byId("dp_invoiceSumInput");
+        //     if (oInvoiceInput) { oInvoiceInput.setValue(fTotalInvoiceSum.toFixed(3)); }
+
+        //     const oBalanceInput = this.byId("dp_balanceInput");
+        //     if (oBalanceInput) {
+        //         oBalanceInput.setValue(fBalance.toFixed(3));
+        //         oBalanceInput.setValueState(
+        //             Math.abs(fBalance) < 0.001
+        //                 ? sap.ui.core.ValueState.None
+        //                 : sap.ui.core.ValueState.Error
+        //         );
+        //         oBalanceInput.setValueStateText("Balance must be zero to save");
+        //     }
+        // },
         _updateTableTitles: function () {
             const oModel = this.getView().getModel("openItems");
             const aOpenItems        = oModel.getProperty("/openItems")        || [];
@@ -448,7 +481,7 @@ sap.ui.define([
 
             const fTotalInvoiceSum = aItemsToBeCleared.reduce(function (fSum, oItem) {
                 const f = parseFloat(oItem.amntLC);
-                return fSum + (isNaN(f) ? 0 : f);   // ← safe parse
+                return fSum + (isNaN(f) ? 0 : f);
             }, 0);
 
             const oPayInput = this.byId("dp_payAmountInput");
@@ -467,6 +500,15 @@ sap.ui.define([
                         : sap.ui.core.ValueState.Error
                 );
                 oBalanceInput.setValueStateText("Balance must be zero to save");
+            }
+
+            // ↓ ADD THIS BLOCK — sync pageModel if display form is currently shown
+            if (this._bDisplayMode) {
+                const oPageModel = this.getView().getModel("pageModel");
+                if (oPageModel) {
+                    oPageModel.setProperty("/invoiceSum", fTotalInvoiceSum.toFixed(3));
+                    oPageModel.setProperty("/balance",    fBalance.toFixed(3));
+                }
             }
         },
 

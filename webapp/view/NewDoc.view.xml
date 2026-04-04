@@ -182,8 +182,11 @@
         <Column id="_IDGenColumn1" minScreenWidth="Tablet" demandPopin="true">
             <Text id="fiscYear" text="Fiscal Year"/>
         </Column>
-        <Column id="_IDGenColumn2" minScreenWidth="Tablet" demandPopin="true">
+        <Column id="_IDGenColumn2" minScreenWidth="Tablet" demandPopin="true" visible="false">
             <Text id="draftType" text="Draft Type"/>
+        </Column>
+            <Column id="_IDGenColumn22dt" minScreenWidth="Tablet" demandPopin="true">
+            <Text id="draftTypetext" text="Draft Type"/>
         </Column>
         <Column id="_IDGenColumn3" minScreenWidth="Tablet" demandPopin="true">
             <Text id="docDate" text="Document Date"/>
@@ -209,6 +212,9 @@
         <Column id="_IDGenColumnDraftSt" minScreenWidth="Tablet" demandPopin="true">
              <Text id="draftStCol" text="Draft Status"/>
        </Column>
+          <Column id="payamt" minScreenWidth="Tablet" demandPopin="true">
+             <Text id="payamttext" text="Payment Amount"/>
+       </Column>
     </columns>
 
     <items>
@@ -221,7 +227,8 @@
                <Text id="_IDGenTextid" text="{headModel>draftId}"/> 
                 <Text id="_IDGenText7" text="{headModel>compCode}"/>
                 <Text id="_IDGenText8" text="{headModel>fiscYear}"/>
-                <Text id="_IDGenText9" text="{headModel>draftType}"/>
+                <Text id="_IDGenText9" text="{headModel>draftType} " visible="false"/>
+                 <Text id="_IDGenText91" text="{headModel>draftTypeTxt} "/>
                 <Text id="_IDGenText10" text="{
                     path: 'headModel>docDate',
                     type: 'sap.ui.model.type.Date',
@@ -238,6 +245,7 @@
                 <Text id="_IDGenText15" text="{headModel>vendor}"/>
                 <Text id="_IDGenTextDraft" text="{headModel>draftSt}"/>
                 <Text id="_IDGenTextDraftSt" text="{headModel>draftStText}"/>
+                <Text id="_IDGenTextpayamt" text="{headModel>payAmnt}"/>
             </cells>
         </ColumnListItem>
     </items>

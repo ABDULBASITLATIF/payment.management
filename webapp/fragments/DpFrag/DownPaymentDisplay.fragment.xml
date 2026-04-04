@@ -58,8 +58,8 @@
             <Label id="dp_balanceLabelD"       text="Balance"               width="auto"/>
             <Text  id="dp_balanceText"         text="{pageModel>/balance}"  width="auto"/>
 
-            <Label id="dp_postdoclabel"        text="Posting Document"      width="auto" visible="false"/>
-            <Text  id="dp_postdocText"         text="{pageModel>/postDoc}"  width="auto" visible="false"/>
+            <Label id="dp_postdoclabel"        text="Posting Document"      width="auto" visible="true"/>
+            <Text  id="dp_postdocText"         text="{pageModel>/postDoc}"  width="auto" visible="true"/>
 
             <Label id="dp_postmsglabel"        text="Posting Message"       width="auto" visible="false"/>
             <TextArea id="dp_postmsgText"      value="{pageModel>/msg}"     width="auto" visible="false" editable="false"/>
