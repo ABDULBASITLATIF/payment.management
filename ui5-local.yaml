@@ -30,10 +30,10 @@ server:
       configuration:
         ignoreCertErrors: false # If set to true, certificate errors will be ignored. E.g. self-signed certificates will be accepted
         backend:
-          - url: https://vhfqmwd1wd01.sap.sarooj.com:44300/
-            client: '110'
+          - path: /sap
+            url: https://vhfqmwd1wd01.sap.sarooj.com:44300/
+            client: '100'
             authenticationType: basic
-            path: /sap
     - name: sap-fe-mockserver
       beforeMiddleware: csp
       configuration:

@@ -324,6 +324,99 @@ sap.ui.define([
                     oDialog.close();
                 });
             }
+        },
+
+        // ══════════════════════════════════════════════════════════════════
+        // SPECIAL GL INDICATOR
+        // ══════════════════════════════════════════════════════════════════
+onLoadSPGL: async function (oEvent) {
+    const oView = this.getView();
+    const oDataModel = oView.getModel();
+
+    if (this._pDPSPGLDialog) {
+        const oOld = await this._pDPSPGLDialog;
+        oOld.destroy();
+        this._pDPSPGLDialog = null;
+    }
+
+    this._pDPSPGLDialog = Fragment.load({
+        id: oView.getId(),
+        name: "zfi.payment.management.fragments.DpFrag.SpGLVhDp",
+        controller: this
+    }).then(function (oDialog) {
+        oView.addDependent(oDialog);
+        return oDialog;
+    });
+
+    const oDialog = await this._pDPSPGLDialog;
+    oDialog.setBusy(true);
+    oDialog.open();
+
+    oDataModel.read("/spGLVH", {
+        success: function (oData) {
+            const oJsonModel = new sap.ui.model.json.JSONModel({ results: oData.results || [] });
+            oDialog.setModel(oJsonModel, "spGL");
+            oDialog.bindAggregation("items", {
+                path: "spGL>/results",
+                template: new sap.m.StandardListItem({
+                    title: "{spGL>spGL}",
+                    description: "{spGL>shortText}",
+                    tooltip: "{spGL>longText}",
+                    type: "Active"
+                })
+            });
+            oDialog.setBusy(false);
+        },
+        error: function () {
+            oDialog.setBusy(false);
+            sap.m.MessageToast.show("Failed to load Special GL indicators");
         }
+    });
+},
+
+onSearchSPGL: function (oEvent) {
+    const sValue = oEvent.getParameter("value").toLowerCase();
+    const oDialog = oEvent.getSource();
+    const oModel  = oDialog.getModel("spGL");
+    if (!oModel) { return; }
+
+    const aAll = oModel.getProperty("/results") || [];
+    const aFiltered = sValue
+        ? aAll.filter(function (o) {
+            return (o.spGL      && o.spGL.toLowerCase().indexOf(sValue)      > -1)
+                || (o.shortText && o.shortText.toLowerCase().indexOf(sValue) > -1)
+                || (o.longText  && o.longText.toLowerCase().indexOf(sValue)  > -1);
+          })
+        : aAll;
+
+    oDialog.bindAggregation("items", {
+        path: "spGL>/filtered",
+        template: new sap.m.StandardListItem({
+            title: "{spGL>spGL}",
+            description: "{spGL>shortText}",
+            tooltip: "{spGL>longText}",
+            type: "Active"
+        })
+    });
+    oModel.setProperty("/filtered", aFiltered);
+},
+
+onConfirmSPGL: function (oEvent) {
+    const oSelectedItem = oEvent.getParameter("selectedItem");
+    if (oSelectedItem) {
+        const oCtx  = oSelectedItem.getBindingContext("spGL");
+        const sSpGL = oCtx ? oCtx.getProperty("spGL") : oSelectedItem.getTitle();
+        this.byId("dp_glvh").setValue(sSpGL);
+        MessageToast.show("Special GL selected: " + sSpGL);
+    }
+},
+
+        onCloseSPGLDialog: function () {
+            if (this._pDPSPGLDialog) {
+                this._pDPSPGLDialog.then(function (oDialog) {
+                    oDialog.close();
+                });
+            }
+        },
     };
 });

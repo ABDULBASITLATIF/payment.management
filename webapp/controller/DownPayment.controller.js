@@ -200,6 +200,7 @@ sap.ui.define([
                 oPageModel.setProperty("/payAmnt",     fnGet("dp_payAmountInput"));
                 oPageModel.setProperty("/invoiceSum",  fnGet("dp_invoiceSumInput"));
                 oPageModel.setProperty("/balance",     fnGet("dp_balanceInput"));
+                oPageModel.setProperty("/spGL", fnGet("dp_glvh"));    
                 oPageModel.setProperty("/docDate",     fnGetDate("dp_documentDatePicker"));
                 oPageModel.setProperty("/postingDate", fnGetDate("dp_postingDatePicker"));
             }
@@ -825,6 +826,7 @@ sap.ui.define([
                 sPayAmnt:   g("dp_payAmountInput") || "0",
                 sBankGL:    g("dp_glAccountInput"),
                 sCurrency:  g("dp_currencyInput"),
+                sSpGL:      g("dp_glvh"),  
                 oDocDate:   this.byId("dp_documentDatePicker")  ? this.byId("dp_documentDatePicker").getDateValue()  : null,
                 oPostDate:  this.byId("dp_postingDatePicker")   ? this.byId("dp_postingDatePicker").getDateValue()   : null
             };
@@ -889,6 +891,7 @@ sap.ui.define([
                     bankGL:      f.sBankGL,
                     vendor:      f.sVendor,
                     curr:        f.sCurrency,
+                     spGL:        f.sSpGL, 
                     payAmnt:     parseFloat(f.sPayAmnt).toFixed(3),
                     action:      sAction,
                     to_item:     this._buildToItems(aItems, f.sCompCode)

@@ -63,6 +63,8 @@
 
             <Label id="dp_postmsglabel"        text="Posting Message"       width="auto" visible="false"/>
             <TextArea id="dp_postmsgText"      value="{pageModel>/msg}"     width="auto" visible="false" editable="false"/>
+            <Label id="dp_spGLLabelD"  text="Special GL"  width="auto"/>
+            <Text  id="dp_spGLText"    text="{pageModel>/spGL}" width="auto"/>
 
         </f:content>
     </f:SimpleForm>

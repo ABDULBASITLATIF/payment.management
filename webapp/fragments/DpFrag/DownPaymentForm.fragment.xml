@@ -68,6 +68,8 @@
 
             <Label id="dp_balanceLabel" text="Balance" width="auto"/>
             <Input id="dp_balanceInput" value="" width="auto" editable="false"/>
+            <Label id="dp_gllabel" text="Special GL" width="auto"/>
+            <Input id="dp_glvh" value="" required="true" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsDP.onLoadSPGL"/>
         </f:content>
     </f:SimpleForm>
     

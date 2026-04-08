@@ -16,10 +16,10 @@ server:
             - /test-resources
           url: https://ui5.sap.com
         backend:
-          - url: https://vhfqmwd1wd01.sap.sarooj.com:44300/
-            client: '110'
+          - path: /sap
+            url: https://vhfqmwd1wd01.sap.sarooj.com:44300/
+            client: '100'
             authenticationType: basic
-            path: /sap
     - name: fiori-tools-appreload
       afterMiddleware: compression
       configuration:

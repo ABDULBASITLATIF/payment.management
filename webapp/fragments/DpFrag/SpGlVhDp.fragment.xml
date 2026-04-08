@@ -1,0 +1,15 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    
+    <SelectDialog
+        id="SGLVHDp"
+        title="Select Special GL"
+        search=".InputHelpsDP.onSearchSPGL"
+        confirm=".InputHelpsDP.onConfirmSPGL"
+        cancel=".InputHelpsDP.onCloseSPGLDialog"
+        rememberSelections="false">
+        <!-- items bound programmatically in onLoadSPGL -->
+    </SelectDialog>
+    
+</core:FragmentDefinition>
