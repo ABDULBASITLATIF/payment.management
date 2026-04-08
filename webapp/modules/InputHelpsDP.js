@@ -404,13 +404,14 @@ onSearchSPGL: function (oEvent) {
 onConfirmSPGL: function (oEvent) {
     const oSelectedItem = oEvent.getParameter("selectedItem");
     if (oSelectedItem) {
-        const oCtx  = oSelectedItem.getBindingContext("spGL");
-        const sSpGL = oCtx ? oCtx.getProperty("spGL") : oSelectedItem.getTitle();
-        this.byId("dp_glvh").setValue(sSpGL);
+        const oCtx      = oSelectedItem.getBindingContext("spGL");
+        const sSpGL     = oCtx ? oCtx.getProperty("spGL")      : oSelectedItem.getTitle();
+        const sDesc     = oCtx ? oCtx.getProperty("shortText") : oSelectedItem.getDescription();
+
+        this.byId("dp_glvh").setValue(sSpGL + " - " + sDesc);
         MessageToast.show("Special GL selected: " + sSpGL);
     }
 },
-
         onCloseSPGLDialog: function () {
             if (this._pDPSPGLDialog) {
                 this._pDPSPGLDialog.then(function (oDialog) {
