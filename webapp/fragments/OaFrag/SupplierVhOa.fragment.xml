@@ -9,12 +9,12 @@
         confirm=".InputHelpsOA.onConfirmSupplier"
         cancel=".InputHelpsOA.onCloseSupplierDialog"
         items="{
-            path: '/I_Supplier_VH',
+            path: '/suppVH',
             sorter: { path: 'Supplier' }
         }">
         <StandardListItem id="_IDGenStandardListItemsOA"
             title="{Supplier}"
-            description="{BPSupplierName}"
+            description="{SupplierName}"
             type="Active"/>
     </SelectDialog>
     

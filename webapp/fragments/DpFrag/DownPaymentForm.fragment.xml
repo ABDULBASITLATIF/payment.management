@@ -11,6 +11,13 @@
         columnsM="2"
         columnsL="3"
         columnsXL="4">
+         <f:toolbar>
+            <Toolbar id="_IDGenToolbar2">
+                <Title id="_IDGenTitle4" text="Down Payment" />
+                <ToolbarSpacer id="_IDGenToolbarSpacer3" />
+                <Button id="_IDGenButton2" text="Fetch DP Items" press="onFetchOpenItems" type="Emphasized" />
+            </Toolbar>
+        </f:toolbar>
         <f:content>
             <Label id="dp_draftidLabel" text="Draft ID" required="true" width="auto"/>
             <Input id="dp_draftidInput" value="" editable="false" width="auto"/>
@@ -18,8 +25,8 @@
             <Label id="dp_companyCodeLabel" text="Company Code" required="true" width="auto"/>
             <Input id="dp_companyCodeInput" value="" maxLength="4" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsDP.onLoadCCVH"/>
             
-            <Label id="dp_fiscalYearLabel" text="Fiscal Year" required="true" width="auto"/>
-            <Input id="dp_fiscalYearInput" value="" maxLength="4" width="auto"/>
+            <!-- <Label id="dp_fiscalYearLabel" text="Fiscal Year" required="true" width="auto"/>
+            <Input id="dp_fiscalYearInput" value="" maxLength="4" width="auto"/> -->
             
             <Label id="dp_documentDateLabel" text="Document Date" required="true" width="auto"/>
             <DatePicker id="dp_documentDatePicker" 
@@ -53,9 +60,10 @@
                 value="" 
                 maxLength="10" 
                 width="auto"
-                submit="onVendorSubmit"
                 showValueHelp="true" 
-                valueHelpRequest=".InputHelpsDP.onLoadSupplierVH"/>
+                valueHelpRequest=".InputHelpsDP.onLoadSupplierVH"
+                description="{pageModel>/supplierName}"
+                change=".InputHelpsDP.onSupplierInputChange"/>
             
             <Label id="dp_currencyLabel" text="Currency" required="true" width="auto"/>
             <Input id="dp_currencyInput" value="" maxLength="5" width="auto" change="onCurrencyChange"/>

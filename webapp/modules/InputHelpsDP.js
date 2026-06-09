@@ -65,6 +65,12 @@ sap.ui.define([
         // ══════════════════════════════════════════════════════════════════
         onLoadSupplierVH: async function (oEvent) {
             const oView = this.getView();
+            const sCompCode = this.byId("dp_companyCodeInput").getValue().trim();
+
+            if (!sCompCode) {
+                MessageToast.show("Please select Company Code first");
+                return;
+            }
 
             this._pDPSupplierDialog ??= Fragment.load({
                 id: oView.getId(),
@@ -76,39 +82,48 @@ sap.ui.define([
             });
 
             const oDialog = await this._pDPSupplierDialog;
+
+            // Filter by company code
+            oDialog.getBinding("items").filter([
+                new Filter("compCode", FilterOperator.EQ, sCompCode)
+            ]);
+
             oDialog.open();
         },
 
         onSearchSupplier: function (oEvent) {
-            const sValue = oEvent.getParameter("value");
-            const aFilters = sValue
-                ? [new Filter({
+            const sValue    = oEvent.getParameter("value");
+            const sCompCode = this.byId("dp_companyCodeInput").getValue().trim();
+
+            const aFilters = [
+                new Filter("compCode", FilterOperator.EQ, sCompCode)
+            ];
+
+            if (sValue) {
+                aFilters.push(new Filter({
                     filters: [
-                        new Filter("Supplier", FilterOperator.Contains, sValue),
-                        new Filter("BPSupplierName", FilterOperator.Contains, sValue)
+                        new Filter("Supplier",     FilterOperator.Contains, sValue),
+                        new Filter("SupplierName", FilterOperator.Contains, sValue)
                     ],
                     and: false
-                })]
-                : [];
+                }));
+            }
+
             oEvent.getSource().getBinding("items").filter(aFilters);
         },
 
         onConfirmSupplier: function (oEvent) {
             const oSelectedItem = oEvent.getParameter("selectedItem");
             if (oSelectedItem) {
-                const sSupplier = oSelectedItem.getTitle();
+                const oContext      = oSelectedItem.getBindingContext();
+                const sSupplier     = oContext.getProperty("Supplier");
+                const sSupplierName = oContext.getProperty("SupplierName");
+
                 this.byId("dp_supplierAccountInput").setValue(sSupplier);
 
-                const sCurr = this.byId("dp_currencyInput") 
-                    ? this.byId("dp_currencyInput").getValue().trim() : "";
+                this.getView().getModel("pageModel")
+                    .setProperty("/supplierName", sSupplierName || "");
 
-                if (!sCurr) {
-                    MessageToast.show("Supplier selected. Please enter Currency to load open items.");
-                    return;
-                }
-
-                // Trigger load with both vendor and currency
-                this._loadOpenItems(sSupplier, sCurr);
                 MessageToast.show("Supplier selected: " + sSupplier);
             }
         },
@@ -120,7 +135,39 @@ sap.ui.define([
                 });
             }
         },
+        onSupplierInputChange: function (oEvent) {
+            const sValue    = oEvent.getSource().getValue().trim();
+            const sCompCode = this.byId("dp_companyCodeInput").getValue().trim();
 
+            if (!sValue) {
+                this.getView().getModel("pageModel")
+                    .setProperty("/supplierName", "");
+                return;
+            }
+
+            const oDataModel = this.getOwnerComponent().getModel();
+            const that = this;
+            oDataModel.read("/suppVH", {
+                filters: [
+                    new Filter("Supplier",  FilterOperator.EQ, sValue),
+                    new Filter("compCode",  FilterOperator.EQ, sCompCode)
+                ],
+                success: function (oData) {
+                    const aResults = oData.results || [];
+                    if (aResults.length > 0) {
+                        that.getView().getModel("pageModel")
+                            .setProperty("/supplierName", aResults[0].SupplierName || "");
+                    } else {
+                        that.getView().getModel("pageModel")
+                            .setProperty("/supplierName", "");
+                    }
+                },
+                error: function () {
+                    that.getView().getModel("pageModel")
+                        .setProperty("/supplierName", "");
+                }
+            });
+        },
         // ══════════════════════════════════════════════════════════════════
         // HOUSE BANK (filtered by Company Code)
         // ══════════════════════════════════════════════════════════════════

@@ -21,7 +21,8 @@ sap.ui.define([
 
             const oPageModel = new JSONModel({
                 mode: "create",
-                draftId: null
+                draftId: null,
+                supplierName: "" 
             });
             this.getView().setModel(oPageModel, "pageModel");
 
@@ -41,6 +42,26 @@ sap.ui.define([
                 this._resetPage();
             }
         },
+        // _onRouteMatched: function (oEvent) {
+        //     const oArgs = oEvent.getParameter("arguments");
+        //     const sDraftId = oArgs.draftId;
+
+        //     if (sDraftId && sDraftId !== "new") {
+        //         // Use setProperty instead of setData to preserve supplierName
+        //         const oPageModel = this.getView().getModel("pageModel");
+        //         oPageModel.setProperty("/mode",     "edit");
+        //         oPageModel.setProperty("/draftId",  sDraftId);
+        //         oPageModel.setProperty("/supplierName", ""); // clear old name before load
+        //         this._loadDraft(sDraftId);
+        //     } else {
+        //         this.getView().getModel("pageModel").setData({
+        //             mode: "create",
+        //             draftId: null,
+        //             supplierName: ""
+        //         });
+        //         this._resetPage();
+        //     }
+        // },
 
         _resetPage: function () {
             const oModel = this.getView().getModel("openItems");
@@ -64,6 +85,8 @@ sap.ui.define([
             const oPostPicker = this.byId("dp_postingDatePicker");
             if (oDocPicker)  { oDocPicker.setValue("");  }
             if (oPostPicker) { oPostPicker.setValue(""); }
+            // ── Clear supplier name ───────────────────────────────────────────────
+            this.getView().getModel("pageModel").setProperty("/supplierName", "");
 
             this._bDisplayMode = false;
             this._applyDisplayMode("");
@@ -156,7 +179,29 @@ sap.ui.define([
             oPageModel.setProperty("/postDoc",  oHead.postDoc  || "");
             oPageModel.setProperty("/msg",      oHead.msg      || "");
             oPageModel.setProperty("/draftSt",  oHead.draftSt  || "");
-            this._applyDisplayMode(oHead.draftSt);
+
+            const sVendor   = oHead.vendor;
+            const sCompCode = oHead.compCode;
+            if (sVendor && sCompCode) {
+                const oDataModel = this.getOwnerComponent().getModel();
+                const that = this;
+                oDataModel.read("/suppVH", {
+                    filters: [
+                        new Filter("Supplier",  FilterOperator.EQ, sVendor),
+                        new Filter("compCode",  FilterOperator.EQ, sCompCode)
+                    ],
+                    success: function (oData) {
+                        const aResults = oData.results || [];
+                        if (aResults.length > 0) {
+                            that.getView().getModel("pageModel")
+                                .setProperty("/supplierName", aResults[0].SupplierName || "");
+                        }
+                    },
+                    error: function (oErr) {
+                        console.warn("Could not fetch supplier name for vendor: " + sVendor, oErr);
+                    }
+                });
+            }
         },
 
         _applyDisplayMode: function (sDraftSt) {
@@ -380,23 +425,23 @@ sap.ui.define([
             });
         },
 
-        onVendorSubmit: function (oEvt) {
-            const sVendor = oEvt.getSource().getValue().trim();
-            const sCurr   = this.byId("dp_currencyInput") ? this.byId("dp_currencyInput").getValue().trim() : "";
+        // onVendorSubmit: function (oEvt) {
+        //     const sVendor = oEvt.getSource().getValue().trim();
+        //     const sCurr   = this.byId("dp_currencyInput") ? this.byId("dp_currencyInput").getValue().trim() : "";
 
-            if (!sVendor) {
-                this.getView().getModel("openItems").setData({ openItems: [], itemsToBeCleared: [] });
-                this._updateTableTitles();
-                return;
-            }
+        //     if (!sVendor) {
+        //         this.getView().getModel("openItems").setData({ openItems: [], itemsToBeCleared: [] });
+        //         this._updateTableTitles();
+        //         return;
+        //     }
 
-            if (!sCurr) {
-                MessageToast.show("Please enter Currency before loading open items");
-                return;
-            }
+        //     if (!sCurr) {
+        //         MessageToast.show("Please enter Currency before loading open items");
+        //         return;
+        //     }
 
-            this._loadOpenItems(sVendor, sCurr);
-        },
+        //     // this._loadOpenItems(sVendor, sCurr);
+        // },
 
         onCurrencyChange: function () {
             const sVendor = this.byId("dp_supplierAccountInput") 
@@ -408,16 +453,72 @@ sap.ui.define([
 
             this._loadOpenItems(sVendor, sCurr);
         },
+        onFetchOpenItems: function () {
+            const oCompCodeInput = this.byId("dp_companyCodeInput");
+            const oVendorInput   = this.byId("dp_supplierAccountInput");
+            const oCurrInput     = this.byId("dp_currencyInput");
 
+            const sCompCode = oCompCodeInput ? oCompCodeInput.getValue().trim() : "";
+            const sVendor   = oVendorInput   ? oVendorInput.getValue().trim()   : "";
+            const sCurr     = oCurrInput     ? oCurrInput.getValue().trim()     : "";
+
+            // 1. Clear previous error states before validating
+            if (oCompCodeInput) oCompCodeInput.setValueState(sap.ui.core.ValueState.None);
+            if (oVendorInput)   oVendorInput.setValueState(sap.ui.core.ValueState.None);
+            if (oCurrInput)     oCurrInput.setValueState(sap.ui.core.ValueState.None);
+
+            let bHasError = false;
+
+            // 2. Validate Company Code
+            if (!sCompCode) {
+                MessageToast.show("Company Code is required.");
+                if (oCompCodeInput) {
+                    oCompCodeInput.setValueState(sap.ui.core.ValueState.Error);
+                    oCompCodeInput.setValueStateText("Required to fetch items");
+                }
+                bHasError = true;
+            }
+
+            // 3. Validate Vendor (Now with the same UI feedback)
+            if (!sVendor) {
+                MessageToast.show("Vendor is required.");
+                if (oVendorInput) {
+                    oVendorInput.setValueState(sap.ui.core.ValueState.Error);
+                    oVendorInput.setValueStateText("Required to fetch items");
+                }
+                bHasError = true;
+            }
+
+          
+            if (!sCurr) {
+                MessageToast.show("Currency is required.");
+                // if (oCurrInput) {
+                //     oCurrInput.setValueState(sap.ui.core.ValueState.Error);
+                //     oCurrInput.setValueStateText("Required to fetch items");
+                // }
+                // bHasError = true;
+            }
+
+            // 5. Stop execution if any field is invalid
+            if (bHasError) {
+                return;
+            }
+
+            // 6. Proceed to load if all validations pass
+            this._loadOpenItems(sVendor, sCurr);
+        },
         _loadOpenItems: function (sVendor, sCurr) {
             const oDataModel = this.getOwnerComponent().getModel();
             const that = this;
             const oTable = this.byId("dp_openItemsTable");
+            
             if (oTable) { oTable.setBusy(true); }
 
             const aFilters = [
                 new Filter("vendor", FilterOperator.EQ, sVendor),
-                new Filter("docCurr",   FilterOperator.EQ, sCurr)
+                new Filter("docCurr",   FilterOperator.EQ, sCurr),
+    
+ 
             ];
 
             oDataModel.read("/dprItems", {
@@ -860,7 +961,7 @@ sap.ui.define([
         },
         _validateAndGetData: function (sAction) {
             const f = this._collectFormValues();
-            if (!f.sCompCode || !f.sFiscYear || !f.sVendor || !f.sBankKey || !f.sBankAcc || !f.oDocDate || !f.oPostDate) {
+            if (!f.sCompCode || !f.sVendor || !f.sBankKey || !f.sBankAcc || !f.oDocDate || !f.oPostDate) {
                 MessageBox.error("Please fill all required fields.");
                 return null;
             }
@@ -1054,7 +1155,6 @@ sap.ui.define([
                 }
             });
         },
-
         onNavBack: function () {
             this.getOwnerComponent().getRouter().navTo("RouteNewDoc");
         }

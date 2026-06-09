@@ -17,8 +17,9 @@ sap.ui.define([
         // ─────────────────────────────────────────────────────────────────────
         onInit: function () {
             const oPageModel = new JSONModel({
-                mode:    "create",
-                draftId: null
+                mode:         "create",
+                draftId:      null,
+                supplierName: ""
             });
             this.getView().setModel(oPageModel, "pageModel");
 
@@ -31,15 +32,16 @@ sap.ui.define([
             const sDraftId = oArgs.draftId;
 
             if (sDraftId && sDraftId !== "new") {
-                this.getView().getModel("pageModel").setData({
-                    mode:    "edit",
-                    draftId: sDraftId
-                });
+                const oPageModel = this.getView().getModel("pageModel");
+                oPageModel.setProperty("/mode",         "edit");
+                oPageModel.setProperty("/draftId",      sDraftId);
+                oPageModel.setProperty("/supplierName", "");
                 this._loadDraft(sDraftId);
             } else {
                 this.getView().getModel("pageModel").setData({
-                    mode:    "create",
-                    draftId: null
+                    mode:         "create",
+                    draftId:      null,
+                    supplierName: ""
                 });
                 this._resetPage();
             }
@@ -59,7 +61,7 @@ sap.ui.define([
             const aInputIds = [
                 "oa_draftidInput",
                 "oa_companyCodeInput",
-                "oa_fiscalYearInput",
+          
                 "oa_referenceInput",
                 "oa_headerTextInput",        // matches fragment: oa_headerTextInput
                 "oa_houseBankInput",
@@ -86,7 +88,9 @@ sap.ui.define([
             const oPostPicker = this.byId("oa_postingDatePicker");
             if (oDocPicker)  { oDocPicker.setValue("");  }
             if (oPostPicker) { oPostPicker.setValue(""); }
-
+            
+              // ── Clear supplier name ───────────────────────────────────────────────
+            this.getView().getModel("pageModel").setProperty("/supplierName", "");
             this._applyDisplayMode("");
             this._updateSaveButton("create");
         },
@@ -180,7 +184,7 @@ sap.ui.define([
             // Map backend fields → fragment input IDs
             fnSet("oa_draftidInput",          oHead.draftId);
             fnSet("oa_companyCodeInput",       oHead.compCode);
-            fnSet("oa_fiscalYearInput",        oHead.fiscYear);
+            // fnSet("oa_fiscalYearInput",        oHead.fiscYear);
             fnSet("oa_referenceInput",         oHead.reference);
             fnSet("oa_headerTextInput",        oHead.headText);   // oa_headerTextInput
             fnSet("oa_houseBankInput",         oHead.bankKey);
@@ -196,6 +200,30 @@ sap.ui.define([
             oPageModel.setProperty("/postDoc", oHead.postDoc || "");
             oPageModel.setProperty("/msg",     oHead.msg     || "");
             oPageModel.setProperty("/draftSt", oHead.draftSt || "");
+
+            // ── Fetch supplier name ───────────────────────────────────────────────
+            const sVendor   = oHead.vendor;
+            const sCompCode = oHead.compCode;
+            if (sVendor && sCompCode) {
+                const oDataModel = this.getOwnerComponent().getModel();
+                const that = this;
+                oDataModel.read("/suppVH", {
+                    filters: [
+                        new Filter("Supplier",  FilterOperator.EQ, sVendor),
+                        new Filter("compCode",  FilterOperator.EQ, sCompCode)
+                    ],
+                    success: function (oData) {
+                        const aResults = oData.results || [];
+                        if (aResults.length > 0) {
+                            that.getView().getModel("pageModel")
+                                .setProperty("/supplierName", aResults[0].SupplierName || "");
+                        }
+                    },
+                    error: function () {
+                        console.warn("Could not fetch supplier name for vendor: " + sVendor);
+                    }
+                });
+            }
 
             this._applyDisplayMode(oHead.draftSt);
         },
@@ -392,7 +420,7 @@ sap.ui.define([
         },
 
         _validateForm: function (oVals) {
-            if (!oVals.sCompCode || !oVals.sFiscYear || !oVals.sVendor ||
+            if (!oVals.sCompCode || !oVals.sVendor ||
                 !oVals.sBankKey  || !oVals.sBankAcc  ||
                 !oVals.oDocDate  || !oVals.oPostDate) {
                 MessageBox.error("Please fill all required fields before saving.");

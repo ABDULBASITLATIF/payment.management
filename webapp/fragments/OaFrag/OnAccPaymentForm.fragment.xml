@@ -18,9 +18,6 @@
             <Label id="oa_companyCodeLabel" text="Company Code" required="true" width="auto"/>
             <Input id="oa_companyCodeInput" value="" maxLength="4" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsOA.onLoadCCVH"/>
             
-            <Label id="oa_fiscalYearLabel" text="Fiscal Year" required="true" width="auto"/>
-            <Input id="oa_fiscalYearInput" value="" maxLength="4" width="auto"/>
-            
             <Label id="oa_documentDateLabel" text="Document Date" required="true" width="auto"/>
             <DatePicker id="oa_documentDatePicker" 
                 value=""
@@ -53,9 +50,10 @@
                 value="" 
                 maxLength="10" 
                 width="auto"
-                submit="onVendorSubmit"
                 showValueHelp="true" 
-                valueHelpRequest=".InputHelpsOA.onLoadSupplierVH"/>
+                valueHelpRequest=".InputHelpsOA.onLoadSupplierVH"
+                description="{pageModel>/supplierName}"
+                change=".InputHelpsOA.onSupplierInputChange"/>
             
             <Label id="oa_currencyLabel" text="Currency" required="true" width="auto"/>
             <Input id="oa_currencyInput" value="" maxLength="5" width="auto"/>
@@ -66,7 +64,7 @@
             <Label id="oa_invoiceSumLabel" text="Total Invoice Sum" width="auto" visible="false"/>
             <Input id="oa_invoiceSumInput" value="" width="auto" editable="false" visible="false"/>
 
-            <Label id="oa_balanceLabel" text="Balance" width="auto" visible="false" />
+            <Label id="oa_balanceLabel" text="Balance" width="auto" visible="false"/>
             <Input id="oa_balanceInput" value="" width="auto" editable="false" visible="false"/>
         </f:content>
     </f:SimpleForm>

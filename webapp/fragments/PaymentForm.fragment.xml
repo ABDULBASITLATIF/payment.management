@@ -11,6 +11,13 @@
         columnsM="2"
         columnsL="3"
         columnsXL="4">
+        <f:toolbar>
+            <Toolbar id="_IDGenToolbar3">
+                <Title id="_IDGenTitle5" text="Payment" />
+                <ToolbarSpacer id="_IDGenToolbarSpacer4" />
+                <Button id="_IDGenButton13" text="Fetch Open Items" press="onFetchOpenItems" type="Emphasized" />
+            </Toolbar>
+        </f:toolbar>
         <f:content>
             <!-- General Information Section -->
             
@@ -20,8 +27,8 @@
             <Label id="companyCodeLabel" text="Company Code" required="true" width="auto"/>
             <Input id="companyCodeInput" value="" maxLength="4" width="auto" showValueHelp="true" valueHelpRequest=".InputHelps.onLoadCCVH"/>
             
-            <Label id="fiscalYearLabel" text="Fiscal Year" required="true" width="auto"/>
-            <Input id="fiscalYearInput" value="" maxLength="4" width="auto"/>
+            <!-- <Label id="fiscalYearLabel" text="Fiscal Year" required="true" width="auto"/>
+            <Input id="fiscalYearInput" value="" maxLength="4" width="auto"/> -->
             
             <Label id="documentDateLabel" text="Document Date" required="true" width="auto"/>
             <DatePicker id="documentDatePicker" 
@@ -42,7 +49,7 @@
             <Input id="_IDGenInput" value="" maxLength="25" width="auto"/>
             
             <!-- Bank Information Section -->
-            
+             
             <Label id="houseBankLabel" text="House Bank" required="true" width="auto"/>
             <Input id="houseBankInput" value="" maxLength="5" width="auto" showValueHelp="true" valueHelpRequest=".InputHelps.onLoadHouseBankVH"/>
             
@@ -55,14 +62,19 @@
             
             <!-- Supplier Information Section -->
             
+            
             <Label id="supplierAccountLabel" text="Vendor" required="true" width="auto"/>
-            <Input id="supplierAccountInput" 
-                value="" 
-                maxLength="10" 
+            <Input id="supplierAccountInput"
+                value=""
+                maxLength="10"
                 width="auto"
-                submit="onVendorSubmit"
-                showValueHelp="true" 
-                valueHelpRequest=".InputHelps.onLoadSupplierVH"/>
+                showValueHelp="true"
+                valueHelpRequest=".InputHelps.onLoadSupplierVH"
+                description="{pageModel>/supplierName}"
+                change=".InputHelps.onSupplierInputChange"
+                
+                />
+           
             
             <Label id="currencyLabel" text="Currency" required="true" width="auto"/>
             <Input id="currencyInput" value="" maxLength="5" width="auto"/>

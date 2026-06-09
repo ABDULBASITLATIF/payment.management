@@ -24,7 +24,8 @@ onInit: function () {
     // Page mode model: "create" or "edit"
     const oPageModel = new JSONModel({
         mode: "create",
-        draftId: null
+        draftId: null,
+        supplierName: ""
     });
     this.getView().setModel(oPageModel, "pageModel");
 
@@ -340,6 +341,7 @@ _resetPage: function () {
     const oPostPicker = this.byId("postingDatePicker");
     if (oDocPicker)  { oDocPicker.setValue("");  }
     if (oPostPicker) { oPostPicker.setValue(""); }
+    this.getView().getModel("pageModel").setProperty("/supplierName", "");
 
     // Reset display mode flags before applying
     this._bDisplayMode = false;
@@ -348,6 +350,7 @@ _resetPage: function () {
     // Reset Save button text
     this._updateSaveButton("create");
     this._updateTableTitles();
+
 },
 
 
@@ -500,6 +503,33 @@ _populateFormFields: function (oHead) {
     this.getView().getModel("pageModel").setProperty("/postDoc", oHead.postDoc || "");
     this.getView().getModel("pageModel").setProperty("/msg",     oHead.msg     || "");
     this.getView().getModel("pageModel").setProperty("/draftSt", oHead.draftSt || "");
+
+
+
+    const sVendor   = oHead.vendor;
+    const sCompCode = oHead.compCode;
+    if (sVendor && sCompCode) {
+        const oDataModel = this.getOwnerComponent().getModel();
+        const that = this;
+        oDataModel.read("/suppVH", {
+            filters: [
+                new Filter("Supplier",  FilterOperator.EQ, sVendor),
+                new Filter("compCode",  FilterOperator.EQ, sCompCode)
+            ],
+            success: function (oData) {
+                const aResults = oData.results || [];
+                if (aResults.length > 0) {
+                    that.getView().getModel("pageModel")
+                        .setProperty("/supplierName", aResults[0].SupplierName || "");
+                }
+            },
+            error: function () {
+                console.warn("Could not fetch supplier name for vendor: " + sVendor);
+            }
+        });
+    }
+
+     
     this._applyDisplayMode(oHead.draftSt);
 },
 
@@ -810,62 +840,126 @@ _loadOpenItemsExcluding: function (sVendor, aItemsToBeCleared, aOriginalToItems)
         }
     });
 },
-onVendorSubmit: function(oEvt) {
-    const sVendor = oEvt.getSource().getValue().trim();
+// onVendorSubmit: function(oEvt) {
+//     const sVendor = oEvt.getSource().getValue().trim();
 
-    if (!sVendor) {
-        const oModel = this.getView().getModel("openItems");
-        oModel.setData({ openItems: [], itemsToBeCleared: [] });
-        this._updateTableTitles();
-        return;
-    }
+//     if (!sVendor) {
+//         const oModel = this.getView().getModel("openItems");
+//         oModel.setData({ openItems: [], itemsToBeCleared: [] });
+//         this._updateTableTitles();
+//         return;
+//     }
 
-    this._loadOpenItems(sVendor);
-},
+//     this._loadOpenItems(sVendor);
+// },
+        onFetchOpenItems: function () {
+            const oCompCodeInput = this.byId("companyCodeInput");
+            const oVendorInput   = this.byId("supplierAccountInput");
+            const oCurrInput     = this.byId("currencyInput");
 
-_loadOpenItems: function(sVendor) {
-    const oDataModel = this.getOwnerComponent().getModel();
-    const that = this;
+            const sCompCode = oCompCodeInput ? oCompCodeInput.getValue().trim() : "";
+            const sVendor   = oVendorInput   ? oVendorInput.getValue().trim()   : "";
+            const sCurr     = oCurrInput     ? oCurrInput.getValue().trim()     : "";
 
-    const oTable = this.byId("openItemsTable");
-    if (oTable) { oTable.setBusy(true); }
+            // 1. Clear previous error states before validating
+            if (oCompCodeInput) oCompCodeInput.setValueState(sap.ui.core.ValueState.None);
+            if (oVendorInput)   oVendorInput.setValueState(sap.ui.core.ValueState.None);
+            if (oCurrInput)     oCurrInput.setValueState(sap.ui.core.ValueState.None);
 
-    const aFilters = sVendor 
-        ? [new Filter("vendorCode", FilterOperator.EQ, sVendor)] 
-        : [];
+            let bHasError = false;
 
-    oDataModel.read("/openItems", {
-        filters: aFilters,
-        success: function(oData) {
-            const oJSONModel = that.getView().getModel("openItems");
-            const aResults = oData && oData.results ? oData.results : [];
-
-            oJSONModel.setData({
-                openItems: aResults,
-                itemsToBeCleared: []  // reset cleared list on each new vendor load
-            });
-
-            that._updateTableTitles();
-            MessageToast.show("Loaded " + aResults.length + " items");
-            if (oTable) { oTable.setBusy(false); }
-        },
-        error: function(oError) {
-            if (oTable) { oTable.setBusy(false); }
-            let sErrorMessage = "Failed to load open items";
-            if (oError && oError.responseText) {
-                try {
-                    const oErrorResponse = JSON.parse(oError.responseText);
-                    if (oErrorResponse.error?.message?.value) {
-                        sErrorMessage = oErrorResponse.error.message.value;
-                    }
-                } catch (e) {
-                    sErrorMessage = oError.message || sErrorMessage;
+            // 2. Validate Company Code
+            if (!sCompCode) {
+                MessageToast.show("Company Code is required.");
+                if (oCompCodeInput) {
+                    oCompCodeInput.setValueState(sap.ui.core.ValueState.Error);
+                    oCompCodeInput.setValueStateText("Required to fetch items");
                 }
+                bHasError = true;
             }
-            MessageBox.error(sErrorMessage);
-        }
-    });
-},
+
+            // 3. Validate Vendor
+            if (!sVendor) {
+                MessageToast.show("Vendor is required.");
+                if (oVendorInput) {
+                    oVendorInput.setValueState(sap.ui.core.ValueState.Error);
+                    oVendorInput.setValueStateText("Required to fetch items");
+                }
+                bHasError = true;
+            }
+
+            // 4. Validate Currency
+            if (!sCurr) {
+                MessageToast.show("Currency is required.");
+                // if (oCurrInput) {
+                //     oCurrInput.setValueState(sap.ui.core.ValueState.Error);
+                //     oCurrInput.setValueStateText("Required to fetch items");
+                // }
+                // bHasError = true;
+            }
+
+            // 5. Stop execution if any field is invalid
+            if (bHasError) {
+                return;
+            }
+
+            // 6. Proceed to load if all validations pass
+            this._loadOpenItems(sVendor, sCurr);
+        },
+        _loadOpenItems: function(sVendor,sCurr) {
+            const oDataModel = this.getOwnerComponent().getModel();
+            const that = this;
+
+            const oTable = this.byId("openItemsTable");
+            if (oTable) { oTable.setBusy(true); }
+          
+
+   
+            if (!sVendor) {
+                MessageToast.show("Action blocked: Vendor is empty.");
+                return;
+            }
+            const aFilters = [
+              
+                new Filter("vendorCode", FilterOperator.EQ, sVendor)
+            ];
+
+            if (sCurr) {
+                aFilters.push(new Filter("docCurr", FilterOperator.EQ, sCurr));
+            }
+
+            oDataModel.read("/openItems", {
+                filters: aFilters,
+                success: function(oData) {
+                    const oJSONModel = that.getView().getModel("openItems");
+                    const aResults = oData && oData.results ? oData.results : [];
+
+                    oJSONModel.setData({
+                        openItems: aResults,
+                        itemsToBeCleared: []  // reset cleared list on each new vendor load
+                    });
+
+                    that._updateTableTitles();
+                    MessageToast.show("Loaded " + aResults.length + " items");
+                    if (oTable) { oTable.setBusy(false); }
+                },
+                error: function(oError) {
+                    if (oTable) { oTable.setBusy(false); }
+                    let sErrorMessage = "Failed to load open items";
+                    if (oError && oError.responseText) {
+                        try {
+                            const oErrorResponse = JSON.parse(oError.responseText);
+                            if (oErrorResponse.error?.message?.value) {
+                                sErrorMessage = oErrorResponse.error.message.value;
+                            }
+                        } catch (e) {
+                            sErrorMessage = oError.message || sErrorMessage;
+                        }
+                    }
+                    MessageBox.error(sErrorMessage);
+                }
+            });
+        },
 // _updateTableTitles: function() {
 //     const oModel = this.getView().getModel("openItems");
 //     const iOpenItems = oModel.getProperty("/openItems").length;
@@ -1227,7 +1321,7 @@ _normalizeDates: function(aItems) {
             const sCurrency = this.byId("currencyInput")       ? this.byId("currencyInput").getValue().trim()       : "";
 
             // ── 2. Required field validation ──────────────────────────────────────
-            if (!sCompCode || !sFiscYear || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
+            if (!sCompCode || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
                 MessageBox.error("Please fill all required fields before saving.");
                 return;
             }

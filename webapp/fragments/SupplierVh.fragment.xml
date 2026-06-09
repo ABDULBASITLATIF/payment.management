@@ -9,12 +9,12 @@
         confirm=".InputHelps.onConfirmSupplier"
         cancel=".InputHelps.onCloseSupplierDialog"
         items="{
-            path: '/I_Supplier_VH',
+            path: '/suppVH',
             sorter: { path: 'Supplier' }
         }">
         <StandardListItem id="_IDGenStandardListItem1"
             title="{Supplier}"
-            description="{BPSupplierName}"
+            description="{SupplierName}"
             type="Active"/>
     </SelectDialog>
     
