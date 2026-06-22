@@ -1,0 +1,74 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+
+    <Dialog id="pglLineItemDialog" title="Add Line Item" contentWidth="500px">
+        <content>
+            <VBox id="_IDGenVBox3" class="sapUiSmallMargin">
+                <f:SimpleForm id="pglLineItemForm"
+                    editable="true"
+                    layout="ColumnLayout"
+                    columnsM="2"
+                    columnsL="2"
+                    columnsXL="2">
+                    <f:content>
+
+                        <Label id="_IDGenLabel9"  text="GL Account"/>
+                        <Input id="pglDlg_glAccount"
+                               showValueHelp="true"
+                               valueHelpRequest=".InputHelpsPGL.onLoadLineGLVH"/>
+
+                        <Label id="_IDGenLabel10" text="Amount"/>
+                        <Input id="pglDlg_amount" liveChange=".onDlgAmountChange"/>
+
+                        <Label id="_IDGenLabel16" text="Debit / Credit"/>
+                        <ComboBox id="pglDlg_dcCombo" selectedKey=""
+                                  selectionChange=".onDCChange">
+                            <core:Item id="_IDGenItem55" key="D" text="Debit"/>
+                            <core:Item id="_IDGenItem56" key="C" text="Credit"/>
+                        </ComboBox>
+
+                        <Label id="_IDGenLabel11" text="Cost Center"/>
+                        <Input id="pglDlg_costCenter"
+                               showValueHelp="true"
+                               valueHelpRequest=".InputHelpsPGL.onLoadCostCenterVH"/>
+
+                        <Label id="_IDGenLabel12" text="Profit Center"/>
+                        <Input id="pglDlg_profitCenter"
+                               showValueHelp="true"
+                               valueHelpRequest=".InputHelpsPGL.onLoadProfitCenterVH"/>
+
+                        <Label id="_IDGenLabel13" text="WBS Element"/>
+                        <Input id="pglDlg_wbs"
+                               showValueHelp="true"
+                               valueHelpRequest=".InputHelpsPGL.onLoadWBSVH"/>
+
+                        <Label id="_IDGenLabel14" text="Item Text"/>
+                        <Input id="pglDlg_itemText"/>
+
+                        <Label id="_IDGenLabel15" text="Tax Code"/>
+                        <Input id="pglDlg_taxCode"
+                               showValueHelp="true"
+                               valueHelpRequest=".InputHelpsPGL.onLoadTaxCodeVH"
+                               change=".onDlgTaxCodeChange"/>
+
+                        <!-- Amount With Tax — shown after DC selected -->
+                        <Label id="pglDlg_amtWithTaxLabel" text="Amount With Tax" visible="false"/>
+                        <Input id="pglDlg_amtWithTax" visible="false" editable="false"/>
+
+                    </f:content>
+                </f:SimpleForm>
+            </VBox>
+        </content>
+
+        <footer>
+            <Toolbar id="_IDGenToolbar1">
+                <ToolbarSpacer id="_IDGenToolbarSpacer5"/>
+                <Button id="_IDGenButton14" text="Add"    type="Accept" press=".onAddLineItem"/>
+                <Button id="_IDGenButton16" text="Cancel" type="Reject" press=".onCancelLineItem"/>
+            </Toolbar>
+        </footer>
+    </Dialog>
+
+</core:FragmentDefinition>

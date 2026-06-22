@@ -126,6 +126,13 @@
           "target": [
             "TargetOnAccountPayment"
           ]
+        },
+        {
+          "name": "RoutePostGl",
+          "pattern": "posttogl/:draftId:",
+          "target": [
+            "TargetPostToGL"
+          ]
         }
       ],
       "targets": {
@@ -144,6 +151,10 @@
         "TargetOnAccountPayment": {
           "id": "OnAccountPayment",
           "name": "OnAccountPayment"
+        },
+        "TargetPostToGL": {
+          "id": "PostGL",
+          "name": "PostGL"
         }
       }
     },

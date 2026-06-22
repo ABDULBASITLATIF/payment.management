@@ -1,0 +1,21 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+
+    <SelectDialog
+        id="wbsVH"
+        title="Select WBS Element"
+        search=".InputHelpsPGL.onSearchWBS"
+        confirm=".InputHelpsPGL.onConfirmWBS"
+        cancel=".InputHelpsPGL.onCloseWBSDialog"
+        items="{
+            path: '/I_WBSElementStdVH',
+            sorter: { path: 'WBSElement' }
+        }">
+        <StandardListItem id="_IDGenStandardListItem7"
+            title="{WBSElement}"
+            description="{WBSDescription}"
+            type="Active"/>
+    </SelectDialog>
+
+</core:FragmentDefinition>

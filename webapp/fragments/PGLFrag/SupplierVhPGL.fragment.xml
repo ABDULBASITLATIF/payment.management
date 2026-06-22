@@ -1,0 +1,21 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    
+    <SelectDialog
+        id="supplierVHPGL"
+        title="Select Supplier"
+        search=".InputHelpsPGL.onSearchSupplier"
+        confirm=".InputHelpsPGL.onConfirmSupplier"
+        cancel=".InputHelpsPGL.onCloseSupplierDialog"
+        items="{
+            path: '/suppVH',
+            sorter: { path: 'Supplier' }
+        }">
+        <StandardListItem id="_IDGenStandardListItemsPGL"
+            title="{Supplier}"
+            description="{SupplierName}"
+            type="Active"/>
+    </SelectDialog>
+    
+</core:FragmentDefinition>

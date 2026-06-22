@@ -56,7 +56,7 @@
 
                             <headerToolbar>
                                 <OverflowToolbar id="dp_openItemsToolbar">
-                                    <Title id="dp_openItemsTitle" text="Open Items" level="H5"/>
+                                    <Title id="dp_openItemsTitle" text="Down Payment Requests" level="H5"/>
                                     <Button id="dp_openItemsInfoBtn" icon="sap-icon://information" type="Transparent"/>
                                     <ToolbarSpacer id="dp_openItemsSpacer"/>
                                     <SearchField id="dp_searchField" width="200px" search="onSearchOpenItems"/>
@@ -121,7 +121,7 @@
 
                             <headerToolbar>
                                 <OverflowToolbar id="dp_itemsToClearToolbar">
-                                    <Title id="dp_itemsToClearTitle" text="Items to Be Cleared" level="H5"/>
+                                    <Title id="dp_itemsToClearTitle" text="Down Payment Requests To Be Cleared" level="H5"/>
                                     <Button id="dp_itemsToClearInfoBtn" icon="sap-icon://information" type="Transparent"/>
                                     <ToolbarSpacer id="dp_itemsToClearSpacer"/>
                                 </OverflowToolbar>

@@ -1,0 +1,21 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+
+    <SelectDialog
+        id="costCenterVH"
+        title="Select Cost Center"
+        search=".InputHelpsPGL.onSearchCostCenter"
+        confirm=".InputHelpsPGL.onConfirmCostCenter"
+        cancel=".InputHelpsPGL.onCloseCostCenterDialog"
+        items="{
+            path: '/costCenterVH',
+            sorter: { path: 'CostCenter' }
+        }">
+        <StandardListItem id="_IDGenStandardListItem5"
+            title="{CostCenter}"
+            description="{CostCenterName}"
+            type="Active"/>
+    </SelectDialog>
+
+</core:FragmentDefinition>

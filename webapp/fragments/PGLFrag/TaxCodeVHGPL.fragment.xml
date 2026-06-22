@@ -1,0 +1,25 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+
+    <SelectDialog
+        id="taxCodeVH"
+        title="Select Tax Code"
+        search=".InputHelpsPGL.onSearchTaxCode"
+        confirm=".InputHelpsPGL.onConfirmTaxCode"
+        cancel=".InputHelpsPGL.onCloseTaxCodeDialog"
+        rememberSelections="false"
+        items="{
+            path: 'taxCodes>/items',
+            sorter: { path: 'TaxCode' }
+        }">
+
+        <StandardListItem id="_IDGenStandardListItem8"
+            title="{taxCodes>TaxCode}"
+            description="{taxCodes>TaxCodeDescription}"
+            info="{taxCodes>TaxRate}"
+            type="Active"/>
+
+    </SelectDialog>
+
+</core:FragmentDefinition>

@@ -15,7 +15,7 @@
             <Toolbar id="_IDGenToolbar2">
                 <Title id="_IDGenTitle4" text="Down Payment" />
                 <ToolbarSpacer id="_IDGenToolbarSpacer3" />
-                <Button id="_IDGenButton2" text="Fetch DP Items" press="onFetchOpenItems" type="Emphasized" />
+                <Button id="_IDGenButton2" text="Fetch DP Items" press="onFetchOpenItems" type="Emphasized" enabled="{= !${pageModel>/isDPR} }"/>
             </Toolbar>
         </f:toolbar>
         <f:content>
@@ -78,6 +78,11 @@
             <Input id="dp_balanceInput" value="" width="auto" editable="false"/>
             <Label id="dp_gllabel" text="Special GL" width="auto"/>
             <Input id="dp_glvh" value="" required="true" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsDP.onLoadSPGL"/>
+             <Label id="dp_glbox" text="Down Payment against Request" width="auto"/>
+            <CheckBox id="CheckBoxDPR" 
+            text="Down Payment against Request" 
+            selected="false"
+            select="onDPRCheckBoxChange"/>
         </f:content>
     </f:SimpleForm>
     

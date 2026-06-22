@@ -1,0 +1,64 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    
+    <f:SimpleForm id="pgl_paymentForm"
+        editable="true"
+        title="Post To GL Account"
+        layout="ColumnLayout"
+        columnsM="2"
+        columnsL="3"
+        columnsXL="4">
+        <f:content>
+            <Label id="pgl_draftidLabel" text="Draft ID" required="true" width="auto"/>
+            <Input id="pgl_draftidInput" value="" editable="false" width="auto"/>
+            
+            <Label id="pgl_companyCodeLabel" text="Company Code" required="true" width="auto"/>
+            <Input id="pgl_companyCodeInput" value="" maxLength="4" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadCCVH"/>
+            
+            <Label id="pgl_documentDateLabel" text="Document Date" required="true" width="auto"/>
+            <DatePicker id="pgl_documentDatePicker" 
+                value=""
+                displayFormat="dd/MM/yyyy"
+                width="auto"/>
+            
+            <Label id="pgl_postingDateLabel" text="Posting Date" required="true" width="auto"/>
+            <DatePicker id="pgl_postingDatePicker" 
+                value=""
+                displayFormat="dd/MM/yyyy"
+                width="auto"/>
+            
+            <Label id="pgl_referenceLabel" text="Reference" width="auto"/>
+            <Input id="pgl_referenceInput" value="" maxLength="16" width="auto"/>
+            
+            <Label id="pgl_headerTextLabel" text="Header Text" width="auto"/>
+            <Input id="pgl_headerTextInput" value="" maxLength="25" width="auto"/>
+            
+            <Label id="pgl_houseBankLabel" text="House Bank" required="true" width="auto"/>
+            <Input id="pgl_houseBankInput" value="" maxLength="5" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadHouseBankVH"/>
+            
+            <Label id="pgl_houseBankAccountLabel" text="House Bank Account ID" required="true" width="auto"/>
+            <Input id="pgl_houseBankAccountInput" value="" maxLength="5" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadHouseBankAccountVH"/>
+        
+            <Label id="pgl_glAccountLabel" text="G/L Account" required="true" width="auto"/>
+            <Input id="pgl_glAccountInput" value="" maxLength="10" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadGLVH"/>
+            
+         
+            
+            <Label id="pgl_currencyLabel" text="Currency" required="true" width="auto"/>
+            <Input id="pgl_currencyInput" value="" maxLength="5" width="auto"/>
+            
+            <Label id="pgl_payAmountLabel" text="Total Pay. Amount" width="auto"/>
+            <Input id="pgl_payAmountInput" value="" width="auto" change="onPayAmountChange" liveChange="onPayAmountChange"/>
+
+            <Label id="pgl_invoiceSumLabel" text="Total Invoice Sum" width="auto" visible="false"/>
+            <Input id="pgl_invoiceSumInput" value="" width="auto" editable="false" visible="false"/>
+
+            <Label id="pgl_balanceLabel" text="Balance" width="auto" visible="false"/>
+            <Input id="pgl_balanceInput" value="" width="auto" editable="false" visible="false"/>
+        </f:content>
+    </f:SimpleForm>
+    
+</core:FragmentDefinition>

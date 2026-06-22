@@ -1,0 +1,19 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    
+    <SelectDialog
+        id="houseBankAccountVHPGL"
+        title="Select House Bank Account"
+        search=".InputHelpsPGL.onSearchHouseBankAccount"
+        confirm=".InputHelpsPGL.onConfirmHouseBankAccount"
+        cancel=".InputHelpsPGL.onCloseHouseBankAccountDialog"
+        items="{/I_HouseBankAccountVH}">
+        <StandardListItem id="_IDGenStandardListItem3PGL"
+            title="{HouseBankAccount}"
+            description="{HouseBankAccountDescription}"
+            info="{BankAccount}"
+            type="Active"/>
+    </SelectDialog>
+    
+</core:FragmentDefinition>

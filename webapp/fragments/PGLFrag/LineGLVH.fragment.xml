@@ -1,0 +1,20 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    
+    <SelectDialog
+        id="glAccVHPGL"
+        title="Select G/L Account"
+        search=".InputHelpsPGL.onSearchLineGLAccount"
+        confirm=".InputHelpsPGL.onConfirmLineGLAccount"
+        cancel=".InputHelpsPGL.onCloseLineGLAccountDialog"
+        items="{/GLAccVH}">
+        <StandardListItem id="_IDGenStandardListItem4PGLline"
+            title="{GLAccount}"
+            description="{longText}"
+           
+            type="Active"/>
+    </SelectDialog>
+    
+</core:FragmentDefinition>
+ 

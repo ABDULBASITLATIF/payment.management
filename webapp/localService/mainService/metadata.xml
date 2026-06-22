@@ -203,6 +203,13 @@
                 <Property Name="DataController9" Type="Edm.String" MaxLength="30" sap:display-format="UpperCase" sap:label="Data Controller" sap:quickinfo="BP: Data Controller (Internal Use Only)"/>
                 <Property Name="DataController10" Type="Edm.String" MaxLength="30" sap:display-format="UpperCase" sap:label="Data Controller" sap:quickinfo="BP: Data Controller (Internal Use Only)"/>
             </EntityType>
+            <EntityType Name="I_WBSElementStdVHType" sap:label="WBS Element Details" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="WBSElement"/>
+                </Key>
+                <Property Name="WBSElement" Type="Edm.String" Nullable="false" MaxLength="24" sap:display-format="UpperCase" sap:text="WBSDescription" sap:label="WBS Element" sap:quickinfo="Work Breakdown Structure Element (WBS Element)"/>
+                <Property Name="WBSDescription" Type="Edm.String" MaxLength="40" sap:label="WBS Element Name" sap:quickinfo="Work Breakdown Structure Element Name"/>
+            </EntityType>
             <EntityType Name="spGLVHType" sap:label="CDS View for Special GL Indicator Value Help" sap:content-version="1">
                 <Key>
                     <PropertyRef Name="accType"/>
@@ -241,6 +248,8 @@
                 <Property Name="procStat" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Character Length 1" sap:quickinfo="Character Field of Length 1"/>
                 <Property Name="msg" Type="Edm.String" MaxLength="255" sap:label="Posting Message"/>
                 <Property Name="postDoc" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Clearing Document" sap:quickinfo="Document Number of the Clearing Document"/>
+                <Property Name="withRef" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="With Reference"/>
+                <Property Name="pdcFlg" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="PDC Flag"/>
                 <NavigationProperty Name="to_item" Relationship="ZFI_PAYMENT_MANAGEMENT_SRV.assoc_B8016EAB107248EC709ECEAA8E01519B" FromRole="FromRole_assoc_B8016EAB107248EC709ECEAA8E01519B" ToRole="ToRole_assoc_B8016EAB107248EC709ECEAA8E01519B"/>
             </EntityType>
             <EntityType Name="itemType" sap:label="CDS View for Payment Draft Items" sap:content-version="1">
@@ -253,8 +262,12 @@
                 <Property Name="itemTy" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Payment Item Type"/>
                 <Property Name="compCurr" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Currency" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
                 <Property Name="amntLC" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="compCurr" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
+                <Property Name="taxAmntLC" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="compCurr" sap:label="Tax Amount"/>
+                <Property Name="refAmntLC" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="compCurr" sap:label="Ref. Doc Amount in L" sap:quickinfo="Ref. Doc Amount in LC"/>
                 <Property Name="docCurr" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Currency" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
                 <Property Name="amntDC" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="docCurr" sap:label="Amount" sap:quickinfo="Amount in document currency"/>
+                <Property Name="taxAmntDC" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="docCurr" sap:label="Tax Amount in DC" sap:quickinfo="Tax Amount in Document Currency"/>
+                <Property Name="refAmntDC" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="docCurr" sap:label="Ref Doc Amount in DC" sap:quickinfo="Ref. Doc Amount in DC"/>
                 <Property Name="compCode" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Company Code"/>
                 <Property Name="refDoc" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Document Number" sap:quickinfo="Document Number of an Accounting Document"/>
                 <Property Name="refYear" Type="Edm.String" MaxLength="4" sap:display-format="NonNegative" sap:label="Fiscal Year"/>
@@ -267,6 +280,12 @@
                 <Property Name="debCredInd" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Debit/Credit Ind." sap:quickinfo="Debit/Credit Indicator"/>
                 <Property Name="postKey" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="Posting Key"/>
                 <Property Name="postingDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Posting Date" sap:quickinfo="Posting Date in the Document"/>
+                <Property Name="glAccount" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="G/L Account" sap:quickinfo="General Ledger Account"/>
+                <Property Name="costCntr" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Cost Center"/>
+                <Property Name="profitCntr" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Profit Center"/>
+                <Property Name="wbs" Type="Edm.String" MaxLength="24" sap:display-format="NonNegative" sap:label="WBS Element"/>
+                <Property Name="itemText" Type="Edm.String" MaxLength="50" sap:label="Text" sap:quickinfo="Item Text"/>
+                <Property Name="taxCode" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="Tax Code" sap:quickinfo="Tax on sales/purchases code"/>
             </EntityType>
             <EntityType Name="aprvrsType" sap:label="CDS View to get payment draft approvers" sap:content-version="1">
                 <Key>
@@ -360,6 +379,38 @@
                 <Property Name="GLAccount" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="G/L Account" sap:quickinfo="General Ledger Account"/>
                 <Property Name="glDesc" Type="Edm.String" MaxLength="50" sap:label="G/L Acct Long Text" sap:quickinfo="G/L Account Long Text"/>
             </EntityType>
+            <EntityType Name="costCenterVHType" sap:label="CDS View for Cost Center Value Help" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="CostCenter"/>
+                    <PropertyRef Name="ValidityEndDate"/>
+                </Key>
+                <Property Name="CostCenter" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="Cost Center"/>
+                <Property Name="ValidityEndDate" Type="Edm.DateTime" Nullable="false" Precision="0" sap:display-format="Date" sap:label="Valid To" sap:quickinfo="Valid To Date"/>
+                <Property Name="ValidityStartDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Valid From" sap:quickinfo="Valid-From Date"/>
+                <Property Name="CostCenterName" Type="Edm.String" MaxLength="20" sap:label="Name" sap:quickinfo="General Name"/>
+                <Property Name="CostCenterDesc" Type="Edm.String" MaxLength="40" sap:label="Description"/>
+            </EntityType>
+            <EntityType Name="GLAccVHType" sap:label="CDS View for GL account Search Help" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="CompanyCode"/>
+                    <PropertyRef Name="GLAccount"/>
+                </Key>
+                <Property Name="CompanyCode" Type="Edm.String" Nullable="false" MaxLength="4" sap:display-format="UpperCase" sap:label="Company Code"/>
+                <Property Name="GLAccount" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="G/L Account" sap:quickinfo="G/L Account Number"/>
+                <Property Name="shortText" Type="Edm.String" MaxLength="20" sap:label="Short Text" sap:quickinfo="G/L Account Short Text"/>
+                <Property Name="longText" Type="Edm.String" MaxLength="50" sap:label="G/L Acct Long Text" sap:quickinfo="G/L Account Long Text"/>
+            </EntityType>
+            <EntityType Name="profitCenterVHType" sap:label="CDS View for Profit Center Value Help" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="ProfitCenter"/>
+                    <PropertyRef Name="ValidityEndDate"/>
+                </Key>
+                <Property Name="ProfitCenter" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="Profit Center"/>
+                <Property Name="ValidityEndDate" Type="Edm.DateTime" Nullable="false" Precision="0" sap:display-format="Date" sap:label="Valid To" sap:quickinfo="Valid To Date"/>
+                <Property Name="ValidityStartDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Valid From" sap:quickinfo="Valid-From Date"/>
+                <Property Name="ProfitCenterName" Type="Edm.String" MaxLength="20" sap:label="Name" sap:quickinfo="General Name"/>
+                <Property Name="ProfitCenterText" Type="Edm.String" MaxLength="40" sap:label="Long Text"/>
+            </EntityType>
             <EntityType Name="suppVHType" sap:label="CDS View for company code based Supplier VH" sap:content-version="1">
                 <Key>
                     <PropertyRef Name="Supplier"/>
@@ -370,6 +421,17 @@
                 <Property Name="SupplierName" Type="Edm.String" MaxLength="35" sap:label="Supplier's Name"/>
                 <Property Name="BusinessPartnerName1" Type="Edm.String" MaxLength="40" sap:label="Name" sap:quickinfo="Name 1"/>
                 <Property Name="BusinessPartner" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Business Partner" sap:quickinfo="Business Partner Number"/>
+            </EntityType>
+            <EntityType Name="taxCodeVHType" sap:label="CDS View for Tax Code Value Help" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="TaxCode"/>
+                </Key>
+                <Property Name="TaxCode" Type="Edm.String" Nullable="false" MaxLength="2" sap:display-format="UpperCase" sap:text="TaxCodeDescription" sap:label="Tax Code" sap:quickinfo="Tax on sales/purchases code"/>
+                <Property Name="TaxCodeDescription" Type="Edm.String" MaxLength="50" sap:label="Tax Code Description" sap:quickinfo="Name for value-added tax"/>
+                <Property Name="TaxRate" Type="Edm.Decimal" Precision="12" Scale="3" sap:unit="RateUnit" sap:label="Tax Rate" sap:quickinfo="Condition amount or percentage where no scale exists"/>
+                <Property Name="RateUnit" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Rate Unit" sap:quickinfo="Condition Unit (Currency or Percentage)" sap:semantics="currency-code"/>
+                <Property Name="kmein" Type="Edm.String" MaxLength="3" sap:label="Unit of Measure" sap:quickinfo="Condition Unit" sap:semantics="unit-of-measure"/>
+                <Property Name="TaxProcedure" Type="Edm.String" MaxLength="6" sap:display-format="UpperCase" sap:label="Tax Calculation Procedure" sap:quickinfo="Procedure (Pricing, Output Control, Acct. Det., Costing,...)"/>
             </EntityType>
             <Association Name="assoc_C4F40A6ED515AE33D9A7FC47F73E499C" sap:content-version="1">
                 <End Type="ZFI_PAYMENT_MANAGEMENT_SRV.I_HousebankType" Multiplicity="1" Role="FromRole_assoc_C4F40A6ED515AE33D9A7FC47F73E499C"/>
@@ -405,6 +467,7 @@
                 <EntitySet Name="I_Housebank" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.I_HousebankType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="I_HouseBankAccountVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.I_HouseBankAccountVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:searchable="true" sap:content-version="1"/>
                 <EntitySet Name="I_Supplier_VH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.I_Supplier_VHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:searchable="true" sap:content-version="1"/>
+                <EntitySet Name="I_WBSElementStdVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.I_WBSElementStdVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:searchable="true" sap:content-version="1"/>
                 <EntitySet Name="spGLVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.spGLVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="head" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.headType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="item" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.itemType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
@@ -413,7 +476,11 @@
                 <EntitySet Name="dprItems" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.dprItemsType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="openItems" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.openItemsType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="bankGLS" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.bankGLSType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+                <EntitySet Name="costCenterVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.costCenterVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+                <EntitySet Name="GLAccVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.GLAccVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+                <EntitySet Name="profitCenterVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.profitCenterVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="suppVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.suppVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+                <EntitySet Name="taxCodeVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.taxCodeVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <AssociationSet Name="assoc_E602B8A74B4D5B24C6231CC77718C3E8" Association="ZFI_PAYMENT_MANAGEMENT_SRV.assoc_E602B8A74B4D5B24C6231CC77718C3E8" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
                     <End EntitySet="aprvrDetails" Role="FromRole_assoc_E602B8A74B4D5B24C6231CC77718C3E8"/>
                     <End EntitySet="item" Role="ToRole_assoc_E602B8A74B4D5B24C6231CC77718C3E8"/>

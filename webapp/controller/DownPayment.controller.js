@@ -20,9 +20,10 @@ sap.ui.define([
             this.getView().setModel(oModel, "openItems");
 
             const oPageModel = new JSONModel({
-                mode: "create",
-                draftId: null,
-                supplierName: "" 
+                mode:         "create",
+                draftId:      null,
+                supplierName: "",
+                isDPR:        false
             });
             this.getView().setModel(oPageModel, "pageModel");
 
@@ -35,10 +36,19 @@ sap.ui.define([
             const sDraftId = oArgs.draftId;
 
             if (sDraftId && sDraftId !== "new") {
-                this.getView().getModel("pageModel").setData({ mode: "edit", draftId: sDraftId });
+                const oPageModel = this.getView().getModel("pageModel");
+                oPageModel.setProperty("/mode",         "edit");
+                oPageModel.setProperty("/draftId",      sDraftId);
+                oPageModel.setProperty("/supplierName", "");
+                oPageModel.setProperty("/isDPR",        false);
                 this._loadDraft(sDraftId);
             } else {
-                this.getView().getModel("pageModel").setData({ mode: "create", draftId: null });
+                this.getView().getModel("pageModel").setData({
+                    mode:         "create",
+                    draftId:      null,
+                    supplierName: "",
+                    isDPR:        false
+                });
                 this._resetPage();
             }
         },
@@ -87,6 +97,11 @@ sap.ui.define([
             if (oPostPicker) { oPostPicker.setValue(""); }
             // ── Clear supplier name ───────────────────────────────────────────────
             this.getView().getModel("pageModel").setProperty("/supplierName", "");
+            // ── Reset checkbox ────────────────────────────────────────────────────
+            const oCheckBox = this.byId("CheckBoxDPR");
+            if (oCheckBox) { oCheckBox.setSelected(false); }
+            this.getView().getModel("pageModel").setProperty("/isDPR", false);
+
 
             this._bDisplayMode = false;
             this._applyDisplayMode("");
@@ -175,6 +190,18 @@ sap.ui.define([
             fnSetDate("dp_documentDatePicker", oHead.docDate);
             fnSetDate("dp_postingDatePicker",  oHead.postingDate);
 
+            // ── Restore DPR checkbox from withRef field ───────────────────────────
+            const bIsDPR = oHead.withRef === "X";
+            const oCheckBox = this.byId("CheckBoxDPR");
+            if (oCheckBox) { oCheckBox.setSelected(bIsDPR); }
+            this.getView().getModel("pageModel").setProperty("/isDPR", bIsDPR);
+
+            // ── Show/hide tables based on DPR state ──────────────────────────────
+            const oOpenItemsForm    = this.byId("dp_openItemsForm");
+            const oItemsToClearForm = this.byId("dp_itemsToClearForm");
+            if (oOpenItemsForm)    { oOpenItemsForm.setVisible(!bIsDPR);    }
+            if (oItemsToClearForm) { oItemsToClearForm.setVisible(!bIsDPR); }
+
             const oPageModel = this.getView().getModel("pageModel");
             oPageModel.setProperty("/postDoc",  oHead.postDoc  || "");
             oPageModel.setProperty("/msg",      oHead.msg      || "");
@@ -204,13 +231,17 @@ sap.ui.define([
             }
         },
 
-        _applyDisplayMode: function (sDraftSt) {
+       _applyDisplayMode: function (sDraftSt) {
             const bIsInApproval = sDraftSt === "2";
             const bIsCreated    = sDraftSt === "1";
             const bIsApproved   = sDraftSt === "3";
             const bIsRejected   = sDraftSt === "4";
             const bIsPosted     = sDraftSt === "5";
             const bIsPostErr    = sDraftSt === "6";
+
+            // ── Read DPR checkbox state ───────────────────────────────────────────
+            const oCheckBox = this.byId("CheckBoxDPR");
+            const bIsDPR    = oCheckBox ? oCheckBox.getSelected() : false;
 
             const oEditFormBox    = this.byId("dp_editFormBox");
             const oDisplayFormBox = this.byId("dp_displayFormBox");
@@ -229,8 +260,8 @@ sap.ui.define([
                     const oDate = oCtrl.getDateValue();
                     if (!oDate) { return ""; }
                     return String(oDate.getDate()).padStart(2, "0") + "/" +
-                           String(oDate.getMonth() + 1).padStart(2, "0") + "/" +
-                           oDate.getFullYear();
+                        String(oDate.getMonth() + 1).padStart(2, "0") + "/" +
+                        oDate.getFullYear();
                 }.bind(this);
 
                 oPageModel.setProperty("/compCode",    fnGet("dp_companyCodeInput"));
@@ -245,7 +276,7 @@ sap.ui.define([
                 oPageModel.setProperty("/payAmnt",     fnGet("dp_payAmountInput"));
                 oPageModel.setProperty("/invoiceSum",  fnGet("dp_invoiceSumInput"));
                 oPageModel.setProperty("/balance",     fnGet("dp_balanceInput"));
-                oPageModel.setProperty("/spGL", fnGet("dp_glvh"));    
+                oPageModel.setProperty("/spGL",        fnGet("dp_glvh"));
                 oPageModel.setProperty("/docDate",     fnGetDate("dp_documentDatePicker"));
                 oPageModel.setProperty("/postingDate", fnGetDate("dp_postingDatePicker"));
             }
@@ -284,60 +315,77 @@ sap.ui.define([
             const oPostButton      = this.byId("dp_postButton");
             const oResubmitButton  = this.byId("dp_resubmitButton");
             const oOpenItemForm    = this.byId("dp_openItemsForm");
+            const oItemsToClearForm = this.byId("dp_itemsToClearForm");
             const oAprvrTable      = this.byId("dp_aprvrTable");
 
             if (bIsInApproval) {
-                if (oSaveButton)     { oSaveButton.setVisible(false);    }
-                if (oUpdateButton)   { oUpdateButton.setVisible(false);  }
-                if (oSubmitButton)   { oSubmitButton.setVisible(false);  }
-                if (oPostButton)     { oPostButton.setVisible(false);    }
-                if (oOpenItemForm)   { oOpenItemForm.setVisible(false);  }
-                if (oAprvrTable)     { oAprvrTable.setVisible(true);     }
+                if (oSaveButton)      { oSaveButton.setVisible(false);               }
+                if (oUpdateButton)    { oUpdateButton.setVisible(false);             }
+                if (oSubmitButton)    { oSubmitButton.setVisible(false);             }
+                if (oPostButton)      { oPostButton.setVisible(false);               }
+                if (oOpenItemForm)    { oOpenItemForm.setVisible(false);             }
+                if (oItemsToClearForm){ oItemsToClearForm.setVisible(false);         }
+                if (oAprvrTable)      { oAprvrTable.setVisible(true);                }
+
             } else if (bIsApproved) {
-                if (oSaveButton)     { oSaveButton.setVisible(false);    }
-                if (oUpdateButton)   { oUpdateButton.setVisible(false);  }
-                if (oSubmitButton)   { oSubmitButton.setVisible(false);  }
-                if (oPostButton)     { oPostButton.setVisible(true);     }
-                if (oOpenItemForm)   { oOpenItemForm.setVisible(false);  }
-                if (oAprvrTable)     { oAprvrTable.setVisible(true);     }
+                if (oSaveButton)      { oSaveButton.setVisible(false);               }
+                if (oUpdateButton)    { oUpdateButton.setVisible(false);             }
+                if (oSubmitButton)    { oSubmitButton.setVisible(false);             }
+                if (oPostButton)      { oPostButton.setVisible(true);                }
+                if (oOpenItemForm)    { oOpenItemForm.setVisible(false);             }
+                if (oItemsToClearForm){ oItemsToClearForm.setVisible(false);         }
+                if (oAprvrTable)      { oAprvrTable.setVisible(true);                }
+
             } else if (bIsCreated) {
-                if (oSaveButton)     { oSaveButton.setVisible(false);    }
-                if (oUpdateButton)   { oUpdateButton.setVisible(true);   }
-                if (oSubmitButton)   { oSubmitButton.setVisible(true);   }
-                if (oPostButton)     { oPostButton.setVisible(false);    }
-                if (oOpenItemForm)   { oOpenItemForm.setVisible(true);   }
-                if (oAprvrTable)     { oAprvrTable.setVisible(false);    }
+                if (oSaveButton)      { oSaveButton.setVisible(false);               }
+                if (oUpdateButton)    { oUpdateButton.setVisible(true);              }
+                if (oSubmitButton)    { oSubmitButton.setVisible(true);              }
+                if (oPostButton)      { oPostButton.setVisible(false);               }
+                // ── Respect DPR checkbox ──────────────────────────────────────────
+                if (oOpenItemForm)    { oOpenItemForm.setVisible(!bIsDPR);           }
+                if (oItemsToClearForm){ oItemsToClearForm.setVisible(!bIsDPR);       }
+                if (oAprvrTable)      { oAprvrTable.setVisible(false);               }
+
             } else if (bIsRejected) {
-                if (oSaveButton)     { oSaveButton.setVisible(false);    }
-                if (oUpdateButton)   { oUpdateButton.setVisible(false);  }
-                if (oSubmitButton)   { oSubmitButton.setVisible(false);  }
-                if (oPostButton)     { oPostButton.setVisible(false);    }
-                if (oResubmitButton) { oResubmitButton.setVisible(true); }
-                if (oOpenItemForm)   { oOpenItemForm.setVisible(true);   }
-                if (oAprvrTable)     { oAprvrTable.setVisible(true);     }
+                if (oSaveButton)      { oSaveButton.setVisible(false);               }
+                if (oUpdateButton)    { oUpdateButton.setVisible(false);             }
+                if (oSubmitButton)    { oSubmitButton.setVisible(false);             }
+                if (oPostButton)      { oPostButton.setVisible(false);               }
+                if (oResubmitButton)  { oResubmitButton.setVisible(true);            }
+                // ── Respect DPR checkbox ──────────────────────────────────────────
+                if (oOpenItemForm)    { oOpenItemForm.setVisible(!bIsDPR);           }
+                if (oItemsToClearForm){ oItemsToClearForm.setVisible(!bIsDPR);       }
+                if (oAprvrTable)      { oAprvrTable.setVisible(true);                }
+
             } else if (bIsPosted) {
-                if (oSaveButton)     { oSaveButton.setVisible(false);    }
-                if (oUpdateButton)   { oUpdateButton.setVisible(false);  }
-                if (oSubmitButton)   { oSubmitButton.setVisible(false);  }
-                if (oPostButton)     { oPostButton.setVisible(false);    }
-                if (oOpenItemForm)   { oOpenItemForm.setVisible(false);  }
-                if (oAprvrTable)     { oAprvrTable.setVisible(true);     }
+                if (oSaveButton)      { oSaveButton.setVisible(false);               }
+                if (oUpdateButton)    { oUpdateButton.setVisible(false);             }
+                if (oSubmitButton)    { oSubmitButton.setVisible(false);             }
+                if (oPostButton)      { oPostButton.setVisible(false);               }
+                if (oOpenItemForm)    { oOpenItemForm.setVisible(false);             }
+                if (oItemsToClearForm){ oItemsToClearForm.setVisible(false);         }
+                if (oAprvrTable)      { oAprvrTable.setVisible(true);                }
+
             } else if (bIsPostErr) {
-                if (oSaveButton)     { oSaveButton.setVisible(false);    }
-                if (oUpdateButton)   { oUpdateButton.setVisible(false);  }
-                if (oSubmitButton)   { oSubmitButton.setVisible(false);  }
-                if (oPostButton)     { oPostButton.setVisible(true);     }
-                if (oOpenItemForm)   { oOpenItemForm.setVisible(false);  }
-                if (oAprvrTable)     { oAprvrTable.setVisible(true);     }
+                if (oSaveButton)      { oSaveButton.setVisible(false);               }
+                if (oUpdateButton)    { oUpdateButton.setVisible(false);             }
+                if (oSubmitButton)    { oSubmitButton.setVisible(false);             }
+                if (oPostButton)      { oPostButton.setVisible(true);                }
+                if (oOpenItemForm)    { oOpenItemForm.setVisible(false);             }
+                if (oItemsToClearForm){ oItemsToClearForm.setVisible(false);         }
+                if (oAprvrTable)      { oAprvrTable.setVisible(true);                }
+
             } else {
                 // Create mode
-                if (oSaveButton)     { oSaveButton.setVisible(true);     }
-                if (oUpdateButton)   { oUpdateButton.setVisible(false);  }
-                if (oSubmitButton)   { oSubmitButton.setVisible(true);   }
-                if (oPostButton)     { oPostButton.setVisible(false);    }
-                if (oResubmitButton) { oResubmitButton.setVisible(false);}
-                if (oOpenItemForm)   { oOpenItemForm.setVisible(true);   }
-                if (oAprvrTable)     { oAprvrTable.setVisible(false);    }
+                if (oSaveButton)      { oSaveButton.setVisible(true);                }
+                if (oUpdateButton)    { oUpdateButton.setVisible(false);             }
+                if (oSubmitButton)    { oSubmitButton.setVisible(true);              }
+                if (oPostButton)      { oPostButton.setVisible(false);               }
+                if (oResubmitButton)  { oResubmitButton.setVisible(false);           }
+                // ── Respect DPR checkbox ──────────────────────────────────────────
+                if (oOpenItemForm)    { oOpenItemForm.setVisible(!bIsDPR);           }
+                if (oItemsToClearForm){ oItemsToClearForm.setVisible(!bIsDPR);       }
+                if (oAprvrTable)      { oAprvrTable.setVisible(false);               }
             }
 
             this._bDisplayMode = bIsInApproval || bIsApproved || bIsPosted || bIsPostErr;
@@ -578,8 +626,8 @@ sap.ui.define([
 
             const oOpenTitle  = this.byId("dp_openItemsTitle");
             const oClearTitle = this.byId("dp_itemsToClearTitle");
-            if (oOpenTitle)  { oOpenTitle.setText("Open Items (" + aOpenItems.length + ")"); }
-            if (oClearTitle) { oClearTitle.setText("Items to Be Cleared (" + aItemsToBeCleared.length + ")"); }
+            if (oOpenTitle)  { oOpenTitle.setText("Down Payment Requests (" + aOpenItems.length + ")"); }
+            if (oClearTitle) { oClearTitle.setText("Down Payment Requests To Be Cleared (" + aItemsToBeCleared.length + ")"); }
 
             const fTotalInvoiceSum = aItemsToBeCleared.reduce(function (fSum, oItem) {
                 const f = parseFloat(oItem.amntLC);
@@ -961,43 +1009,84 @@ sap.ui.define([
         },
         _validateAndGetData: function (sAction) {
             const f = this._collectFormValues();
+
+            const oCheckBox = this.byId("CheckBoxDPR");
+            const bIsDPR    = oCheckBox ? oCheckBox.getSelected() : false;
+
             if (!f.sCompCode || !f.sVendor || !f.sBankKey || !f.sBankAcc || !f.oDocDate || !f.oPostDate) {
                 MessageBox.error("Please fill all required fields.");
                 return null;
             }
-            const oModel = this.getView().getModel("openItems");
-            const aItems = oModel.getProperty("/itemsToBeCleared");
-            if (aItems.length === 0) {
-                MessageBox.error("Please move at least one item to 'Items to Be Cleared'.");
-                return null;
-            }
-            const fSum     = aItems.reduce(function (s, o) { return s + (parseFloat(o.amntLC) || 0); }, 0);
-            const fPay     = parseFloat(f.sPayAmnt) || 0;
-            const fBalance = fPay - fSum;
-            if (Math.abs(fBalance) >= 0.001) {
-                MessageBox.error("Balance must be zero.\nPayment: " + fPay.toFixed(3) + "\nInvoice: " + fSum.toFixed(3) + "\nBalance: " + fBalance.toFixed(3));
-                return null;
-            }
-            return {
-                payload: {
-                    compCode:    f.sCompCode,
-                    fiscYear:    f.sFiscYear,
-                    draftType:   "2",
-                    docDate:     this._toODataDate2(f.oDocDate),
-                    postingDate: this._toODataDate2(f.oPostDate),
-                    reference:   f.sReference,
-                    headText:    f.sHeadText,
-                    bankKey:     f.sBankKey,
-                    bankAcc:     f.sBankAcc,
-                    bankGL:      f.sBankGL,
-                    vendor:      f.sVendor,
-                    curr:        f.sCurrency,
-                     spGL:        f.sSpGL, 
-                    payAmnt:     parseFloat(f.sPayAmnt).toFixed(3),
-                    action:      sAction,
-                    to_item:     this._buildToItems(aItems, f.sCompCode)
+
+            if (!bIsDPR) {
+                const oModel = this.getView().getModel("openItems");
+                const aItems = oModel.getProperty("/itemsToBeCleared");
+
+                if (aItems.length === 0) {
+                    MessageBox.error("Please move at least one item to 'Items to Be Cleared'.");
+                    return null;
                 }
+
+                const fSum     = aItems.reduce(function (s, o) { return s + (parseFloat(o.amntLC) || 0); }, 0);
+                const fPay     = parseFloat(f.sPayAmnt) || 0;
+                const fBalance = fPay - fSum;
+
+                if (Math.abs(fBalance) >= 0.001) {
+                    MessageBox.error(
+                        "Balance must be zero.\nPayment: " + fPay.toFixed(3) +
+                        "\nInvoice: " + fSum.toFixed(3) +
+                        "\nBalance: " + fBalance.toFixed(3)
+                    );
+                    return null;
+                }
+            }
+
+            const aItems = bIsDPR
+                ? []
+                : (this.getView().getModel("openItems").getProperty("/itemsToBeCleared") || []);
+
+            // ── Dummy to_item for DPR mode (data consistency) ─────────────────────
+            const aDummyToItems = [{
+                itemId:      "001",
+                itemTy:      "2",
+                amntLC:      parseFloat(f.sPayAmnt || "0").toFixed(3),
+                amntDC:      parseFloat(f.sPayAmnt || "0").toFixed(3),
+                compCode:    f.sCompCode,
+                refDoc:      "",
+                refYear:     "",
+                refLine:     "",
+                docType:     "",
+                baseDate:    null,
+                extRef:      "",
+                assignNo:    "",
+                docCurr:     f.sCurrency,
+                compCurr:    f.sCurrency,
+                postingDate: null
+            }];
+
+            const oPayload = {
+                compCode:    f.sCompCode,
+                fiscYear:    f.sFiscYear,
+                draftType:   "2",
+                docDate:     this._toODataDate2(f.oDocDate),
+                postingDate: this._toODataDate2(f.oPostDate),
+                reference:   f.sReference,
+                headText:    f.sHeadText,
+                bankKey:     f.sBankKey,
+                bankAcc:     f.sBankAcc,
+                bankGL:      f.sBankGL,
+                vendor:      f.sVendor,
+                curr:        f.sCurrency,
+                spGL:        f.sSpGL,
+                payAmnt:     parseFloat(f.sPayAmnt).toFixed(3),
+                action:      sAction,
+                // ── withRef: X if DPR checked, blank if not ───────────────────────
+                withRef:     bIsDPR ? "X" : "",
+                // ── to_item: dummy if DPR, real items if not ──────────────────────
+                to_item:     bIsDPR ? aDummyToItems : this._buildToItems(aItems, f.sCompCode)
             };
+
+            return { payload: oPayload };
         },
 
         onSave: function () {
@@ -1015,11 +1104,16 @@ sap.ui.define([
                     const sDraftId = oData.draftId;
                     const oInput = that.byId("dp_draftidInput");
                     if (oInput && sDraftId) { oInput.setValue(sDraftId); }
-                    that.getView().getModel("pageModel").setData({ mode: "edit", draftId: sDraftId });
+
+                    // ── Use setProperty instead of setData to preserve isDPR and supplierName ──
+                    const oPageModel = that.getView().getModel("pageModel");
+                    oPageModel.setProperty("/mode",    "edit");
+                    oPageModel.setProperty("/draftId", sDraftId);
+
                     const oSave   = that.byId("dp_saveButton");
                     const oUpdate = that.byId("dp_updateButton");
-                    if (oSave)   { oSave.setVisible(false);   }
-                    if (oUpdate) { oUpdate.setVisible(true);  }
+                    if (oSave)   { oSave.setVisible(false);  }
+                    if (oUpdate) { oUpdate.setVisible(true); }
                     MessageToast.show("Saved successfully. Draft ID: " + sDraftId);
                 },
                 error: function (oError) {
@@ -1157,6 +1251,26 @@ sap.ui.define([
         },
         onNavBack: function () {
             this.getOwnerComponent().getRouter().navTo("RouteNewDoc");
-        }
+        },
+        onDPRCheckBoxChange: function (oEvent) {
+            const bSelected = oEvent.getParameter("selected");
+            this.getView().getModel("pageModel").setProperty("/isDPR", bSelected);
+
+            const oOpenItemsForm    = this.byId("dp_openItemsForm");
+            const oItemsToClearForm = this.byId("dp_itemsToClearForm");
+
+            if (bSelected) {
+                // Clear data and hide tables
+                const oModel = this.getView().getModel("openItems");
+                oModel.setData({ openItems: [], itemsToBeCleared: [] });
+                this._updateTableTitles();
+                if (oOpenItemsForm)    { oOpenItemsForm.setVisible(false);    }
+                if (oItemsToClearForm) { oItemsToClearForm.setVisible(false); }
+            } else {
+                // Show tables again
+                if (oOpenItemsForm)    { oOpenItemsForm.setVisible(true);    }
+                if (oItemsToClearForm) { oItemsToClearForm.setVisible(true); }
+            }
+        },
     });
 });

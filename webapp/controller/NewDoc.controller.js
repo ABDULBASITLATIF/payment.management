@@ -191,6 +191,9 @@ _onRouteMatched: function() {
                 case "v3":
                     oRouter.navTo("RouteOnAccountPayment", { draftId: "new" });
                     break;
+                case "v4":
+                    oRouter.navTo("RoutePostGl", { draftId: "new" });
+                    break;     
                 default:
                     MessageToast.show("Please select a payment type.");
             }
@@ -232,6 +235,9 @@ onEditDraft: function (oEvent) {
         case "3":
             oRouter.navTo("RouteOnAccountPayment", { draftId: sDraftId });
             break;
+        case "4":
+            oRouter.navTo("RoutePostGl", { draftId: sDraftId });
+            break;    
         default:
             MessageToast.show("Unknown draft type: " + sDraftType);
     }
