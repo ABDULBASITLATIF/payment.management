@@ -1085,18 +1085,20 @@ sap.ui.define([
                 // ── to_item: dummy if DPR, real items if not ──────────────────────
                 to_item:     bIsDPR ? aDummyToItems : this._buildToItems(aItems, f.sCompCode)
             };
-
+             
             return { payload: oPayload };
         },
 
         onSave: function () {
             const that = this;
             const oResult = this._validateAndGetData("I");
+                  debugger;
             if (!oResult) { return; }
 
             const oDataModel = this.getOwnerComponent().getModel();
             oDataModel.setUseBatch(false);
             this._setBusyDialog(true);
+            
             oDataModel.create("/head", oResult.payload, {
                 success: function (oData) {
                     that._setBusyDialog(false);
@@ -1130,6 +1132,7 @@ sap.ui.define([
             const that = this;
             const sDraftId = this.getView().getModel("pageModel").getProperty("/draftId");
             const oResult  = this._validateAndGetData("U");
+      
             if (!oResult) { return; }
             oResult.payload.draftId = sDraftId;
 

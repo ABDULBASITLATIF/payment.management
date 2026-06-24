@@ -108,6 +108,24 @@ sap.ui.define([
             const oTable      = this.byId("pglitemtable");
             if (oEditButton) { oEditButton.setEnabled(false); }
             if (oTable)      { oTable.removeSelections(true); }
+
+            // Reset line item totals
+            const oDebitInput   = this.byId("pgl_totalDebitInput");
+            const oCreditInput  = this.byId("pgl_totalCreditInput");
+            const oBalanceInput = this.byId("pgl_lineBalanceInput");
+            if (oDebitInput)   { oDebitInput.setValue("");   }
+            if (oCreditInput)  { oCreditInput.setValue("");  }
+            if (oBalanceInput) {
+                oBalanceInput.setValue("");
+                oBalanceInput.setValueState(sap.ui.core.ValueState.None);
+            }
+
+            const oPageModel = this.getView().getModel("pageModel");
+            if (oPageModel) {
+                oPageModel.setProperty("/totalDebit",  "");
+                oPageModel.setProperty("/totalCredit", "");
+                oPageModel.setProperty("/lineBalance", "");
+            }
         },
 
         // ─────────────────────────────────────────────────────────────────────
@@ -224,29 +242,34 @@ sap.ui.define([
             // ── Populate line items from to_item expand ───────────────────────
             const aBackendItems = (oHead.to_item && oHead.to_item.results) ? oHead.to_item.results : [];
             const aMappedItems = aBackendItems.map(function (oItem) {
-                const bDebit   = oItem.debCredInd === "S";
-                const fAmt     = parseFloat(oItem.amntLC    || "0");
-                const fTaxAmt  = parseFloat(oItem.taxAmntLC || "0");
-                const fWithTax = parseFloat(oItem.refAmntLC || "0") || (fAmt + fTaxAmt);
+            const bDebit   = oItem.debCredInd === "S";
+            const fAmt     = parseFloat(oItem.amntLC    || "0");
+            const fTaxAmt  = parseFloat(oItem.taxAmntLC || "0");
+            const fWithTax = parseFloat(oItem.refAmntLC || "0") || (fAmt + fTaxAmt);
 
-                return {
-                    glAccount:     oItem.spGl       || "",
-                    amount:        oItem.amntLC     || "",
-                    costCenter:    oItem.costCntr   || "",
-                    profitCenter:  oItem.profitCntr || "",
-                    wbs:           oItem.wbs        || "",
-                    itemText:      oItem.itemText   || "",
-                    taxCode:       oItem.taxCode    || "",
-                    dcIndicator:   bDebit ? "Debit" : "Credit",
-                    taxAmount:     fTaxAmt.toFixed(3),
-                    amountWithTax: fWithTax.toFixed(3),
-                    itemId:        oItem.itemId     || ""
-                };
-            });
-            const oLineModel = this.getView().getModel("lineItems");
-            if (oLineModel) { oLineModel.setProperty("/items", aMappedItems); }
+            const sWbs = (oItem.wbs || "").replace(/^0+$/, "");
 
-            this._applyDisplayMode(oHead.draftSt);
+            return {
+                glAccount:     oItem.glAccount  ,   // correct field
+                amount:        oItem.amntLC  ,
+                costCenter:    oItem.costCntr   ,
+                profitCenter:  oItem.profitCntr   ,
+                wbs:           sWbs,
+                itemText:      oItem.itemText    ,
+                taxCode:       oItem.taxCode      ,
+                dcIndicator:   bDebit ? "Debit" : (oItem.debCredInd === "H" ? "Credit" : ""),
+                taxAmount:     fTaxAmt.toFixed(3),
+                amountWithTax: fWithTax.toFixed(3),
+                itemId:        oItem.itemId       
+            };
+        });
+                const oLineModel = this.getView().getModel("lineItems");
+                if (oLineModel) { oLineModel.setProperty("/items", aMappedItems); }
+
+                // Recalculate totals from loaded items
+                this._calcLineItemTotals();
+
+                this._applyDisplayMode(oHead.draftSt);
         },
 
         // ─────────────────────────────────────────────────────────────────────
@@ -461,25 +484,25 @@ sap.ui.define([
                     const sRefAmnt    = parseFloat(oRow.amountWithTax || "0").toFixed(3);
 
                     return {
-                        itemId:     sItemId,
-                        itemTy:     "1",
-                        amntLC:     sAmnt,
-                        amntDC:     sAmnt,
-                        taxAmntLC:  sTaxAmnt,
-                        taxAmntDC:  sTaxAmnt,
-                        refAmntLC:  sRefAmnt,
-                        refAmntDC:  sRefAmnt,
-                        compCode:   sCompCode,
-                        compCurr:   sCurr,
-                        docCurr:    sCurr,
-                        debCredInd: sDebCredInd,
-                        costCntr:   oRow.costCenter   || "",
-                        profitCntr: oRow.profitCenter || "",
-                        wbs:        oRow.wbs          || "",
-                        itemText:   oRow.itemText     || "",
-                        taxCode:    (oRow.taxCode || "").trim().substring(0, 2),
-                        glAccount:   oRow.glAccount    || ""
-                    };
+                    itemId:     sItemId,
+                    itemTy:     "1",
+                    amntLC:     sAmnt,
+                    amntDC:     sAmnt,
+                    taxAmntLC:  sTaxAmnt,
+                    taxAmntDC:  sTaxAmnt,
+                    refAmntLC:  sRefAmnt,
+                    refAmntDC:  sRefAmnt,
+                    compCode:   sCompCode,
+                    compCurr:   sCurr,
+                    docCurr:    sCurr,
+                    debCredInd: sDebCredInd,
+                    costCntr:   oRow.costCenter  || "",
+                    profitCntr: oRow.profitCenter|| "",
+                    wbs:        oRow.wbs         || "",
+                    itemText:   oRow.itemText    || "",
+                    taxCode:    (oRow.taxCode    || "").trim().substring(0, 2),
+                    glAccount:  oRow.glAccount   || ""   // correct field
+                };
                 });
             },
 
@@ -571,6 +594,15 @@ sap.ui.define([
             const that  = this;
             const oVals = this._collectFormValues();
             if (!this._validateForm(oVals)) { return; }
+            // ── Balance check — must be zero ─────────────────────────────────────
+            const fLineBalance = this._calcLineItemTotals();
+            if (Math.abs(fLineBalance) >= 0.001) {
+                MessageBox.error(
+                    "Document cannot be saved. Balance must be zero.\n" +
+                    "Current Balance: " + fLineBalance.toFixed(3)
+                );
+                return;
+}
 
             const oPayload = {
                 compCode:    oVals.sCompCode,
@@ -625,6 +657,15 @@ sap.ui.define([
             const sSavedDraftId = oPageModel.getProperty("/draftId");
             const oVals         = this._collectFormValues();
             if (!this._validateForm(oVals)) { return; }
+            // ── Balance check — must be zero ─────────────────────────────────────
+            const fLineBalance = this._calcLineItemTotals();
+            if (Math.abs(fLineBalance) >= 0.001) {
+                MessageBox.error(
+                    "Document cannot be saved. Balance must be zero.\n" +
+                    "Current Balance: " + fLineBalance.toFixed(3)
+                );
+                return;
+            }
 
             const oPayload = {
                 draftId:     sSavedDraftId,
@@ -642,11 +683,11 @@ sap.ui.define([
                 action:      "U",
                 to_item:     this._buildToItems(oVals.sCompCode, oVals.sCurrency)
             };
-
+            debugger;
             const oDataModel = this.getOwnerComponent().getModel();
             oDataModel.setUseBatch(false);
             this._setBusyDialog(true);
-
+            
             oDataModel.create("/head", oPayload, {
                 success: function () {
                     that._setBusyDialog(false);
@@ -674,6 +715,7 @@ sap.ui.define([
             const fnSubmit = function (sDraftId) {
                 oDataModel.setUseBatch(false);
                 that._setBusyDialog(true);
+                debugger;
                 oDataModel.create("/head", { draftId: sDraftId, action: "S" }, {
                     success: function () {
                         that._setBusyDialog(false);
@@ -714,9 +756,20 @@ sap.ui.define([
                     to_item:     this._buildToItems(oVals.sCompCode, oVals.sCurrency)
                 };
 
+                
+
                 const oDataModel2 = this.getOwnerComponent().getModel();
                 oDataModel2.setUseBatch(false);
                 this._setBusyDialog(true);
+                // In onSubmit, edit mode branch — add before oDataModel2.create
+                const fLineBalance = this._calcLineItemTotals();
+                if (Math.abs(fLineBalance) >= 0.001) {
+                    MessageBox.error(
+                        "Document cannot be submitted. Balance must be zero.\n" +
+                        "Current Balance: " + fLineBalance.toFixed(3)
+                    );
+                    return;
+                }
                 oDataModel2.create("/head", oPayload, {
                     success: function () {
                         oDataModel2.setUseBatch(true);
@@ -1017,6 +1070,9 @@ sap.ui.define([
                 oLineModel.setProperty("/items", aItems);
             }
 
+            // Recalculate totals after every add/edit
+            this._calcLineItemTotals();
+
             // Reset calc cache
             this._fCurrentTaxAmount  = 0;
             this._fCurrentAmtWithTax = 0;
@@ -1025,7 +1081,6 @@ sap.ui.define([
                 this._oPGLLineItemDialog.close();
             }
         },
-
         // ─────────────────────────────────────────────────────────────────────
         // Cancel dialog
         // ─────────────────────────────────────────────────────────────────────
@@ -1119,6 +1174,58 @@ sap.ui.define([
             this._fCurrentAmtWithTax  = fWithTax;
 
             oAmtWTax.setValue(fWithTax.toFixed(3));
+        },
+        // ─────────────────────────────────────────────────────────────────────
+        // Calculate Debit/Credit totals and Balance from line items
+        // H = Credit (positive), S = Debit (negative)
+        // ─────────────────────────────────────────────────────────────────────
+        _calcLineItemTotals: function () {
+            const oLineModel = this.getView().getModel("lineItems");
+            const aItems     = oLineModel ? (oLineModel.getProperty("/items") || []) : [];
+
+            let fTotalDebit  = 0;
+            let fTotalCredit = 0;
+
+            aItems.forEach(function (oRow) {
+                const fAmtWithTax = parseFloat(oRow.amountWithTax || "0") || 0;
+                if (oRow.dcIndicator === "Debit") {
+                    // S = Debit → negative
+                    fTotalDebit += fAmtWithTax;
+                } else if (oRow.dcIndicator === "Credit") {
+                    // H = Credit → positive
+                    fTotalCredit += fAmtWithTax;
+                }
+            });
+
+            // Balance = Credit - Debit (should be zero to allow save)
+            const fBalance = fTotalCredit - fTotalDebit;
+
+            // Update edit form inputs
+            const oDebitInput   = this.byId("pgl_totalDebitInput");
+            const oCreditInput  = this.byId("pgl_totalCreditInput");
+            const oBalanceInput = this.byId("pgl_lineBalanceInput");
+
+            if (oDebitInput)   { oDebitInput.setValue((-fTotalDebit).toFixed(3));  }
+            if (oCreditInput)  { oCreditInput.setValue(fTotalCredit.toFixed(3));   }
+            if (oBalanceInput) {
+                oBalanceInput.setValue(fBalance.toFixed(3));
+                oBalanceInput.setValueState(
+                    Math.abs(fBalance) < 0.001
+                        ? sap.ui.core.ValueState.None
+                        : sap.ui.core.ValueState.Error
+                );
+            }
+
+            // Update pageModel for display fragment
+            const oPageModel = this.getView().getModel("pageModel");
+            if (oPageModel) {
+                oPageModel.setProperty("/totalDebit",  (-fTotalDebit).toFixed(3));
+                oPageModel.setProperty("/totalCredit", fTotalCredit.toFixed(3));
+                oPageModel.setProperty("/lineBalance", fBalance.toFixed(3));
+            }
+
+            // Return balance for validation use
+            return fBalance;
         },
 
     });

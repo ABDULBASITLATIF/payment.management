@@ -70,34 +70,36 @@
                                 </OverflowToolbar>
                             </headerToolbar>
 
-                            <columns>
-                                <Column id="glacc"       width="auto"><header><Text id="_IDGenText53" text="GL Account"/></header></Column>
-                                <Column id="amount"      width="auto"><header><Text id="_IDGenText61" text="Amount"/></header></Column>
-                                <Column id="textcode"    width="auto"><header><Text id="_IDGenText66" text="Tax Code"/></header></Column>
-                                <Column id="debitCol"    width="auto"><header><Text id="_IDGenText67" text="Debit/Credit Ind."/></header></Column>
-                                <Column id="taxamountCol" width="auto"><header><Text id="_IDGenText6r" text="Tax Amount"/></header></Column>
-                                <Column id="amtwithtax"  width="auto"><header><Text id="_IDGenText68" text="Amount With Tax"/></header></Column>
-                                <Column id="costcentr"   width="auto"><header><Text id="_IDGenText62" text="Cost Center"/></header></Column>
-                                <Column id="profitcentr" width="auto"><header><Text id="_IDGenText63" text="Profit Center"/></header></Column>
-                                <Column id="itemtext"    width="auto"><header><Text id="_IDGenText65" text="Item Text"/></header></Column>
+                           <columns>
+                                <Column id="glacc"        width="auto"><header><Text id="_IDGenText53" text="GL Account"/></header></Column>
+                                <Column id="amount"       width="auto"><header><Text id="_IDGenText61" text="Amount"/></header></Column>
+                                <Column id="textcode"     width="auto"><header><Text id="_IDGenText62" text="Tax Code"/></header></Column>
+                                <Column id="debitCol"     width="auto"><header><Text id="_IDGenText63" text="Debit/Credit Ind."/></header></Column>
+                                <Column id="taxamountCol" width="auto"><header><Text id="_IDGenText64" text="Tax Amount"/></header></Column>
+                                <Column id="amtwithtax"   width="auto"><header><Text id="_IDGenText65" text="Amount With Tax"/></header></Column>
+                                <Column id="costcentr"    width="auto"><header><Text id="_IDGenText66" text="Cost Center"/></header></Column>
+                                <Column id="profitcentr"  width="auto"><header><Text id="_IDGenText67" text="Profit Center"/></header></Column>
+                                <Column id="wbselement"   width="auto"><header><Text id="_IDGenText68" text="WBS Element"/></header></Column>
+                                <Column id="itemtext"     width="auto"><header><Text id="_IDGenText69" text="Item Text"/></header></Column>
                             </columns>
 
                             <items>
                                 <ColumnListItem id="pgllistitem">
                                     <cells>
-                                        <Text id="_IDGenText64" text="{lineItems>glAccount}"/>
-                                        <Text id="_IDGenText69" text="{lineItems>amount}"/>
-                                        <Text id="_IDGenText70" text="{lineItems>taxCode}"/>
-                                        <Text id="_IDGenText71" text="{lineItems>dcIndicator}"/>
-                                        <Text id="_IDGenText72" text="{lineItems>taxAmount}"/>
-                                        <Text id="_IDGenText73" text="{lineItems>amountWithTax}"/>
-                                        <Text id="_IDGenText74" text="{lineItems>costCenter}"/>
-                                        <Text id="_IDGenText75" text="{lineItems>profitCenter}"/>
-                                        <Text id="_IDGenText76" text="{lineItems>itemText}"/>
+                                        <Text id="_IDGenText70" text="{lineItems>glAccount}"/>
+                                        <Text id="_IDGenText71" text="{lineItems>amount}"/>
+                                        <Text id="_IDGenText72" text="{lineItems>taxCode}"/>
+                                        <Text id="_IDGenText73" text="{lineItems>dcIndicator}"/>
+                                        <Text id="_IDGenText74" text="{lineItems>taxAmount}"/>
+                                        <Text id="_IDGenText75" text="{lineItems>amountWithTax}"/>
+                                        <Text id="_IDGenText76" text="{lineItems>costCenter}"/>
+                                        <Text id="_IDGenText77" text="{lineItems>profitCenter}"/>
+                                        <Text id="_IDGenText78" text="{lineItems>wbs}"/>
+                                        <Text id="_IDGenText79" text="{lineItems>itemText}"/>
                                     </cells>
                                 </ColumnListItem>
                             </items>
-                        </Table>
+                                                    </Table>
                     </f:content>
                 </f:SimpleForm>
                 

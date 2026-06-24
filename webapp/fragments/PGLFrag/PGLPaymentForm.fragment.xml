@@ -58,6 +58,15 @@
 
             <Label id="pgl_balanceLabel" text="Balance" width="auto" visible="false"/>
             <Input id="pgl_balanceInput" value="" width="auto" editable="false" visible="false"/>
+            
+            <Label id="pgl_totalDebitLabel" text="Total Debit" width="auto"/>
+            <Input id="pgl_totalDebitInput" value="" width="auto" editable="false"/>
+
+            <Label id="pgl_totalCreditLabel" text="Total Credit" width="auto"/>
+            <Input id="pgl_totalCreditInput" value="" width="auto" editable="false"/>
+
+            <Label id="pgl_lineBalanceLabel" text="Balance" width="auto"/>
+            <Input id="pgl_lineBalanceInput" value="" width="auto" editable="false"/>
         </f:content>
     </f:SimpleForm>
     

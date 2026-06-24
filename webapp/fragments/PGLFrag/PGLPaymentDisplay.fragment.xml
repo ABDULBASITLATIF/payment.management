@@ -62,6 +62,15 @@
             <Label id="pgl_postmsglabel"        text="Posting Message"       width="auto" visible="false"/>
             <TextArea id="pgl_postmsgText"      value="{pageModel>/msg}"     width="auto" visible="false" editable="false"/>
 
+            <Label id="pgl_totalDebitLabelD"  text="Total Debit"  width="auto"/>
+            <Text  id="pgl_totalDebitText"    text="{pageModel>/totalDebit}"  width="auto"/>
+
+            <Label id="pgl_totalCreditLabelD" text="Total Credit" width="auto"/>
+            <Text  id="pgl_totalCreditText"   text="{pageModel>/totalCredit}" width="auto"/>
+
+            <Label id="pgl_lineBalanceLabelD" text="Balance"      width="auto"/>
+            <Text  id="pgl_lineBalanceText"   text="{pageModel>/lineBalance}" width="auto"/>
+
         </f:content>
     </f:SimpleForm>
 
