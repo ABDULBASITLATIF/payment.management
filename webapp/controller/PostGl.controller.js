@@ -42,14 +42,26 @@ sap.ui.define([
                 oPageModel.setProperty("/mode",         "edit");
                 oPageModel.setProperty("/draftId",      sDraftId);
                 oPageModel.setProperty("/supplierName", "");
-                this._loadDraft(sDraftId);
+                this._loadDraft2(sDraftId);
+                
             } else {
+                this.getView().setModel(new JSONModel({
+                    "values":{"draftID":"","compCode":"",
+                    "docDate":"","postDate":"","refer":"","headText":"","bankID":"","bankAcc":"",
+                    "bankGL":"","curr":"","payAmnt":parseFloat(0),"debit":parseFloat(0),"credit":parseFloat(0),"balance":parseFloat(0)
+                    },
+                    "state":{"draftID":"None","compCode":"",
+                    "docDate":"","postDate":"","refer":"","headText":"","bankID":"","bankAcc":"",
+                    "bankGL":"","curr":"","payAmnt":"","debit":"","credit":"","balance":""
+                    }, "visSave":true,"visUpd":false,"visSub":false,"visAddR":true,"visEditR":true
+                }),"glData");
+                this.getView().setModel(new JSONModel({"items":[]},"lineItems"));
                 this.getView().getModel("pageModel").setData({
                     mode:         "create",
                     draftId:      null,
                     supplierName: ""
                 });
-                this._resetPage();
+                //this._resetPage();
             }
         },
 
@@ -179,6 +191,73 @@ sap.ui.define([
                 }
             });
         },
+
+        // ─────────────────────────────────────────────────────────────────────
+        // Load draft (Edit mode)
+        // ─────────────────────────────────────────────────────────────────────
+        _loadDraft2: function (sDraftId) {
+            const oDataModel = this.getOwnerComponent().getModel();
+            const that       = this;
+
+            this.getView().setBusy(true);
+
+            oDataModel.read("/head('" + sDraftId + "')", {
+                urlParameters: { "$expand": "to_item" },
+                
+                success: function (oHead) {
+                    var lineItems = [];
+                    that.getView().setBusy(false);
+                    var totCredit = parseFloat(0);
+                    var totDebit = parseFloat(0);
+                    for(var i=0;i<oHead.to_item.length;i++){
+                        var itemData = oHead.to_item[i];
+                        if (itemData.debCredInd === 'H')
+                            totCredit = totCredit +  parseFloat(itemData.amntDC);
+                        else
+                            totDebit = totDebit +  parseFloat(itemData.amntDC);
+                        
+                        lineItems.push({"glAccount": itemData.glAccount,"amount": parseFloat(itemData.amntDC), "costCenter": itemData.costCenter  , 
+                                        "profitCenter":  itemData.profitCntr, "wbs":itemData.wbs,"itemText":itemData.itemText,
+                                        "taxCode": itemData.taxCode,"dcIndicator": itemData.debCredInd,"taxAmount": parseFloat(itemData.taxAmntDC),
+                                        amountWithTax: parseFloat(itemData.taxAmntDC) + parseFloat(itemData.amntDC)});
+                    }
+                    that.getView().setModel(new JSONModel({
+                        "values":{"draftID":oHead.draftID,"compCode":oHead.compCode,
+                        "docDate":oHead.docDate,"postDate":oHead.postingDate,"refer":oHead.reference,"headText":oHead.headText,"bankID":oHead.bankKey,
+                        "bankAcc":oHead.bankAcc,"bankGL":oHead.bankGL,"curr":oHead.curr,"payAmnt":parseFloat(oHead.payAmnt),
+                        "debit":parseFloat(0),"credit":parseFloat(0),"balance":parseFloat(0)
+                        },
+                        "state":{"draftID":"None","compCode":"",
+                        "docDate":"","postDate":"","refer":"","headText":"","bankID":"","bankAcc":"",
+                        "bankGL":"","curr":"","payAmnt":"","debit":"","credit":"","balance":""
+                        }, "visSave":true,"visUpd":false,"visSub":false,"visAddR":true,"visEditR":true
+                    }),"glData");                    
+                    
+                    this.getView().setModel(new JSONModel({"items":lineItems},"lineItems"));
+
+                    // Load approvers for statuses 2–6
+                    if (["2","3","4","5","6"].indexOf(oHead.draftSt) !== -1) {
+                        const aApFilters = [new Filter("draftID", FilterOperator.EQ, sDraftId)];
+                        oDataModel.read("/aprvrs", {
+                            filters: aApFilters,
+                            success: function (oData) {
+                                const oAprvrModel = new JSONModel(oData.results);
+                                that.getView().setModel(oAprvrModel, "aprvrTab");
+                                const oAprvrTable = that.byId("gl_aprvrTable");
+                                if (oAprvrTable) { oAprvrTable.setVisible(true); }
+                            },
+                            error: function (oErr) {
+                                console.error("Approvers load error:", JSON.stringify(oErr));
+                            }
+                        });
+                    }
+                },
+                error: function () {
+                    that.getView().setBusy(false);
+                    MessageBox.error("Failed to load draft.");
+                }
+            });
+        },        
 
         // ─────────────────────────────────────────────────────────────────────
         // Populate form fields from backend data
@@ -568,76 +647,83 @@ sap.ui.define([
         // ─────────────────────────────────────────────────────────────────────
         // Pay Amount change
         // ─────────────────────────────────────────────────────────────────────
-        onPayAmountChange: function () {
-            const oPayInput     = this.byId("pgl_payAmountInput");
-            const oInvSumInput  = this.byId("pgl_invoiceSumInput");
-            const oBalanceInput = this.byId("pgl_balanceInput");
+        onPayAmountChange: function (oEvent) {
+            // this.getView().getModel("glData")
+            // const oPayInput     = this.byId("pgl_payAmountInput");
+            // const oInvSumInput  = this.byId("pgl_invoiceSumInput");
+            // const oBalanceInput = this.byId("pgl_balanceInput");
 
-            const fPayAmnt    = parseFloat(oPayInput    ? oPayInput.getValue()    : "0") || 0;
-            const fInvoiceSum = parseFloat(oInvSumInput ? oInvSumInput.getValue() : "0") || 0;
-            const fBalance    = fPayAmnt - fInvoiceSum;
+            // const fPayAmnt    = parseFloat(oPayInput    ? oPayInput.getValue()    : "0") || 0;
+            // const fInvoiceSum = parseFloat(oInvSumInput ? oInvSumInput.getValue() : "0") || 0;
+            // const fBalance    = fPayAmnt - fInvoiceSum;
 
-            if (oBalanceInput) {
-                oBalanceInput.setValue(fBalance.toFixed(3));
-                oBalanceInput.setValueState(
-                    Math.abs(fBalance) < 0.001
-                        ? sap.ui.core.ValueState.None
-                        : sap.ui.core.ValueState.Warning
-                );
-            }
+            // if (oBalanceInput) {
+            //     oBalanceInput.setValue(fBalance.toFixed(3));
+            //     oBalanceInput.setValueState(
+            //         Math.abs(fBalance) < 0.001
+            //             ? sap.ui.core.ValueState.None
+            //             : sap.ui.core.ValueState.Warning
+            //     );
+            // }
+        },
+        ///Revamp-01        
+        calcBalance(oEvent){
+            var glData = this.getView().getModel("glData").getData();
+            glData.values.balance = parseFloat(glData.values.payAmnt) + parseFloat(glData.values.credit) - parseFloat(glData.values.debit);
+            this.getView().getModel("glData").setDate(glData);
         },
 
         // ─────────────────────────────────────────────────────────────────────
         // Save (Create — action "I", draftType hardcoded "4")
         // ─────────────────────────────────────────────────────────────────────
         onSave: function () {
-            const that  = this;
-            const oVals = this._collectFormValues();
-            if (!this._validateForm(oVals)) { return; }
-            // ── Balance check — must be zero ─────────────────────────────────────
-            const fLineBalance = this._calcLineItemTotals();
-            if (Math.abs(fLineBalance) >= 0.001) {
-                MessageBox.error(
-                    "Document cannot be saved. Balance must be zero.\n" +
-                    "Current Balance: " + fLineBalance.toFixed(3)
-                );
-                return;
-}
+            var glData = this.getView().getModel("glData").getData();
 
             const oPayload = {
-                compCode:    oVals.sCompCode,
+                compCode:    glData.compCode,
                 draftType:   "4",                                          // hardcoded
-                docDate:     this._toODataDate2(oVals.oDocDate),
-                postingDate: this._toODataDate2(oVals.oPostDate),
-                reference:   oVals.sReference,
-                headText:    oVals.sHeadText,
-                bankKey:     oVals.sBankKey,
-                bankAcc:     oVals.sBankAcc,
-                bankGL:      oVals.sBankGL,
-                curr:        oVals.sCurrency,
-                payAmnt:     parseFloat(oVals.sPayAmnt || "0").toFixed(3),
-                action:      "I",
-                to_item:     this._buildToItems(oVals.sCompCode, oVals.sCurrency)
+                docDate:     this._toODataDate2(glData.docDate),
+                postingDate: this._toODataDate2(glData.postDate),
+                reference:   glData.refer,
+                headText:    glData.headText,
+                bankKey:     glData.bankID,
+                bankAcc:     glData.bankAcc,
+                bankGL:      glData.bankGL,
+                curr:        glData.curr,
+                payAmnt:     parseFloat(glData.payAmnt || "0").toFixed(3),
+                action:      "I"   ,
+                to_items: []             
             };
-
+            var lineItems = this.getView().getModel("itemData");
+            for (var i=0;i<lineItems.length;i++){
+                var item1 = lineItems[i];
+                
+                oPayload.to_items.push({ "itemId": (parseInt(i) + 1), "itemTy":"1", "amntLC":item1.amount, "amntDC":item1.amount,
+                    "taxAmntLC": item1.taxAmount,"taxAmntDC": item1.taxAmount,"compCode":glData.compCode,//"compCurr": ,
+                    "docCurr": item1.curr,"debCredInd": item1.dcIndicator,"costCntr": item1.costCenter,"profitCntr":item1.profitCenter,
+                    "wbs":item1.wbs,"itemText":item1.itemText, "taxCode":   item1.taxCode, "glAccount":item1.glAccount   
+                });             
+            }
+            
             const oDataModel = this.getOwnerComponent().getModel();
             oDataModel.setUseBatch(false);
             this._setBusyDialog(true);
-
+            var that = this;
             oDataModel.create("/head", oPayload, {
                 success: function (oCreatedData) {
                     that._setBusyDialog(false);
                     oDataModel.setUseBatch(true);
 
-                    const sDraftId = oCreatedData.draftId;
-                    const oDraftIdInput = that.byId("pgl_draftidInput");
-                    if (oDraftIdInput && sDraftId) { oDraftIdInput.setValue(sDraftId); }
-
-                    const oPageModel = that.getView().getModel("pageModel");
-                    oPageModel.setProperty("/mode",    "edit");
-                    oPageModel.setProperty("/draftId", sDraftId);
-
-                    that._updateSaveButton("edit");
+                    glData.visUpd = true;
+                    glData.visSave = false;
+                    glData.draftID = oCreatedData.draftId;
+                    
+                    that.getView().getModel("glData").setData(glData);
+                    var pageData = that.getView().getModel("pageModel").getData();
+                    pageData.mode = "edit";
+                    pageData.draftID = glData.draftID;
+                    that.getView().getModel("pageModel").setData(pageData);
+                    
                     MessageToast.show("Saved successfully. Draft ID: " + sDraftId);
                 },
                 error: function (oError) {
@@ -646,6 +732,62 @@ sap.ui.define([
                     that._showError(oError, "Failed to save.");
                 }
             });
+
+//             const that  = this;
+//             const oVals = this._collectFormValues();
+//             if (!this._validateForm(oVals)) { return; }
+//             // ── Balance check — must be zero ─────────────────────────────────────
+//             const fLineBalance = this._calcLineItemTotals();
+//             if (Math.abs(fLineBalance) >= 0.001) {
+//                 MessageBox.error(
+//                     "Document cannot be saved. Balance must be zero.\n" +
+//                     "Current Balance: " + fLineBalance.toFixed(3)
+//                 );
+//                 return;
+// }
+
+//             const oPayload = {
+//                 compCode:    oVals.sCompCode,
+//                 draftType:   "4",                                          // hardcoded
+//                 docDate:     this._toODataDate2(oVals.oDocDate),
+//                 postingDate: this._toODataDate2(oVals.oPostDate),
+//                 reference:   oVals.sReference,
+//                 headText:    oVals.sHeadText,
+//                 bankKey:     oVals.sBankKey,
+//                 bankAcc:     oVals.sBankAcc,
+//                 bankGL:      oVals.sBankGL,
+//                 curr:        oVals.sCurrency,
+//                 payAmnt:     parseFloat(oVals.sPayAmnt || "0").toFixed(3),
+//                 action:      "I",
+//                 to_item:     this._buildToItems(oVals.sCompCode, oVals.sCurrency)
+//             };
+
+//             const oDataModel = this.getOwnerComponent().getModel();
+//             oDataModel.setUseBatch(false);
+//             this._setBusyDialog(true);
+
+//             oDataModel.create("/head", oPayload, {
+//                 success: function (oCreatedData) {
+//                     that._setBusyDialog(false);
+//                     oDataModel.setUseBatch(true);
+
+//                     const sDraftId = oCreatedData.draftId;
+//                     const oDraftIdInput = that.byId("pgl_draftidInput");
+//                     if (oDraftIdInput && sDraftId) { oDraftIdInput.setValue(sDraftId); }
+
+//                     const oPageModel = that.getView().getModel("pageModel");
+//                     oPageModel.setProperty("/mode",    "edit");
+//                     oPageModel.setProperty("/draftId", sDraftId);
+
+//                     that._updateSaveButton("edit");
+//                     MessageToast.show("Saved successfully. Draft ID: " + sDraftId);
+//                 },
+//                 error: function (oError) {
+//                     that._setBusyDialog(false);
+//                     oDataModel.setUseBatch(true);
+//                     that._showError(oError, "Failed to save.");
+//                 }
+//             });
         },
 
         // ─────────────────────────────────────────────────────────────────────
@@ -915,6 +1057,14 @@ sap.ui.define([
         // Open line item dialog — Add mode
         // ─────────────────────────────────────────────────────────────────────
         onOpenLineItemDialog: function () {
+
+            this.getView().setModel(new JSONModel({
+                glAccount:     "",amount:   parseFloat(0), costCenter:  "", profitCenter:  "",
+                wbs:"",itemText:"",taxCode: "",dcIndicator: "",taxAmount: parseFloat(0),
+                amountWithTax: parseFloat(0)
+            }),"itemData");    
+
+
             this._sLineItemMode = "add";
             const that = this;
 
@@ -928,6 +1078,7 @@ sap.ui.define([
                     that.getView().addDependent(oDialog);
                     that._clearLineItemDialog();
                     oDialog.setTitle("Add Line Item");
+                    
                     oDialog.open();
                 });
             } else {
@@ -953,6 +1104,14 @@ sap.ui.define([
             if (!oRow) { return; }
 
             this._sLineItemMode = "edit";
+            // this.getView().setModel(new JSONModel({
+            //                 glAccount: oRow.glAccount,amount: parseFloat(oRow.amount), costCenter: oRow.costCenter, 
+            //                 profitCenter:  oRow.profitCenter,
+            //                 wbs:oRow.wbs,itemText:oRow.itemText,taxCode: oRow.taxCode,
+            //                 dcIndicator: oRow.dcIndicator,taxAmount: oRow.taxAmount,
+            //                 amountWithTax: parseFloat(0)
+            //             }),"itemData");
+            this.getView().setModel(new JSONModel(oRow),"itemData");                
             const that = this;
 
             const fnFill = function () {
@@ -1021,66 +1180,93 @@ sap.ui.define([
         // Add / Update row in JSON model
         // ─────────────────────────────────────────────────────────────────────
         onAddLineItem: function () {
-            const oView = this.getView();
-            const fnVal = function (sId) {
-                const oCtrl = oView.byId(sId);
-                return oCtrl ? oCtrl.getValue().trim() : "";
-            };
+            var glData = this.getView().getModel("glData").getData();
+            var itemData = this.getView().getModel("itemData").getData();
+            var lineItems = this.getView().getModel("lineItems").getData();
+            if ( itemData.amountWithTax === "")
+                itemData.amountWithTax = itemData.amount;
 
-            const oCombo  = oView.byId("pglDlg_dcCombo");
-            const sKey    = oCombo ? oCombo.getSelectedKey() : "";
-            const sKeyTxt = sKey === "D" ? "Debit" : sKey === "C" ? "Credit" : "";
+            lineItems.items.push(itemData);
+            if( itemData.dcIndicator === 'H')
+                glData.values.credit = parseFloat(glData.values.credit) + parseFloat(itemData.amountWithTax );
+            else
+                glData.values.debit = parseFloat(glData.values.debit) + parseFloat(itemData.amountWithTax );
+            glData.values.balance = parseFloat(glData.values.credit) + parseFloat(glData.values.payAmnt) - 
+                                            parseFloat(glData.values.debit);
 
-            if (!sKey) {
-                MessageBox.error("Please select Debit or Credit.");
-                return;
-            }
-
-            const fAmt      = parseFloat(fnVal("pglDlg_amount"))   || 0;
-            const fTaxAmt   = this._fCurrentTaxAmount   || 0;
-            const fWithTax  = this._fCurrentAmtWithTax  || fAmt;
-
-            const oRow = {
-                glAccount:     fnVal("pglDlg_glAccount"),
-                amount:        fAmt.toFixed(3),
-                costCenter:    fnVal("pglDlg_costCenter"),
-                profitCenter:  fnVal("pglDlg_profitCenter"),
-                wbs:           fnVal("pglDlg_wbs"),
-                itemText:      fnVal("pglDlg_itemText"),
-                taxCode:       fnVal("pglDlg_taxCode"),
-                dcIndicator:   sKeyTxt,
-                taxAmount:     fTaxAmt.toFixed(3),
-                amountWithTax: fWithTax.toFixed(3)
-            };
-
-            const oLineModel = this.getView().getModel("lineItems");
-            const aItems     = oLineModel.getProperty("/items") || [];
-
-            if (this._sLineItemMode === "edit" && this._iSelectedLineItemIndex >= 0) {
-                aItems[this._iSelectedLineItemIndex] = oRow;
-                oLineModel.setProperty("/items", aItems);
-
-                const oTable      = this.byId("pglitemtable");
-                const oEditButton = this.byId("pglItemsInfoedit");
-                if (oTable)      { oTable.removeSelections(true); }
-                if (oEditButton) { oEditButton.setEnabled(false); }
-                this._iSelectedLineItemIndex = -1;
-            } else {
-                aItems.push(oRow);
-                oLineModel.setProperty("/items", aItems);
-            }
-
-            // Recalculate totals after every add/edit
-            this._calcLineItemTotals();
-
-            // Reset calc cache
-            this._fCurrentTaxAmount  = 0;
-            this._fCurrentAmtWithTax = 0;
+            
+            this.getView().getModel("glData").setData(glData);
+            this.getView().getModel("itemData").setData(itemData);
+            this.getView().getModel("lineItems").setData(lineItems);
 
             if (this._oPGLLineItemDialog) {
                 this._oPGLLineItemDialog.close();
             }
+
+            // const oView = this.getView();
+            // const fnVal = function (sId) {
+            //     const oCtrl = oView.byId(sId);
+            //     return oCtrl ? oCtrl.getValue().trim() : "";
+            // };
+
+            // const oCombo  = oView.byId("pglDlg_dcCombo");
+            // const sKey    = oCombo ? oCombo.getSelectedKey() : "";
+            // const sKeyTxt = sKey === "D" ? "Debit" : sKey === "C" ? "Credit" : "";
+
+            // if (!sKey) {
+            //     MessageBox.error("Please select Debit or Credit.");
+            //     return;
+            // }
+
+            // const fAmt      = parseFloat(fnVal("pglDlg_amount"))   || 0;
+            // const fTaxAmt   = this._fCurrentTaxAmount   || 0;
+            // const fWithTax  = this._fCurrentAmtWithTax  || fAmt;
+
+            // const oRow = {
+            //     glAccount:     fnVal("pglDlg_glAccount"),
+            //     amount:        fAmt.toFixed(3),
+            //     costCenter:    fnVal("pglDlg_costCenter"),
+            //     profitCenter:  fnVal("pglDlg_profitCenter"),
+            //     wbs:           fnVal("pglDlg_wbs"),
+            //     itemText:      fnVal("pglDlg_itemText"),
+            //     taxCode:       fnVal("pglDlg_taxCode"),
+            //     dcIndicator:   sKeyTxt,
+            //     taxAmount:     fTaxAmt.toFixed(3),
+            //     amountWithTax: fWithTax.toFixed(3)
+            // };
+
+            // const oLineModel = this.getView().getModel("lineItems");
+            // const aItems     = oLineModel.getProperty("/items") || [];
+
+            // if (this._sLineItemMode === "edit" && this._iSelectedLineItemIndex >= 0) {
+            //     aItems[this._iSelectedLineItemIndex] = oRow;
+            //     oLineModel.setProperty("/items", aItems);
+
+            //     const oTable      = this.byId("pglitemtable");
+            //     const oEditButton = this.byId("pglItemsInfoedit");
+            //     if (oTable)      { oTable.removeSelections(true); }
+            //     if (oEditButton) { oEditButton.setEnabled(false); }
+            //     this._iSelectedLineItemIndex = -1;
+            // } else {
+            //     aItems.push(oRow);
+            //     oLineModel.setProperty("/items", aItems);
+            // }
+
+            // // Recalculate totals after every add/edit
+            // this._calcLineItemTotals();
+
+            // // Reset calc cache
+            // this._fCurrentTaxAmount  = 0;
+            // this._fCurrentAmtWithTax = 0;
+
+            // if (this._oPGLLineItemDialog) {
+            //     this._oPGLLineItemDialog.close();
+            // }
         },
+        ///Revamp-01
+        addNewItem(oEvent){
+
+        }   ,     
         // ─────────────────────────────────────────────────────────────────────
         // Cancel dialog
         // ─────────────────────────────────────────────────────────────────────

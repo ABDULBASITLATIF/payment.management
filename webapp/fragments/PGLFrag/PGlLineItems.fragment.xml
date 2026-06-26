@@ -17,45 +17,50 @@
                         <Label id="_IDGenLabel9"  text="GL Account"/>
                         <Input id="pglDlg_glAccount"
                                showValueHelp="true"
+                               value="{itemData>/glAccount}"
                                valueHelpRequest=".InputHelpsPGL.onLoadLineGLVH"/>
 
                         <Label id="_IDGenLabel10" text="Amount"/>
-                        <Input id="pglDlg_amount" liveChange=".onDlgAmountChange"/>
+                        <Input id="pglDlg_amount" liveChange=".onDlgAmountChange" value="{itemData>/amount}"/>
 
                         <Label id="_IDGenLabel16" text="Debit / Credit"/>
-                        <ComboBox id="pglDlg_dcCombo" selectedKey=""
-                                  selectionChange=".onDCChange">
-                            <core:Item id="_IDGenItem55" key="D" text="Debit"/>
-                            <core:Item id="_IDGenItem56" key="C" text="Credit"/>
+                        <ComboBox id="pglDlg_dcCombo" selectedKey="{itemData>/dcIndicator}"
+                                  selectionChange=".onDCChange" >
+                            <core:Item id="_IDGenItem55" key="S" text="Debit"/>
+                            <core:Item id="_IDGenItem56" key="H" text="Credit"/>
                         </ComboBox>
 
                         <Label id="_IDGenLabel11" text="Cost Center"/>
                         <Input id="pglDlg_costCenter"
                                showValueHelp="true"
-                               valueHelpRequest=".InputHelpsPGL.onLoadCostCenterVH"/>
+                               valueHelpRequest=".InputHelpsPGL.onLoadCostCenterVH"
+                               value="{itemData>/costCenter}"/>
 
                         <Label id="_IDGenLabel12" text="Profit Center"/>
                         <Input id="pglDlg_profitCenter"
                                showValueHelp="true"
-                               valueHelpRequest=".InputHelpsPGL.onLoadProfitCenterVH"/>
+                               valueHelpRequest=".InputHelpsPGL.onLoadProfitCenterVH"
+                               value="{itemData>/profitCenter}"/>
 
                         <Label id="_IDGenLabel13" text="WBS Element"/>
                         <Input id="pglDlg_wbs"
                                showValueHelp="true"
-                               valueHelpRequest=".InputHelpsPGL.onLoadWBSVH"/>
+                               valueHelpRequest=".InputHelpsPGL.onLoadWBSVH"
+                               value="{itemData>/wbs}"/>
 
                         <Label id="_IDGenLabel14" text="Item Text"/>
-                        <Input id="pglDlg_itemText"/>
+                        <Input id="pglDlg_itemText" value="{itemData>/itemText}"/>
 
                         <Label id="_IDGenLabel15" text="Tax Code"/>
                         <Input id="pglDlg_taxCode"
                                showValueHelp="true"
                                valueHelpRequest=".InputHelpsPGL.onLoadTaxCodeVH"
-                               change=".onDlgTaxCodeChange"/>
+                               change=".onDlgTaxCodeChange"
+                               value="{itemData>/taxCode}"/>
 
                         <!-- Amount With Tax — shown after DC selected -->
                         <Label id="pglDlg_amtWithTaxLabel" text="Amount With Tax" visible="false"/>
-                        <Input id="pglDlg_amtWithTax" visible="false" editable="false"/>
+                        <Input id="pglDlg_amtWithTax" visible="false" editable="false" value="{itemData>/amountWithTax}"/>
 
                     </f:content>
                 </f:SimpleForm>

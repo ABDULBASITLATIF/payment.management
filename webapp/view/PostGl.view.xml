@@ -65,8 +65,10 @@
                                 <OverflowToolbar id="pglItemsToolbar">
                                     <Title id="pglItemsTitle" text="GL Line Items" level="H5"/>
                                     <ToolbarSpacer id="pgl_openItemsSpacer"/>
-                                    <Button id="pglItemsInfoBtn"  icon="sap-icon://add"  text="Add"  press="onOpenLineItemDialog" type="Emphasized"/>
-                                    <Button id="pglItemsInfoedit" icon="sap-icon://edit" text="Edit" press="onEditLineItem" enabled="false"/>
+                                    <Button id="pglItemsInfoBtn"  icon="sap-icon://add"  text="Add"  press="onOpenLineItemDialog" type="Emphasized"
+                                            visible="{glData>/visAddR}"/>
+                                    <Button id="pglItemsInfoedit" icon="sap-icon://edit" text="Edit" press="onEditLineItem" enabled="false"
+                                            visible="{glData>/visEditR}"/>
                                 </OverflowToolbar>
                             </headerToolbar>
 
@@ -154,9 +156,9 @@
         <footer>
             <Toolbar id="_IDGenToolbargl">
                 <ToolbarSpacer id="_IDGenToolbarSpacergl"/>
-                <Button id="_IDGenButton25gl"  text="Save"      type="Emphasized" press="onSave"/>
-                <Button id="_IDGenButton27gl"  text="Update"    type="Emphasized" press="onUpdate"/>
-                <Button id="_IDGenButton26gl"  text="Submit"    type="Emphasized" press="onSubmit"/>
+                <Button id="_IDGenButton25gl"  text="Save"      type="Emphasized" press="onSave" visible="{glData>visSave}"/>
+                <Button id="_IDGenButton27gl"  text="Update"    type="Emphasized" press="onUpdate" visible="{glData>visUpd}"/>
+                <Button id="_IDGenButton26gl"  text="Submit"    type="Emphasized" press="onSubmit" visible="{glData>visSub}"/>
                 <Button id="_IDGenButton2622gl" text="Post"     type="Emphasized" press="onPost"      visible="false"/>
                 <Button id="resubmitButtongl"  text="Resubmit" type="Emphasized" press="onResubmit"  visible="false"/>
             </Toolbar>
