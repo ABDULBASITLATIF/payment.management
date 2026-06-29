@@ -47,7 +47,7 @@ sap.ui.define([
             const oSelectedItem = oEvent.getParameter("selectedItem");
             if (oSelectedItem) {
                 const sCompCode = oSelectedItem.getTitle();
-                this.byId("pgl_companyCodeInput").setValue(sCompCode);
+                this.getView().getModel("glData").setProperty("/values/compCode", sCompCode);
                 MessageToast.show("Company Code selected: " + sCompCode);
             }
         },
@@ -116,12 +116,7 @@ sap.ui.define([
                 const oContext      = oSelectedItem.getBindingContext();
                 const sSupplier     = oContext.getProperty("Supplier");
                 const sSupplierName = oContext.getProperty("SupplierName");
-
-                this.byId("pgl_supplierAccountInput").setValue(sSupplier);
-
-                this.getView().getModel("pageModel")
-                    .setProperty("/supplierName", sSupplierName || "");
-
+                this.getView().getModel("pageModel").setProperty("/supplierName", sSupplierName || "");
                 MessageToast.show("Supplier selected: " + sSupplier);
             }
         },
@@ -209,12 +204,11 @@ sap.ui.define([
 
             oEvent.getSource().getBinding("items").filter(aFilters);
         },
-
         onConfirmHouseBank: function (oEvent) {
             const oSelectedItem = oEvent.getParameter("selectedItem");
             if (oSelectedItem) {
                 const sHouseBank = oSelectedItem.getTitle();
-                this.byId("pgl_houseBankInput").setValue(sHouseBank);
+                this.getView().getModel("glData").setProperty("/values/bankID", sHouseBank);
                 MessageToast.show("House Bank selected: " + sHouseBank);
             }
         },
@@ -283,16 +277,16 @@ sap.ui.define([
 
             oEvent.getSource().getBinding("items").filter(aFilters);
         },
-
         onConfirmHouseBankAccount: function (oEvent) {
             const oSelectedItem = oEvent.getParameter("selectedItem");
             if (oSelectedItem) {
-                const oContext = oSelectedItem.getBindingContext();
+                const oContext          = oSelectedItem.getBindingContext();
                 const sHouseBankAccount = oContext.getProperty("HouseBankAccount");
-                this.byId("pgl_houseBankAccountInput").setValue(sHouseBankAccount);
+                this.getView().getModel("glData").setProperty("/values/bankAcc", sHouseBankAccount);
                 MessageToast.show("House Bank Account selected: " + sHouseBankAccount);
             }
         },
+
 
         onCloseHouseBankAccountDialog: function () {
             if (this._pGLHouseBankAccountDialog) {
@@ -361,11 +355,10 @@ sap.ui.define([
             const oSelectedItem = oEvent.getParameter("selectedItem");
             if (oSelectedItem) {
                 const sGLAccount = oSelectedItem.getTitle();
-                this.byId("pgl_glAccountInput").setValue(sGLAccount);
+                this.getView().getModel("glData").setProperty("/values/bankGL", sGLAccount);
                 MessageToast.show("G/L Account selected: " + sGLAccount);
             }
         },
-
         onCloseGLAccountDialog: function () {
             if (this._pGLGLAccountDialog) {
                 this._pGLGLAccountDialog.then(function (oDialog) {
@@ -411,7 +404,7 @@ sap.ui.define([
             const oSelectedItem = oEvent.getParameter("selectedItem");
             if (oSelectedItem) {
                 const sCostCenter = oSelectedItem.getTitle();
-                this.byId("pglDlg_costCenter").setValue(sCostCenter);
+                this.getView().getModel("itemData").setProperty("/costCenter", sCostCenter);
                 MessageToast.show("Cost Center selected: " + sCostCenter);
             }
         },
@@ -460,7 +453,7 @@ sap.ui.define([
             const oSelectedItem = oEvent.getParameter("selectedItem");
             if (oSelectedItem) {
                 const sProfitCenter = oSelectedItem.getTitle();
-                this.byId("pglDlg_profitCenter").setValue(sProfitCenter);
+                this.getView().getModel("itemData").setProperty("/profitCenter", sProfitCenter);
                 MessageToast.show("Profit Center selected: " + sProfitCenter);
             }
         },
@@ -509,7 +502,7 @@ sap.ui.define([
             const oSelectedItem = oEvent.getParameter("selectedItem");
             if (oSelectedItem) {
                 const sWBS = oSelectedItem.getTitle();
-                this.byId("pglDlg_wbs").setValue(sWBS);
+                this.getView().getModel("itemData").setProperty("/wbs", sWBS);
                 MessageToast.show("WBS Element selected: " + sWBS);
             }
         },
@@ -586,21 +579,29 @@ sap.ui.define([
             oEvent.getSource().getBinding("items").filter(aFilters);
         },
 
-            onConfirmTaxCode: function (oEvent) {
-                const oSelectedItem = oEvent.getParameter("selectedItem");
-                if (oSelectedItem) {
-                    const oContext = oSelectedItem.getBindingContext("taxCodes");
-                    const sTaxCode = oContext.getProperty("TaxCode");
-                    const sDesc    = oContext.getProperty("TaxCodeDescription");
-                    this.byId("pglDlg_taxCode").setValue(sTaxCode);
-                    MessageToast.show("Tax Code selected: " + sTaxCode + (sDesc ? " - " + sDesc : ""));
+        // onConfirmTaxCode: function (oEvent) {
+        //     const oSelectedItem = oEvent.getParameter("selectedItem");
+        //     if (oSelectedItem) {
+        //         const oContext = oSelectedItem.getBindingContext("taxCodes");
+        //         const sTaxCode = oContext.getProperty("TaxCode");
+        //         const sDesc    = oContext.getProperty("TaxCodeDescription");
+        //         this.getView().getModel("itemData").setProperty("/taxCode", sTaxCode);
+        //         MessageToast.show("Tax Code selected: " + sTaxCode + (sDesc ? " - " + sDesc : ""));
+        //         if (this._calcAmountWithTax) { this._calcAmountWithTax(); }
+        //     }
+        // },
 
-                    // Trigger recalc after tax code selected from VH
-                    if (this._calcAmountWithTax) {
-                        this._calcAmountWithTax();
-                    }
-                }
-            },
+        onConfirmTaxCode: function (oEvent) {
+            const oSelectedItem = oEvent.getParameter("selectedItem");
+            if (oSelectedItem) {
+                const oCtx   = oSelectedItem.getBindingContext("taxCodes");
+                const sTaxCode = oCtx.getProperty("TaxCode");
+                const sDesc    = oCtx.getProperty("TaxCodeDescription");
+                this.getView().getModel("itemData").setProperty("/taxCode", sTaxCode);
+                MessageToast.show("Tax Code selected: " + sTaxCode + (sDesc ? " - " + sDesc : ""));
+                if (this._calcAmountWithTax) { this._calcAmountWithTax(); }
+            }
+        },
 
         onCloseTaxCodeDialog: function () {
             if (this._pGLTaxCodeDialog) {
@@ -645,14 +646,13 @@ sap.ui.define([
 
        
         },
-
         onConfirmLineGLAccount: function (oEvent) {
             const oSelectedItem = oEvent.getParameter("selectedItem");
             if (oSelectedItem) {
                 const oContext   = oSelectedItem.getBindingContext();
                 const sGLAccount = oContext.getProperty("GLAccount");
                 const sLongText  = oContext.getProperty("longText");
-                this.byId("pglDlg_glAccount").setValue(sGLAccount);
+                this.getView().getModel("itemData").setProperty("/glAccount", sGLAccount);
                 MessageToast.show("G/L Account selected: " + sGLAccount + (sLongText ? " - " + sLongText : ""));
             }
         },
