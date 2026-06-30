@@ -53,11 +53,6 @@ sap.ui.define([
                         "payAmnt":  parseFloat(0), "debit": parseFloat(0),
                         "credit":   parseFloat(0), "balance": parseFloat(0)
                     },
-                    "state": {
-                        "draftID": "None", "compCode": "", "docDate": "", "postDate": "",
-                        "refer": "", "headText": "", "bankID": "", "bankAcc": "",
-                        "bankGL": "", "curr": "", "payAmnt": "", "debit": "", "credit": "", "balance": ""
-                    },
                     "state":{"draftID":"None","compCode":"None",
                     "docDate":"None","postDate":"None","refer":"None","headText":"None","bankID":"None","bankAcc":"None",
                     "bankGL":"None","curr":"None","payAmnt":"None","debit":"None","credit":"None","balance":"None"
@@ -267,11 +262,10 @@ sap.ui.define([
                             "credit":   totCredit,
                             "balance":  parseFloat(oHead.payAmnt || 0) + totCredit - totDebit
                         },
-                        "state": {
-                            "draftID": "None", "compCode": "", "docDate": "", "postDate": "",
-                            "refer": "", "headText": "", "bankID": "", "bankAcc": "",
-                            "bankGL": "", "curr": "", "payAmnt": "", "debit": "", "credit": "", "balance": ""
-                        },
+                        "state":{"draftID":"None","compCode":"None",
+                    "docDate":"None","postDate":"None","refer":"None","headText":"None","bankID":"None","bankAcc":"None",
+                    "bankGL":"None","curr":"None","payAmnt":"None","debit":"None","credit":"None","balance":"None"
+                    }, 
                         "visSave": false, "visUpd": false, "visSub": false,
                         "visAddR": true,  "visEditR": true
                     }), "glData");
