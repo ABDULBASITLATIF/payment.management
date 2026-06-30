@@ -13,10 +13,13 @@
         columnsXL="4">
         <f:content>
             <Label id="pgl_draftidLabel" text="Draft ID" required="true" width="auto"/>
-            <Input id="pgl_draftidInput" value="{glData>/values/draftID}" editable="false" width="auto"/>
+            <Input id="pgl_draftidInput" value="{glData>/values/draftID}" editable="false" width="auto"
+                    valueState="{glData>/state/draftID}" />
             
             <Label id="pgl_companyCodeLabel" text="Company Code" required="true" width="auto"/>
-            <Input id="pgl_companyCodeInput" value="{glData>/values/compCode}" maxLength="4" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadCCVH"/>
+            <Input id="pgl_companyCodeInput" value="{glData>/values/compCode}" maxLength="4" width="auto" showValueHelp="true" 
+            valueHelpRequest=".InputHelpsPGL.onLoadCCVH" valueState="{glData>/state/compCode}"
+                    submit=".FieldValidations.validCompCode"/>
             
             <Label id="pgl_documentDateLabel" text="Document Date" required="true" width="auto"/>
             <DatePicker id="pgl_documentDatePicker" 
@@ -37,18 +40,24 @@
             <Input id="pgl_headerTextInput" value="{glData>/values/headText}" maxLength="25" width="auto"/>
             
             <Label id="pgl_houseBankLabel" text="House Bank" required="true" width="auto"/>
-            <Input id="pgl_houseBankInput" value="{glData>/values/bankID}" maxLength="5" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadHouseBankVH"/>
+            <Input id="pgl_houseBankInput" value="{glData>/values/bankID}" maxLength="5" width="auto" 
+                    showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadHouseBankVH"
+                    valueState="{glData>/state/bankID}"/>
             
             <Label id="pgl_houseBankAccountLabel" text="House Bank Account ID" required="true" width="auto"/>
-            <Input id="pgl_houseBankAccountInput" value="{glData>/values/bankAcc}" maxLength="5" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadHouseBankAccountVH"/>
+            <Input id="pgl_houseBankAccountInput" value="{glData>/values/bankAcc}" maxLength="5" width="auto" 
+                    showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadHouseBankAccountVH"
+                    valueState="{glData>/state/bankAcc}"/>
         
             <Label id="pgl_glAccountLabel" text="G/L Account" required="true" width="auto"/>
-            <Input id="pgl_glAccountInput" value="{glData>/values/bankGL}" maxLength="10" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadGLVH"/>
-            
+            <Input id="pgl_glAccountInput" value="{glData>/values/bankGL}" maxLength="10" width="auto"
+                    showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadGLVH"
+                    valueState="{glData>/state/bankGL}"/>            
          
             
             <Label id="pgl_currencyLabel" text="Currency" required="true" width="auto"/>
-            <Input id="pgl_currencyInput" value="{glData>/values/curr}" maxLength="5" width="auto"/>
+            <Input id="pgl_currencyInput" value="{glData>/values/curr}" 
+                    maxLength="5" width="auto" valueState="{glData>/state/curr}"/>
             
             <Label id="pgl_payAmountLabel" text="Total Pay. Amount" width="auto"/>
             <Input id="pgl_payAmountInput" value="{glData>/values/payAmnt}" width="auto" change="onPayAmountChange" submit="calcBalance"/>
@@ -57,7 +66,8 @@
             <Input id="pgl_invoiceSumInput" value="{glData>/values/}" width="auto" editable="false" visible="false"/>
 
             <Label id="pgl_balanceLabel" text="Balance" width="auto" visible="false"/>
-            <Input id="pgl_balanceInput" value="{glData>/values/balance}" width="auto" editable="false" visible="false"/>
+            <Input id="pgl_balanceInput" value="{glData>/values/balance}" width="auto" 
+                    editable="false" visible="false" valueState="{glData>/state/balance}"/>
             
             <Label id="pgl_totalDebitLabel" text="Total Debit" width="auto"/>
             <Input id="pgl_totalDebitInput" value="{glData>/values/debit}" width="auto" editable="false"/>

@@ -5,12 +5,14 @@ sap.ui.define([
     "sap/ui/model/FilterOperator",
     "sap/m/MessageBox",
     "sap/m/MessageToast",
-    "../modules/InputHelpsPGL"
-], function(Controller, JSONModel, Filter, FilterOperator, MessageBox, MessageToast, InputHelpsPGL) {
+    "../modules/InputHelpsPGL",
+    "../modules/FieldValidations"
+], function(Controller, JSONModel, Filter, FilterOperator, MessageBox, MessageToast, InputHelpsPGL,FieldValidations) {
     "use strict";
 
     return Controller.extend("zfi.payment.management.controller.PostGL", {
         InputHelpsPGL: InputHelpsPGL,
+        FieldValidations: FieldValidations,
 
         // ─────────────────────────────────────────────────────────────────────
         // Init & Routing
@@ -50,9 +52,9 @@ sap.ui.define([
                     "docDate":"","postDate":"","refer":"","headText":"","bankID":"","bankAcc":"",
                     "bankGL":"","curr":"","payAmnt":parseFloat(0),"debit":parseFloat(0),"credit":parseFloat(0),"balance":parseFloat(0)
                     },
-                    "state":{"draftID":"None","compCode":"",
-                    "docDate":"","postDate":"","refer":"","headText":"","bankID":"","bankAcc":"",
-                    "bankGL":"","curr":"","payAmnt":"","debit":"","credit":"","balance":""
+                    "state":{"draftID":"None","compCode":"None",
+                    "docDate":"None","postDate":"None","refer":"None","headText":"None","bankID":"None","bankAcc":"None",
+                    "bankGL":"None","curr":"None","payAmnt":"None","debit":"None","credit":"None","balance":"None"
                     }, "visSave":true,"visUpd":false,"visSub":false,"visAddR":true,"visEditR":true
                 }),"glData");
                 this.getView().setModel(new JSONModel({"items":[]},"lineItems"));
