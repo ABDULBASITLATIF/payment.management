@@ -56,6 +56,7 @@
                                showValueHelp="true"
                                valueHelpRequest=".InputHelpsPGL.onLoadTaxCodeVH"
                                change=".onDlgTaxCodeChange"
+                               submit=".onDlgTaxCodeChange"
                                value="{itemData>/taxCode}"/>
 
                         <!-- Amount With Tax — shown after DC selected -->

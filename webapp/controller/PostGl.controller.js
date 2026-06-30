@@ -225,9 +225,9 @@ sap.ui.define([
                         var itemData = aResults[i];
 
                         if (itemData.debCredInd === "H") {
-                            totCredit = totCredit + parseFloat(itemData.amntDC);
+                            totCredit = totCredit + parseFloat(itemData.amntDC) + parseFloat(itemData.taxAmntDC);
                         } else {
-                            totDebit = totDebit + parseFloat(itemData.amntDC);
+                            totDebit = totDebit + parseFloat(itemData.amntDC)  + parseFloat(itemData.taxAmntDC);
                         }
 
                         lineItems.push({
@@ -773,6 +773,7 @@ sap.ui.define([
                     "taxAmntDC":  parseFloat(item1.taxAmount || 0).toFixed(3),
                     "compCode":   glValues.compCode,
                     "docCurr":    glValues.curr,
+                    "compCurr":   glValues.curr,
                     "debCredInd": item1.dcIndicator === "S" ? "S" : "H",
                     "costCntr":   item1.costCenter   || "",
                     "profitCntr": item1.profitCenter || "",
@@ -869,6 +870,7 @@ sap.ui.define([
                     "taxAmntDC":  parseFloat(item1.taxAmount || 0).toFixed(3),
                     "compCode":   glData.values.compCode,
                     "docCurr":    glData.values.curr,
+                    "compCurr":   glData.values.curr,
                     "debCredInd": item1.dcIndicator === "S" ? "S" : "H",
                     "costCntr":   item1.costCenter   || "",
                     "profitCntr": item1.profitCenter || "",
@@ -986,6 +988,7 @@ sap.ui.define([
                         "taxAmntDC":  parseFloat(item1.taxAmount || 0).toFixed(3),
                         "compCode":   glData.values.compCode,
                         "docCurr":    glData.values.curr,
+                        "compCurr":   glData.values.curr,
                         "debCredInd": item1.dcIndicator === "S" ? "S" : "H",
                         "costCntr":   item1.costCenter   || "",
                         "profitCntr": item1.profitCenter || "",
@@ -1041,6 +1044,7 @@ sap.ui.define([
                         "taxAmntDC":  parseFloat(item1.taxAmount || 0).toFixed(3),
                         "compCode":   glData.values.compCode,
                         "docCurr":    glData.values.curr,
+                        "compCurr":   glData.values.curr,
                         "debCredInd": item1.dcIndicator === "S" ? "S" : "H",
                         "costCntr":   item1.costCenter   || "",
                         "profitCntr": item1.profitCenter || "",
@@ -1282,9 +1286,80 @@ sap.ui.define([
         // ─────────────────────────────────────────────────────────────────────
         // Add / Update row in JSON model
         // ─────────────────────────────────────────────────────────────────────
+        // onAddLineItem: function () {
+        //     var oGlModel   = this.getView().getModel("glData");
+        //     var glData     = oGlModel.getData();
+        //     var itemData   = this.getView().getModel("itemData").getData();
+        //     var oLineModel = this.getView().getModel("lineItems");
+        //     var lineItems  = oLineModel.getData();
+
+        //     if (itemData.amountWithTax === "" || itemData.amountWithTax === 0) {
+        //         itemData.amountWithTax = itemData.amount;
+        //     }
+
+        //     // Normalize dcIndicator: ComboBox uses key "S"/"H", model stores "Debit"/"Credit"
+        //     // Handle both so edit round-trips work correctly
+        //     // Normalize whatever the ComboBox key returns → display text
+        //     // var sDCKey = itemData.dcIndicator;
+        //     // if (sDCKey === "S" || sDCKey === "Debit")   { itemData.dcIndicator = "Debit";  }
+        //     // if (sDCKey === "H" || sDCKey === "Credit")  { itemData.dcIndicator = "Credit"; }
+
+        //     if (this._sLineItemMode === "edit" && this._iSelectedLineItemIndex >= 0) {
+        //         // ── EDIT MODE: replace the existing row, recalc totals from scratch ──
+        //         lineItems.items[this._iSelectedLineItemIndex] = itemData;
+
+        //         // Recalculate debit/credit totals from all items
+        //         var fTotalDebit  = 0;
+        //         var fTotalCredit = 0;
+        //         lineItems.items.forEach(function (oRow) {
+        //             var fAmt = parseFloat(oRow.amountWithTax || oRow.amount || 0);
+        //             if (oRow.dcIndicator === "Credit") {
+        //                 fTotalCredit += fAmt;
+        //             } else {
+        //                 fTotalDebit  += fAmt;
+        //             }
+        //         });
+
+        //         glData.values.debit   = fTotalDebit;
+        //         glData.values.credit  = fTotalCredit;
+        //         glData.values.balance = parseFloat(glData.values.payAmnt || 0)
+        //                                 + fTotalCredit - fTotalDebit;
+
+        //         // Reset selection state
+        //         this._iSelectedLineItemIndex = -1;
+        //         this._sLineItemMode          = "add";
+
+        //         var oTable      = this.byId("pglitemtable");
+        //         var oEditButton = this.byId("pglItemsInfoedit");
+        //         if (oTable)      { oTable.removeSelections(true); }
+        //         if (oEditButton) { oEditButton.setEnabled(false); }
+
+        //     } else {
+        //         // ── ADD MODE: push new row ──
+        //         lineItems.items.push(itemData);
+
+        //         if (itemData.dcIndicator === "H") {
+        //             glData.values.credit = parseFloat(glData.values.credit || 0)
+        //                                 + parseFloat(itemData.amountWithTax || itemData.amount || 0);
+        //         } else {
+        //             glData.values.debit  = parseFloat(glData.values.debit  || 0)
+        //                                 + parseFloat(itemData.amountWithTax || itemData.amount || 0);
+        //         }
+
+        //         glData.values.balance = parseFloat(glData.values.payAmnt || 0)
+        //                             + parseFloat(glData.values.credit  || 0)
+        //                             - parseFloat(glData.values.debit   || 0);
+        //     }
+
+        //     oGlModel.setData(glData);
+        //     this.getView().getModel("lineItems").setData(lineItems);
+
+        //     if (this._oPGLLineItemDialog) {
+        //         this._oPGLLineItemDialog.close();
+        //     }
+        // },
         onAddLineItem: function () {
             var oGlModel   = this.getView().getModel("glData");
-            var glData     = oGlModel.getData();
             var itemData   = this.getView().getModel("itemData").getData();
             var oLineModel = this.getView().getModel("lineItems");
             var lineItems  = oLineModel.getData();
@@ -1293,35 +1368,8 @@ sap.ui.define([
                 itemData.amountWithTax = itemData.amount;
             }
 
-            // Normalize dcIndicator: ComboBox uses key "S"/"H", model stores "Debit"/"Credit"
-            // Handle both so edit round-trips work correctly
-            // Normalize whatever the ComboBox key returns → display text
-            // var sDCKey = itemData.dcIndicator;
-            // if (sDCKey === "S" || sDCKey === "Debit")   { itemData.dcIndicator = "Debit";  }
-            // if (sDCKey === "H" || sDCKey === "Credit")  { itemData.dcIndicator = "Credit"; }
-
             if (this._sLineItemMode === "edit" && this._iSelectedLineItemIndex >= 0) {
-                // ── EDIT MODE: replace the existing row, recalc totals from scratch ──
                 lineItems.items[this._iSelectedLineItemIndex] = itemData;
-
-                // Recalculate debit/credit totals from all items
-                var fTotalDebit  = 0;
-                var fTotalCredit = 0;
-                lineItems.items.forEach(function (oRow) {
-                    var fAmt = parseFloat(oRow.amountWithTax || oRow.amount || 0);
-                    if (oRow.dcIndicator === "Credit") {
-                        fTotalCredit += fAmt;
-                    } else {
-                        fTotalDebit  += fAmt;
-                    }
-                });
-
-                glData.values.debit   = fTotalDebit;
-                glData.values.credit  = fTotalCredit;
-                glData.values.balance = parseFloat(glData.values.payAmnt || 0)
-                                        + fTotalCredit - fTotalDebit;
-
-                // Reset selection state
                 this._iSelectedLineItemIndex = -1;
                 this._sLineItemMode          = "add";
 
@@ -1329,26 +1377,12 @@ sap.ui.define([
                 var oEditButton = this.byId("pglItemsInfoedit");
                 if (oTable)      { oTable.removeSelections(true); }
                 if (oEditButton) { oEditButton.setEnabled(false); }
-
             } else {
-                // ── ADD MODE: push new row ──
                 lineItems.items.push(itemData);
-
-                if (itemData.dcIndicator === "H") {
-                    glData.values.credit = parseFloat(glData.values.credit || 0)
-                                        + parseFloat(itemData.amountWithTax || itemData.amount || 0);
-                } else {
-                    glData.values.debit  = parseFloat(glData.values.debit  || 0)
-                                        + parseFloat(itemData.amountWithTax || itemData.amount || 0);
-                }
-
-                glData.values.balance = parseFloat(glData.values.payAmnt || 0)
-                                    + parseFloat(glData.values.credit  || 0)
-                                    - parseFloat(glData.values.debit   || 0);
             }
 
-            oGlModel.setData(glData);
             this.getView().getModel("lineItems").setData(lineItems);
+            this._calcLineItemTotals();   // ← single source of truth for debit/credit/balance
 
             if (this._oPGLLineItemDialog) {
                 this._oPGLLineItemDialog.close();
@@ -1363,6 +1397,64 @@ sap.ui.define([
                 this._oPGLLineItemDialog.close();
             }
         },
+        // onDeleteLineItem: function () {
+        //     const iIndex = this._iSelectedLineItemIndex;
+        //     if (iIndex === undefined || iIndex < 0) {
+        //         MessageBox.error("Please select a line item to delete.");
+        //         return;
+        //     }
+
+        //     const that = this;
+
+        //     MessageBox.confirm("Are you sure you want to delete this line item?", {
+        //         title:   "Confirm Delete",
+        //         actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+        //         onClose: function (sAction) {
+        //             if (sAction !== MessageBox.Action.YES) { return; }
+
+        //             var oGlModel   = that.getView().getModel("glData");
+        //             var glData     = oGlModel.getData();
+        //             var oLineModel = that.getView().getModel("lineItems");
+        //             var lineItems  = oLineModel.getData();
+
+        //             // Remove the row
+        //             lineItems.items.splice(iIndex, 1);
+
+        //             // Recalculate totals from scratch
+        //             var fTotalDebit  = 0;
+        //             var fTotalCredit = 0;
+        //             lineItems.items.forEach(function (oRow) {
+        //                 var fAmt = parseFloat(oRow.amountWithTax || oRow.amount || 0);
+        //                 if (oRow.dcIndicator === "H") {
+        //                     fTotalCredit += fAmt;
+        //                 } else {
+        //                     fTotalDebit  += fAmt;
+        //                 }
+        //             });
+
+        //             glData.values.debit   = fTotalDebit;
+        //             glData.values.credit  = fTotalCredit;
+        //             glData.values.balance = parseFloat(glData.values.payAmnt || 0)
+        //                                 + fTotalCredit - fTotalDebit;
+
+        //             oGlModel.setData(glData);
+        //             oLineModel.setData(lineItems);
+
+        //             // Reset selection state
+        //             that._iSelectedLineItemIndex = -1;
+        //             that._sLineItemMode          = "add";
+
+        //             var oTable        = that.byId("pglitemtable");
+        //             var oEditButton   = that.byId("pglItemsInfoedit");
+        //             var oDeleteButton = that.byId("pglItemsInfodelete");
+        //             if (oTable)        { oTable.removeSelections(true);  }
+        //             if (oEditButton)   { oEditButton.setEnabled(false);  }
+        //             if (oDeleteButton) { oDeleteButton.setEnabled(false); }
+
+        //             MessageToast.show("Line item deleted.");
+        //         }
+        //     });
+        // },
         onDeleteLineItem: function () {
             const iIndex = this._iSelectedLineItemIndex;
             if (iIndex === undefined || iIndex < 0) {
@@ -1378,33 +1470,14 @@ sap.ui.define([
                 onClose: function (sAction) {
                     if (sAction !== MessageBox.Action.YES) { return; }
 
-                    var oGlModel   = that.getView().getModel("glData");
-                    var glData     = oGlModel.getData();
                     var oLineModel = that.getView().getModel("lineItems");
                     var lineItems  = oLineModel.getData();
 
                     // Remove the row
                     lineItems.items.splice(iIndex, 1);
 
-                    // Recalculate totals from scratch
-                    var fTotalDebit  = 0;
-                    var fTotalCredit = 0;
-                    lineItems.items.forEach(function (oRow) {
-                        var fAmt = parseFloat(oRow.amountWithTax || oRow.amount || 0);
-                        if (oRow.dcIndicator === "H") {
-                            fTotalCredit += fAmt;
-                        } else {
-                            fTotalDebit  += fAmt;
-                        }
-                    });
-
-                    glData.values.debit   = fTotalDebit;
-                    glData.values.credit  = fTotalCredit;
-                    glData.values.balance = parseFloat(glData.values.payAmnt || 0)
-                                        + fTotalCredit - fTotalDebit;
-
-                    oGlModel.setData(glData);
                     oLineModel.setData(lineItems);
+                    that._calcLineItemTotals();   // single source of truth for debit/credit/balance
 
                     // Reset selection state
                     that._iSelectedLineItemIndex = -1;
