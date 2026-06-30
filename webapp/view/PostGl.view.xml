@@ -42,7 +42,7 @@
 
 
                 <VBox id="_IDGenVBox4" >
-                            <f:SimpleForm id="pglitemform"
+                    <f:SimpleForm id="pglitemform"
                     editable="false"
                     layout="ResponsiveGridLayout"
                     width="auto"
@@ -69,6 +69,7 @@
                                             visible="{glData>/visAddR}"/>
                                     <Button id="pglItemsInfoedit" icon="sap-icon://edit" text="Edit" press="onEditLineItem" enabled="false"
                                             visible="{glData>/visEditR}"/>
+                                    <Button id="pglItemsInfodelete" icon="sap-icon://delete" text="Delete" press="onDeleteLineItem" enabled="false"   visible="{glData>/visAddR}"/>        
                                 </OverflowToolbar>
                             </headerToolbar>
 
@@ -91,7 +92,10 @@
                                         <Text id="_IDGenText70" text="{lineItems>glAccount}"/>
                                         <Text id="_IDGenText71" text="{lineItems>amount}"/>
                                         <Text id="_IDGenText72" text="{lineItems>taxCode}"/>
-                                        <Text id="_IDGenText73" text="{lineItems>dcIndicator}"/>
+                                        <Text id="_IDGenText73" text="{
+                                            path: 'lineItems>dcIndicator',
+                                            formatter: '.formatDCIndicator'
+                                        }"/>
                                         <Text id="_IDGenText74" text="{lineItems>taxAmount}"/>
                                         <Text id="_IDGenText75" text="{lineItems>amountWithTax}"/>
                                         <Text id="_IDGenText76" text="{lineItems>costCenter}"/>

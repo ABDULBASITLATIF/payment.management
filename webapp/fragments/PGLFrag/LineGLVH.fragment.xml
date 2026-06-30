@@ -12,9 +12,7 @@
         <StandardListItem id="_IDGenStandardListItem4PGLline"
             title="{GLAccount}"
             description="{longText}"
-           
             type="Active"/>
     </SelectDialog>
     
 </core:FragmentDefinition>
- 
