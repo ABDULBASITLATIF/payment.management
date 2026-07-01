@@ -5,9 +5,10 @@ sap.ui.define([
     "sap/ui/model/FilterOperator",
     "sap/m/MessageBox",
     "sap/m/MessageToast",
+    "sap/ui/core/format/DateFormat", 
     "../modules/InputHelpsPGL",
     "../modules/FieldValidations"
-], function(Controller, JSONModel, Filter, FilterOperator, MessageBox, MessageToast, InputHelpsPGL,FieldValidations) {
+], function(Controller, JSONModel, Filter, FilterOperator, MessageBox, MessageToast, DateFormat, InputHelpsPGL,FieldValidations) {
     "use strict";
 
     return Controller.extend("zfi.payment.management.controller.PostGL", {
@@ -25,12 +26,46 @@ sap.ui.define([
             });
             this.getView().setModel(oPageModel, "pageModel");
             this._initLineItemsModel();
+            this._loadTaxCodesModel();
             this._iSelectedLineItemIndex = -1;
             this._sLineItemMode          = "add";
 
             const oRouter = this.getOwnerComponent().getRouter();
             oRouter.getRoute("RoutePostGl").attachMatched(this._onRouteMatched, this);
         },
+        _loadTaxCodesModel: function () {
+            const oView      = this.getView();
+            const oMainModel = this.getOwnerComponent().getModel();
+
+            oMainModel.read("/taxCodeVH", {
+                success: function (oData) {
+                    const aAll    = oData.results || [];
+                    const oSeen   = {};
+                    const aUnique = [];
+
+                    aAll.forEach(function (oItem) {
+                        if (!oSeen[oItem.TaxCode]) {
+                            oSeen[oItem.TaxCode] = true;
+                            aUnique.push({
+                                TaxCode:            oItem.TaxCode,
+                                TaxCodeDescription: oItem.TaxCodeDescription || "",
+                                TaxRate:            oItem.TaxRate             || "0.000",
+                                RateUnit:           oItem.RateUnit            || ""
+                            });
+                        }
+                    });
+
+                    aUnique.sort(function (a, b) {
+                        return a.TaxCode.localeCompare(b.TaxCode);
+                    });
+
+                    oView.setModel(new JSONModel({ items: aUnique }), "taxCodes");
+                },
+                error: function () {
+                    console.error("Failed to preload tax codes.");
+                }
+            });
+        },        
 
         _onRouteMatched: function (oEvent) {
             const oArgs    = oEvent.getParameter("arguments");
@@ -201,6 +236,24 @@ sap.ui.define([
                 }
             });
         },
+        _formatDateDisplay: function (value) {
+            if (!value) { return ""; }
+
+            var oDate = null;
+            if (value instanceof Date) {
+                oDate = value;
+            } else if (typeof value === "string" && value.indexOf("/Date(") === 0) {
+                var sTs = value.replace("/Date(", "").replace(")/", "").split("+")[0];
+                oDate = new Date(parseInt(sTs));
+            } else if (typeof value === "string") {
+                oDate = new Date(value);
+            }
+
+            if (!oDate || isNaN(oDate.getTime())) { return ""; }
+
+            var oDateFormat = sap.ui.core.format.DateFormat.getDateInstance({ pattern: "dd/MM/yyyy" });
+            return oDateFormat.format(oDate);
+        },
      
         _loadDraft2: function (sDraftId) {
             const oDataModel = this.getOwnerComponent().getModel();
@@ -249,8 +302,8 @@ sap.ui.define([
                         "values": {
                             "draftID":  oHead.draftId      || "",   // Bug 2 fixed
                             "compCode": oHead.compCode      || "",
-                            "docDate":  oHead.docDate       || "",
-                            "postDate": oHead.postingDate   || "",
+                            "docDate":  that._formatDateDisplay(oHead.docDate),
+                            "postDate": that._formatDateDisplay(oHead.postingDate),
                             "refer":    oHead.reference     || "",
                             "headText": oHead.headText      || "",
                             "bankID":   oHead.bankKey       || "",
@@ -1235,6 +1288,7 @@ sap.ui.define([
                 fnSet("pglDlg_wbs",          oRow.wbs);
                 fnSet("pglDlg_itemText",     oRow.itemText);
                 fnSet("pglDlg_taxCode",      oRow.taxCode);
+                fnSet("pglDlg_taxAmount",    oRow.taxAmount); 
                 fnSet("pglDlg_amtWithTax",   oRow.amountWithTax);
 
                 // Restore calc cache
@@ -1245,6 +1299,9 @@ sap.ui.define([
                 const oCombo = oView.byId("pglDlg_dcCombo");
                 if (oCombo) { oCombo.setSelectedKey(sKey); }
 
+
+                oView.byId("pglDlg_taxAmountLabel") ?.setVisible(true);     
+                oView.byId("pglDlg_taxAmount")      ?.setVisible(true);
                 oView.byId("pglDlg_amtWithTaxLabel")?.setVisible(true);
                 oView.byId("pglDlg_amtWithTax")     ?.setVisible(true);
 
@@ -1271,9 +1328,11 @@ sap.ui.define([
         // ─────────────────────────────────────────────────────────────────────
         // ComboBox change — toggle Debit/Credit inputs in dialog
         // ─────────────────────────────────────────────────────────────────────
+    
         onDCChange: function (oEvent) {
+                debugger;
             const sKey   = oEvent.getSource().getSelectedKey();
-            const bShow  = sKey === "D" || sKey === "C";
+            const bShow  = sKey === "S" || sKey === "H"; 
             const oView  = this.getView();
 
             oView.byId("pglDlg_amtWithTaxLabel")?.setVisible(bShow);
@@ -1503,7 +1562,7 @@ sap.ui.define([
 
             ["pglDlg_glAccount","pglDlg_amount","pglDlg_costCenter",
             "pglDlg_profitCenter","pglDlg_wbs","pglDlg_itemText",
-            "pglDlg_taxCode","pglDlg_amtWithTax"]
+            "pglDlg_taxCode","pglDlg_amtWithTax","pglDlg_taxAmount"]
                 .forEach(function (sId) {
                     const oCtrl = oView.byId(sId);
                     if (oCtrl) { oCtrl.setValue(""); }
@@ -1512,6 +1571,8 @@ sap.ui.define([
             const oCombo = oView.byId("pglDlg_dcCombo");
             if (oCombo) { oCombo.setSelectedKey(""); }
 
+            oView.byId("pglDlg_taxAmountLabel") ?.setVisible(false);   
+            oView.byId("pglDlg_taxAmount")      ?.setVisible(false);    
             oView.byId("pglDlg_amtWithTaxLabel")?.setVisible(false);
             oView.byId("pglDlg_amtWithTax")     ?.setVisible(false);
 
@@ -1540,10 +1601,21 @@ sap.ui.define([
         },
         onDlgAmountChange: function () {
             this._calcAmountWithTax();
+            // const oView  = this.getView();
+            // oView.byId("pglDlg_amtWithTaxLabel")?.setVisible();
+            // oView.byId("pglDlg_amtWithTax")     ?.setVisible();
         },
 
         onDlgTaxCodeChange: function () {
             this._calcAmountWithTax();
+            this._showTaxFields();
+        },
+        _showTaxFields: function () {
+            const oView = this.getView();
+            oView.byId("pglDlg_taxAmountLabel") ?.setVisible(true);
+            oView.byId("pglDlg_taxAmount")      ?.setVisible(true);
+            oView.byId("pglDlg_amtWithTaxLabel")?.setVisible(true);
+            oView.byId("pglDlg_amtWithTax")     ?.setVisible(true);
         },
 
         // ─────────────────────────────────────────────────────────────────────
@@ -1579,65 +1651,7 @@ sap.ui.define([
             oItemData.setProperty("/taxAmount",    fTaxAmt);
             oItemData.setProperty("/amountWithTax", fWithTax);
         },
-        // ─────────────────────────────────────────────────────────────────────
-        // Calculate Debit/Credit totals and Balance from line items
-        // H = Credit (positive), S = Debit (negative)
-        // ─────────────────────────────────────────────────────────────────────
-        // _calcLineItemTotals: function () {
-        //     const oLineModel = this.getView().getModel("lineItems");
-        //     const aItems     = oLineModel ? (oLineModel.getProperty("/items") || []) : [];
-
-        //     let fTotalDebit  = 0;
-        //     let fTotalCredit = 0;
-
-        //     aItems.forEach(function (oRow) {
-        //         const fAmtWithTax = parseFloat(oRow.amountWithTax || "0") || 0;
-        //         if (oRow.dcIndicator === "Debit") {
-        //             fTotalDebit += fAmtWithTax;
-        //         } else if (oRow.dcIndicator === "Credit") {
-        //             fTotalCredit += fAmtWithTax;
-        //         }
-        //     });
-
-        //     // Balance = Credit - Debit (should be zero to allow submit)
-        //     const fBalance = fTotalCredit - fTotalDebit;
-
-        //     // ── Update glData model so bound fields stay in sync ──
-        //     const oGlModel = this.getView().getModel("glData");
-        //     if (oGlModel) {
-        //         oGlModel.setProperty("/values/debit",   fTotalDebit);
-        //         oGlModel.setProperty("/values/credit",  fTotalCredit);
-        //         oGlModel.setProperty("/values/balance",
-        //             parseFloat(oGlModel.getProperty("/values/payAmnt") || 0)
-        //             + fTotalCredit - fTotalDebit);
-        //     }
-
-        //     // ── Update standalone input fields (edit form) ──
-        //     const oDebitInput   = this.byId("pgl_totalDebitInput");
-        //     const oCreditInput  = this.byId("pgl_totalCreditInput");
-        //     const oBalanceInput = this.byId("pgl_lineBalanceInput");
-
-        //     if (oDebitInput)   { oDebitInput.setValue(fTotalDebit.toFixed(3));   }  // ← no negation
-        //     if (oCreditInput)  { oCreditInput.setValue(fTotalCredit.toFixed(3)); }
-        //     if (oBalanceInput) {
-        //         oBalanceInput.setValue(fBalance.toFixed(3));
-        //         oBalanceInput.setValueState(
-        //             Math.abs(fBalance) < 0.001
-        //                 ? sap.ui.core.ValueState.None
-        //                 : sap.ui.core.ValueState.Error
-        //         );
-        //     }
-
-        //     // ── Update pageModel for display fragment ──
-        //     const oPageModel = this.getView().getModel("pageModel");
-        //     if (oPageModel) {
-        //         oPageModel.setProperty("/totalDebit",  fTotalDebit.toFixed(3));   // ← no negation
-        //         oPageModel.setProperty("/totalCredit", fTotalCredit.toFixed(3));
-        //         oPageModel.setProperty("/lineBalance", fBalance.toFixed(3));
-        //     }
-
-        //     return fBalance;
-        // },
+      
         _calcLineItemTotals: function () {
             const oLineModel = this.getView().getModel("lineItems");
             const aItems     = oLineModel ? (oLineModel.getProperty("/items") || []) : [];

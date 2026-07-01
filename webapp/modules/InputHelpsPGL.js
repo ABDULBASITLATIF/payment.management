@@ -2,8 +2,9 @@ sap.ui.define([
     "sap/m/MessageToast",
     "sap/ui/model/Filter",
     "sap/ui/core/Fragment",
-    "sap/ui/model/FilterOperator"
-], function (MessageToast, Filter, Fragment, FilterOperator) {
+    "sap/ui/model/FilterOperator",
+    "sap/ui/model/json/JSONModel"   
+], function (MessageToast, Filter, Fragment, FilterOperator,JSONModel) {
     "use strict";
     return {
 
@@ -515,6 +516,55 @@ sap.ui.define([
         // ══════════════════════════════════════════════════════════════════
         // TAX CODE
         // ══════════════════════════════════════════════════════════════════
+        // onLoadTaxCodeVH: async function () {
+        //     const oView      = this.getView();
+        //     const oMainModel = this.getOwnerComponent().getModel();
+        //     const that       = this;
+
+        //     this._pGLTaxCodeDialog ??= Fragment.load({
+        //         id:         oView.getId(),
+        //         name:       "zfi.payment.management.fragments.PGLFrag.TaxCodeVHGPL",
+        //         controller: this
+        //     }).then(function (oDialog) {
+        //         oView.addDependent(oDialog);
+        //         return oDialog;
+        //     });
+
+        //     // Load data first, then open dialog once model is ready
+        //     oMainModel.read("/taxCodeVH", {
+        //         success: async function (oData) {
+        //             const aAll    = oData.results || [];
+        //             const oSeen   = {};
+        //             const aUnique = [];
+
+        //             aAll.forEach(function (oItem) {
+        //                 if (!oSeen[oItem.TaxCode]) {
+        //                     oSeen[oItem.TaxCode] = true;
+        //                     aUnique.push({
+        //                         TaxCode:            oItem.TaxCode,
+        //                         TaxCodeDescription: oItem.TaxCodeDescription || "",
+        //                         TaxRate:            oItem.TaxRate             || "0.000",
+        //                         RateUnit:           oItem.RateUnit            || ""
+        //                     });
+        //                 }
+        //             });
+
+        //             aUnique.sort(function (a, b) {
+        //                 return a.TaxCode.localeCompare(b.TaxCode);
+        //             });
+
+        //             const oTaxModel = new sap.ui.model.json.JSONModel({ items: aUnique });
+        //             oView.setModel(oTaxModel, "taxCodes");
+
+        //             // Open dialog only after model is set
+        //             const oDialog = await that._pGLTaxCodeDialog;
+        //             oDialog.open();
+        //         },
+        //         error: function () {
+        //             sap.m.MessageBox.error("Failed to load tax codes.");
+        //         }
+        //     });
+        // },
         onLoadTaxCodeVH: async function () {
             const oView      = this.getView();
             const oMainModel = this.getOwnerComponent().getModel();
@@ -529,9 +579,14 @@ sap.ui.define([
                 return oDialog;
             });
 
-            // Load data first, then open dialog once model is ready
+            const oDialog = await this._pGLTaxCodeDialog;
+
+            // Open immediately using the preloaded model — no more waiting on a fresh read
+            oDialog.open();
+
+            // Refresh in the background so data stays current
             oMainModel.read("/taxCodeVH", {
-                success: async function (oData) {
+                success: function (oData) {
                     const aAll    = oData.results || [];
                     const oSeen   = {};
                     const aUnique = [];
@@ -552,12 +607,7 @@ sap.ui.define([
                         return a.TaxCode.localeCompare(b.TaxCode);
                     });
 
-                    const oTaxModel = new sap.ui.model.json.JSONModel({ items: aUnique });
-                    oView.setModel(oTaxModel, "taxCodes");
-
-                    // Open dialog only after model is set
-                    const oDialog = await that._pGLTaxCodeDialog;
-                    oDialog.open();
+                    oView.setModel(new JSONModel({ items: aUnique }), "taxCodes");
                 },
                 error: function () {
                     sap.m.MessageBox.error("Failed to load tax codes.");
@@ -600,6 +650,7 @@ sap.ui.define([
                 this.getView().getModel("itemData").setProperty("/taxCode", sTaxCode);
                 MessageToast.show("Tax Code selected: " + sTaxCode + (sDesc ? " - " + sDesc : ""));
                 if (this._calcAmountWithTax) { this._calcAmountWithTax(); }
+                if (this._showTaxFields)     { this._showTaxFields(); } 
             }
         },
 
