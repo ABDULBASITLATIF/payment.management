@@ -18,7 +18,8 @@
                         <Input id="pglDlg_glAccount"
                                showValueHelp="true"
                                value="{itemData>/glAccount}"
-                               valueHelpRequest=".InputHelpsPGL.onLoadLineGLVH"/>
+                               valueHelpRequest=".InputHelpsPGL.onLoadLineGLVH"
+                               submit=".FieldValidations.validGL" change=".FieldValidations.validGL"/>
 
                         <Label id="_IDGenLabel10" text="Amount"/>
                         <Input id="pglDlg_amount" liveChange=".onDlgAmountChange" value="{itemData>/amount}"/>
@@ -34,19 +35,22 @@
                         <Input id="pglDlg_costCenter"
                                showValueHelp="true"
                                valueHelpRequest=".InputHelpsPGL.onLoadCostCenterVH"
-                               value="{itemData>/costCenter}"/>
+                               value="{itemData>/costCenter}"
+                               submit=".FieldValidations.validCostCenter" change=".FieldValidations.validCostCenter"/>
 
                         <Label id="_IDGenLabel12" text="Profit Center"/>
                         <Input id="pglDlg_profitCenter"
                                showValueHelp="true"
                                valueHelpRequest=".InputHelpsPGL.onLoadProfitCenterVH"
-                               value="{itemData>/profitCenter}"/>
+                               value="{itemData>/profitCenter}"
+                               submit=".FieldValidations.validProfitCenter" change=".FieldValidations.validProfitCenter"/>
 
                         <Label id="_IDGenLabel13" text="WBS Element"/>
                         <Input id="pglDlg_wbs"
                                showValueHelp="true"
                                valueHelpRequest=".InputHelpsPGL.onLoadWBSVH"
-                               value="{itemData>/wbs}"/>
+                               value="{itemData>/wbs}"
+                               submit=".FieldValidations.validWBS" change=".FieldValidations.validWBS"/>
 
                         <Label id="_IDGenLabel14" text="Item Text"/>
                         <Input id="pglDlg_itemText" value="{itemData>/itemText}"/>
@@ -55,9 +59,10 @@
                         <Input id="pglDlg_taxCode"
                                showValueHelp="true"
                                valueHelpRequest=".InputHelpsPGL.onLoadTaxCodeVH"
-                               change=".onDlgTaxCodeChange"
-                               submit=".onDlgTaxCodeChange"
-                               value="{itemData>/taxCode}"/>
+                               change=".FieldValidations.validTaxCode"
+                               submit=".FieldValidations.validTaxCode"
+                               value="{itemData>/taxCode}"
+                               />
 
                         <!-- Amount With Tax — shown after DC selected -->
                         <Label id="pglDlg_amtWithTaxLabel" text="Amount With Tax" visible="false"/>
