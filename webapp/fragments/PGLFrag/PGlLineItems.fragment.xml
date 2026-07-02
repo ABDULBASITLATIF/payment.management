@@ -22,11 +22,10 @@
                                submit=".FieldValidations.validGL" change=".FieldValidations.validGL"/>
 
                         <Label id="_IDGenLabel10" text="Amount"/>
-                        <Input id="pglDlg_amount" liveChange=".onDlgAmountChange" value="{itemData>/amount}"/>
+                        <Input id="pglDlg_amount" change=".onDlgAmountChange" value="{itemData>/amount}"/>
 
                         <Label id="_IDGenLabel16" text="Debit / Credit"/>
-                        <ComboBox id="pglDlg_dcCombo" selectedKey="{itemData>/dcIndicator}"
-                                  selectionChange=".onDCChange" >
+                        <ComboBox id="pglDlg_dcCombo" selectedKey="{itemData>/dcIndicator}">
                             <core:Item id="_IDGenItem55" key="S" text="Debit"/>
                             <core:Item id="_IDGenItem56" key="H" text="Credit"/>
                         </ComboBox>
@@ -64,7 +63,8 @@
                                value="{itemData>/taxCode}"
                                />
 
-                        <!-- Amount With Tax — shown after DC selected -->
+                        <Label id="pglDlg_taxAmountLabel" text="Tax Amount" visible="false"/>
+                        <Input id="pglDlg_taxAmount" visible="false" editable="false" value="{itemData>/taxAmount}"/>
                         <Label id="pglDlg_amtWithTaxLabel" text="Amount With Tax" visible="false"/>
                         <Input id="pglDlg_amtWithTax" visible="false" editable="false" value="{itemData>/amountWithTax}"/>
 
