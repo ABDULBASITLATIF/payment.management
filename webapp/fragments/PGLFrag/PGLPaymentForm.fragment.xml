@@ -41,23 +41,27 @@
             
             <Label id="pgl_houseBankLabel" text="House Bank" required="true" width="auto"/>
             <Input id="pgl_houseBankInput" value="{glData>/values/bankID}" maxLength="5" width="auto" 
-                    showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadHouseBankVH"
+                    showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadHouseBankVH" 
+                    submit=".FieldValidations.validBankID" change=".FieldValidations.validBankID"
                     valueState="{glData>/state/bankID}"/>
             
             <Label id="pgl_houseBankAccountLabel" text="House Bank Account ID" required="true" width="auto"/>
             <Input id="pgl_houseBankAccountInput" value="{glData>/values/bankAcc}" maxLength="5" width="auto" 
                     showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadHouseBankAccountVH"
-                    valueState="{glData>/state/bankAcc}"/>
+                    valueState="{glData>/state/bankAcc}"
+                    submit=".FieldValidations.validBnkAcc" change=".FieldValidations.validBnkAcc"/>
         
             <Label id="pgl_glAccountLabel" text="G/L Account" required="true" width="auto"/>
             <Input id="pgl_glAccountInput" value="{glData>/values/bankGL}" maxLength="10" width="auto"
                     showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadGLVH"
-                    valueState="{glData>/state/bankGL}"/>            
+                    valueState="{glData>/state/bankGL}" 
+                    submit=".FieldValidations.validBankGL" change=".FieldValidations.validBankGL"/>            
          
             
             <Label id="pgl_currencyLabel" text="Currency" required="true" width="auto"/>
             <Input id="pgl_currencyInput" value="{glData>/values/curr}" 
-                    maxLength="5" width="auto" valueState="{glData>/state/curr}"/>
+                    maxLength="5" width="auto" valueState="{glData>/state/curr}"
+                    />
             
             <Label id="pgl_payAmountLabel" text="Total Pay. Amount" width="auto"/>
             <Input id="pgl_payAmountInput" value="{glData>/values/payAmnt}" width="auto" change="onPayAmountChange" submit="calcBalance"/>
