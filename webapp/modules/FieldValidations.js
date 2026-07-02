@@ -181,6 +181,7 @@ sap.ui.define([
             
         },
         validTaxCode(oEvent){
+            var that = this;
             var taxCodeFld = oEvent.getSource();
             var taxCodeVal = taxCodeFld.getValue();
             var modelData = taxCodeFld.mBindingInfos.value.binding.oModel.getData();
@@ -196,6 +197,8 @@ sap.ui.define([
                         modelData.taxAmount = parseFloat(modelData.amount) * parseFloat(oData.results[0].TaxRate);
                         modelData.amountWithTax = modelData.taxAmount + parseFloat(modelData.amount);
                         taxCodeFld.mBindingInfos.value.binding.oModel.setData(modelData);
+                        // if (this._calcAmountWithTax) { this._calcAmountWithTax(); }
+                        if (that._showTaxFields)     { that._showTaxFields(); } 
                     }
                 },
                 error(oError){

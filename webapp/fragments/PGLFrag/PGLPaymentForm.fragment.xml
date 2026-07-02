@@ -23,13 +23,15 @@
             
             <Label id="pgl_documentDateLabel" text="Document Date" required="true" width="auto"/>
             <DatePicker id="pgl_documentDatePicker" 
-                value="{glData>/values/docDate}"
+                value="{path : 'glData>/values/docDate' , type: 'sap.ui.model.type.Date'}"
+                valueFormat="dd/MM/yyyy"  
                 displayFormat="dd/MM/yyyy"
                 width="auto"/>
             
             <Label id="pgl_postingDateLabel" text="Posting Date" required="true" width="auto"/>
             <DatePicker id="pgl_postingDatePicker" 
-                value="{glData>/values/postDate}"
+                value="{path : 'glData>/values/postDate', type: 'sap.ui.model.type.Date'}"
+                valueFormat="yyyy/MM/dd"   
                 displayFormat="dd/MM/yyyy"
                 width="auto"/>
             

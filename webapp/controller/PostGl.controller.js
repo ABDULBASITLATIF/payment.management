@@ -236,24 +236,24 @@ sap.ui.define([
                 }
             });
         },
-        _formatDateDisplay: function (value) {
-            if (!value) { return ""; }
+        // _formatDateDisplay: function (value) {
+        //     if (!value) { return ""; }
 
-            var oDate = null;
-            if (value instanceof Date) {
-                oDate = value;
-            } else if (typeof value === "string" && value.indexOf("/Date(") === 0) {
-                var sTs = value.replace("/Date(", "").replace(")/", "").split("+")[0];
-                oDate = new Date(parseInt(sTs));
-            } else if (typeof value === "string") {
-                oDate = new Date(value);
-            }
+        //     var oDate = null;
+        //     if (value instanceof Date) {
+        //         oDate = value;
+        //     } else if (typeof value === "string" && value.indexOf("/Date(") === 0) {
+        //         var sTs = value.replace("/Date(", "").replace(")/", "").split("+")[0];
+        //         oDate = new Date(parseInt(sTs));
+        //     } else if (typeof value === "string") {
+        //         oDate = new Date(value);
+        //     }
 
-            if (!oDate || isNaN(oDate.getTime())) { return ""; }
+        //     if (!oDate || isNaN(oDate.getTime())) { return ""; }
 
-            var oDateFormat = sap.ui.core.format.DateFormat.getDateInstance({ pattern: "dd/MM/yyyy" });
-            return oDateFormat.format(oDate);
-        },
+        //     var oDateFormat = sap.ui.core.format.DateFormat.getDateInstance({ pattern: "dd/MM/yyyy" });
+        //     return oDateFormat.format(oDate);
+        // },
      
         _loadDraft2: function (sDraftId) {
             const oDataModel = this.getOwnerComponent().getModel();
@@ -302,8 +302,8 @@ sap.ui.define([
                         "values": {
                             "draftID":  oHead.draftId      || "",   // Bug 2 fixed
                             "compCode": oHead.compCode      || "",
-                            "docDate":  that._formatDateDisplay(oHead.docDate),
-                            "postDate": that._formatDateDisplay(oHead.postingDate),
+                            "docDate":  oHead.docDate,
+                            "postDate": oHead.postingDate,
                             "refer":    oHead.reference     || "",
                             "headText": oHead.headText      || "",
                             "bankID":   oHead.bankKey       || "",
@@ -676,18 +676,14 @@ sap.ui.define([
         },
 
         _toODataDate2: function (value) {
+            if (!value) { return null; }
 
-            if (!value) {
-                return null;
-            }
+            var oDate = value instanceof Date ? value : new Date(value);
+            if (isNaN(oDate.getTime())) { return null; }
 
-            // If already a Date object
-            if (value instanceof Date) {
-                return value;
-            }
-
-            // Convert string to Date
-            return new Date(value);
+            // Build a Date at UTC midnight using the same Y/M/D the user picked,
+            // so serializing to UTC doesn't roll the date back a day.
+            return new Date(Date.UTC(oDate.getFullYear(), oDate.getMonth(), oDate.getDate()));
         },
 
         // ─────────────────────────────────────────────────────────────────────
