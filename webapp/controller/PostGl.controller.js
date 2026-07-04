@@ -91,9 +91,10 @@ sap.ui.define([
                     "state":{"draftID":"None","compCode":"None",
                     "docDate":"None","postDate":"None","refer":"None","headText":"None","bankID":"None","bankAcc":"None",
                     "bankGL":"None","curr":"None","payAmnt":"None","debit":"None","credit":"None","balance":"None"
-                    }, "visSave":true,"visUpd":false,"visSub":false,"visAddR":true,"visEditR":true
+                    }, "visSave":true,"visUpd":false,"visSub":true,"visAddR":true,"visEditR":true
                 }),"glData");
-                this.getView().setModel(new JSONModel({"items":[]},"lineItems"));
+                // this.getView().setModel(new JSONModel({"items":[]},"lineItems"));
+                this.getView().setModel(new JSONModel({"items":[]}), "lineItems");
                 this.getView().getModel("pageModel").setData({
                     mode:         "create",
                     draftId:      null,
@@ -198,44 +199,6 @@ sap.ui.define([
             oGlData.setProperty("/visUpd",  sMode === "edit");
         },
 
-        // ─────────────────────────────────────────────────────────────────────
-        // Load draft (Edit mode)
-        // ─────────────────────────────────────────────────────────────────────
-        _loadDraft: function (sDraftId) {
-            const oDataModel = this.getOwnerComponent().getModel();
-            const that       = this;
-
-            this.getView().setBusy(true);
-
-            oDataModel.read("/head('" + sDraftId + "')", {
-                urlParameters: { "$expand": "to_item" },
-                success: function (oHead) {
-                    that.getView().setBusy(false);
-                    that._populateFormFields(oHead);
-
-                    // Load approvers for statuses 2–6
-                    if (["2","3","4","5","6"].indexOf(oHead.draftSt) !== -1) {
-                        const aApFilters = [new Filter("draftID", FilterOperator.EQ, sDraftId)];
-                        oDataModel.read("/aprvrs", {
-                            filters: aApFilters,
-                            success: function (oData) {
-                                const oAprvrModel = new JSONModel(oData.results);
-                                that.getView().setModel(oAprvrModel, "aprvrTab");
-                                const oAprvrTable = that.byId("gl_aprvrTable");
-                                if (oAprvrTable) { oAprvrTable.setVisible(true); }
-                            },
-                            error: function (oErr) {
-                                console.error("Approvers load error:", JSON.stringify(oErr));
-                            }
-                        });
-                    }
-                },
-                error: function () {
-                    that.getView().setBusy(false);
-                    MessageBox.error("Failed to load draft.");
-                }
-            });
-        },
         // _formatDateDisplay: function (value) {
         //     if (!value) { return ""; }
 
@@ -254,7 +217,25 @@ sap.ui.define([
         //     var oDateFormat = sap.ui.core.format.DateFormat.getDateInstance({ pattern: "dd/MM/yyyy" });
         //     return oDateFormat.format(oDate);
         // },
-     
+        // New helper (put near _toODataDate2)
+        _formatDatePGL: function (value) {
+            if (!value) { return ""; }
+            let oDate = null;
+            if (value instanceof Date) {
+                oDate = value;
+            } else if (typeof value === "string" && value.indexOf("/Date(") === 0) {
+                const sTs = value.replace("/Date(", "").replace(")/", "").split("+")[0];
+                oDate = new Date(parseInt(sTs));
+            } else if (typeof value === "string" && value.indexOf("T") > -1) {
+                oDate = new Date(value);
+            } else if (typeof value === "string" && value.indexOf("-") > -1) {
+                const aParts = value.split("-");
+                oDate = new Date(parseInt(aParts[0]), parseInt(aParts[1]) - 1, parseInt(aParts[2]));
+            }
+            if (!oDate || isNaN(oDate.getTime())) { return ""; }
+            return DateFormat.getDateInstance({ pattern: "dd/MM/yyyy" }).format(oDate);
+        },
+
         _loadDraft2: function (sDraftId) {
             const oDataModel = this.getOwnerComponent().getModel();
             const that       = this;
@@ -322,12 +303,27 @@ sap.ui.define([
                         "visSave": false, "visUpd": false, "visSub": false,
                         "visAddR": true,  "visEditR": true
                     }), "glData");
-
-                    // Bug 1 fixed — that.getView() not this.getView()
+ 
                     that.getView().setModel(new JSONModel({ "items": lineItems }), "lineItems");
 
                     // Apply correct display mode based on draftSt
                     that._applyDisplayMode(oHead.draftSt);
+                    that._calcLineItemTotals();
+                    const oPageModel = that.getView().getModel("pageModel");
+                    oPageModel.setProperty("/postDoc",     oHead.postDoc     || "");
+                    oPageModel.setProperty("/msg",         oHead.msg         || "");
+                    oPageModel.setProperty("/draftSt",     oHead.draftSt     || "");
+                    oPageModel.setProperty("/compCode",    oHead.compCode    || "");
+                    oPageModel.setProperty("/fiscYear",    oHead.fiscYear    || "");
+                    oPageModel.setProperty("/reference",   oHead.reference   || "");
+                    oPageModel.setProperty("/headText",    oHead.headText    || "");
+                    oPageModel.setProperty("/bankKey",     oHead.bankKey     || "");
+                    oPageModel.setProperty("/bankAcc",     oHead.bankAcc     || "");
+                    oPageModel.setProperty("/bankGL",      oHead.bankGL      || "");
+                    oPageModel.setProperty("/curr",        oHead.curr        || "");
+                    oPageModel.setProperty("/payAmnt",     oHead.payAmnt     || "");
+                    oPageModel.setProperty("/docDate",     that._formatDatePGL(oHead.docDate));
+                    oPageModel.setProperty("/postingDate", that._formatDatePGL(oHead.postingDate));
 
                     // Load approvers for statuses 2–6
                     if (["2", "3", "4", "5", "6"].indexOf(oHead.draftSt) !== -1) {
@@ -464,6 +460,7 @@ sap.ui.define([
             const bIsPosted     = sDraftSt === "5";
             const bIsPostErr    = sDraftSt === "6";
             const bDisplayForm  = bIsInApproval || bIsApproved || bIsPosted || bIsPostErr;
+            this._bLineItemsReadOnly = bDisplayForm;
 
             // Show/hide edit vs display form box
             const oEditFormBox    = this.byId("gl_editFormBox");
@@ -558,6 +555,14 @@ sap.ui.define([
                     }.bind(this));
                 }
             }
+ 
+            const oAddBtn    = this.byId("pglItemsInfoBtn");
+            const oEditBtn   = this.byId("pglItemsInfoedit");
+            const oDeleteBtn = this.byId("pglItemsInfodelete");
+
+            if (oAddBtn)    { oAddBtn.setEnabled(!bDisplayForm); }
+            if (oEditBtn)   { oEditBtn.setEnabled(!bDisplayForm && this._iSelectedLineItemIndex >= 0); }
+            if (oDeleteBtn) { oDeleteBtn.setEnabled(!bDisplayForm && this._iSelectedLineItemIndex >= 0); }
         },
 
         _setPostingInfoVisible: function (bShowDoc, bShowMsg) {
@@ -605,56 +610,6 @@ sap.ui.define([
             }
             return true;
         },
-
-        // ─────────────────────────────────────────────────────────────────────
-        // Build to_item from lineItems JSON model
-        // Maps each dialog row → OData item structure
-        // ─────────────────────────────────────────────────────────────────────
-            _buildToItems: function (sCompCode, sCurr) {
-                const oLineModel = this.getView().getModel("lineItems");
-                const aItems     = oLineModel ? (oLineModel.getProperty("/items") || []) : [];
-
-                if (aItems.length === 0) {
-                    return [{
-                        itemId:   "001",
-                        itemTy:   "1",
-                        amntLC:   "0.000",
-                        compCode: sCompCode,
-                        compCurr: sCurr,
-                        docCurr:  sCurr
-                    }];
-                }
-
-                return aItems.map(function (oRow, iIndex) {
-                    const sItemId     = String(iIndex + 1).padStart(3, "0");
-                    const bDebit      = oRow.dcIndicator === "Debit";
-                    const sDebCredInd = oRow.dcIndicator === "S" ? "S" : "H";
-                    const sAmnt       = parseFloat(oRow.amount        || "0").toFixed(3);
-                    const sTaxAmnt    = parseFloat(oRow.taxAmount     || "0").toFixed(3);
-                    const sRefAmnt    = parseFloat(oRow.amountWithTax || "0").toFixed(3);
-
-                    return {
-                    itemId:     sItemId,
-                    itemTy:     "1",
-                    amntLC:     sAmnt,
-                    amntDC:     sAmnt,
-                    taxAmntLC:  sTaxAmnt,
-                    taxAmntDC:  sTaxAmnt,
-                    refAmntLC:  sRefAmnt,
-                    refAmntDC:  sRefAmnt,
-                    compCode:   sCompCode,
-                    compCurr:   sCurr,
-                    docCurr:    sCurr,
-                    debCredInd: sDebCredInd,
-                    costCntr:   oRow.costCenter  || "",
-                    profitCntr: oRow.profitCenter|| "",
-                    wbs:        oRow.wbs         || "",
-                    itemText:   oRow.itemText    || "",
-                    taxCode:    (oRow.taxCode    || "").trim().substring(0, 2),
-                    glAccount:  oRow.glAccount   || ""   // correct field
-                };
-                });
-            },
 
         // ─────────────────────────────────────────────────────────────────────
         // OData date helpers
@@ -725,70 +680,6 @@ sap.ui.define([
             this.getView().getModel("glData").setData(glData);
         },
 
-
-
-        // ─────────────────────────────────────────────────────────────────────
-        // Save (Create — action "I", draftType hardcoded "4")
-        // ─────────────────────────────────────────────────────────────────────
-        // onSave: function () {
-        //     var glData = this.getView().getModel("glData").getData().values;
-
-        //     const oPayload = {
-        //         compCode:    glData.compCode,
-        //         draftType:   "4",                                          // hardcoded
-        //         docDate:     this._toODataDate2(glData.docDate),
-        //         postingDate: this._toODataDate2(glData.postDate),
-        //         reference:   glData.refer,
-        //         headText:    glData.headText,
-        //         bankKey:     glData.bankID,
-        //         bankAcc:     glData.bankAcc,
-        //         bankGL:      glData.bankGL,
-        //         curr:        glData.curr,
-        //         payAmnt:     parseFloat(glData.payAmnt || "0").toFixed(3),
-        //         action:      "I"   ,
-        //         to_item: []             
-        //     };
-        //     var lineItems = this.getView().getModel("itemData");
-        //     for (var i=0;i<lineItems.length;i++){
-        //         var item1 = lineItems[i];
-                
-        //         oPayload.to_item.push({ "itemId": (parseInt(i) + 1), "itemTy":"1", "amntLC":item1.amount, "amntDC":item1.amount,
-        //             "taxAmntLC": item1.taxAmount,"taxAmntDC": item1.taxAmount,"compCode":glData.compCode,//"compCurr": ,
-        //             "docCurr": item1.curr,"debCredInd": item1.dcIndicator,"costCntr": item1.costCenter,"profitCntr":item1.profitCenter,
-        //             "wbs":item1.wbs,"itemText":item1.itemText, "taxCode":   item1.taxCode, "glAccount":item1.glAccount   
-        //         });             
-        //     }
-            
-        //     const oDataModel = this.getOwnerComponent().getModel();
-        //     oDataModel.setUseBatch(false);
-        //     this._setBusyDialog(true);
-        //     var that = this;
-        //     oDataModel.create("/head", oPayload, {
-        //         success: function (oCreatedData) {
-        //             that._setBusyDialog(false);
-        //             oDataModel.setUseBatch(true);
-
-        //             glData.visUpd = true;
-        //             glData.visSave = false;
-        //             glData.draftID = oCreatedData.draftId;
-                    
-        //             that.getView().getModel("glData").setData(glData);
-        //             var pageData = that.getView().getModel("pageModel").getData();
-        //             pageData.mode = "edit";
-        //             pageData.draftID = glData.draftID;
-        //             that.getView().getModel("pageModel").setData(pageData);
-                    
-        //             MessageToast.show("Saved successfully. Draft ID: " +  glData.draftID);
-        //         },
-        //         error: function (oError) {
-        //             that._setBusyDialog(false);
-        //             oDataModel.setUseBatch(true);
-        //             that._showError(oError, "Failed to save.");
-        //         }
-        //     });
-
- 
-        // },
         onSave: function () {
             var oGlModel  = this.getView().getModel("glData");
             var oGlData   = oGlModel.getData();          // full root — values + visSave etc.
@@ -1584,6 +1475,16 @@ sap.ui.define([
             const oEditButton   = this.byId("pglItemsInfoedit");
             const oDeleteButton = this.byId("pglItemsInfodelete");
             const aSelected     = oTable.getSelectedItems();
+
+                if (this._bLineItemsReadOnly) {
+                // Display-only draft — never enable Edit/Delete regardless of selection
+                this._iSelectedLineItemIndex = -1;
+                if (oEditButton)   { oEditButton.setEnabled(false);  }
+                if (oDeleteButton) { oDeleteButton.setEnabled(false); }
+                oTable.removeSelections(true);
+                return;
+            }
+
 
             if (aSelected.length > 0) {
                 this._iSelectedLineItemIndex = oTable.getItems().indexOf(aSelected[0]);
