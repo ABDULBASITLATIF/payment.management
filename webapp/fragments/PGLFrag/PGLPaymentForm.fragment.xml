@@ -19,7 +19,7 @@
             <Label id="pgl_companyCodeLabel" text="Company Code" required="true" width="auto"/>
             <Input id="pgl_companyCodeInput" value="{glData>/values/compCode}" maxLength="4" width="auto" showValueHelp="true" 
             valueHelpRequest=".InputHelpsPGL.onLoadCCVH" valueState="{glData>/state/compCode}"
-                    submit=".FieldValidations.validCompCode"/>
+                    submit=".FieldValidations.validCompCode" editable="{glData>/edit/compCode}"/>
             
             <Label id="pgl_documentDateLabel" text="Document Date" required="true" width="auto"/>
             <DatePicker id="pgl_documentDatePicker" 
@@ -45,19 +45,21 @@
             <Input id="pgl_houseBankInput" value="{glData>/values/bankID}" maxLength="5" width="auto" 
                     showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadHouseBankVH" 
                     submit=".FieldValidations.validBankID" change=".FieldValidations.validBankID"
-                    valueState="{glData>/state/bankID}"/>
+                    valueState="{glData>/state/bankID}" editable="{glData>/edit/bankID}"/>
             
             <Label id="pgl_houseBankAccountLabel" text="House Bank Account ID" required="true" width="auto"/>
             <Input id="pgl_houseBankAccountInput" value="{glData>/values/bankAcc}" maxLength="5" width="auto" 
                     showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadHouseBankAccountVH"
                     valueState="{glData>/state/bankAcc}"
-                    submit=".FieldValidations.validBnkAcc" change=".FieldValidations.validBnkAcc"/>
+                    submit=".FieldValidations.validBnkAcc" change=".FieldValidations.validBnkAcc"
+                    editable="{glData>/edit/bankAcc}"/>
         
             <Label id="pgl_glAccountLabel" text="G/L Account" required="true" width="auto"/>
             <Input id="pgl_glAccountInput" value="{glData>/values/bankGL}" maxLength="10" width="auto"
                     showValueHelp="true" valueHelpRequest=".InputHelpsPGL.onLoadGLVH"
                     valueState="{glData>/state/bankGL}" 
-                    submit=".FieldValidations.validBankGL" change=".FieldValidations.validBankGL"/>            
+                    submit=".FieldValidations.validBankGL" change=".FieldValidations.validBankGL"
+                    editable="{glData>/edit/bankGL}"/>            
          
             
             <Label id="pgl_currencyLabel" text="Currency" required="true" width="auto"/>

@@ -88,10 +88,14 @@ sap.ui.define([
                         "payAmnt":  parseFloat(0), "debit": parseFloat(0),
                         "credit":   parseFloat(0), "balance": parseFloat(0)
                     },
+                    "edit":{
+                       "compCode":true, "bankID":true,"bankAcc":true,"bankGL":true 
+                    } ,
                     "state":{"draftID":"None","compCode":"None",
                     "docDate":"None","postDate":"None","refer":"None","headText":"None","bankID":"None","bankAcc":"None",
                     "bankGL":"None","curr":"None","payAmnt":"None","debit":"None","credit":"None","balance":"None"
-                    }, "visSave":true,"visUpd":false,"visSub":true,"visAddR":true,"visEditR":true
+                    }, "visSave":true,"visUpd":false,"visSub":true,"visAddR":true,"visEditR":true,"visReSub":false,"visPost":false,
+                    "itemSel":"SingleSelectMaster"
                 }),"glData");
                 // this.getView().setModel(new JSONModel({"items":[]},"lineItems"));
                 this.getView().setModel(new JSONModel({"items":[]}), "lineItems");
@@ -237,6 +241,7 @@ sap.ui.define([
         },
 
         _loadDraft2: function (sDraftId) {
+            
             const oDataModel = this.getOwnerComponent().getModel();
             const that       = this;
 
@@ -279,7 +284,7 @@ sap.ui.define([
                     }
 
                     // Bug 2 fixed — oHead.draftId not oHead.draftID
-                    that.getView().setModel(new JSONModel({
+                    var glData1 = {
                         "values": {
                             "draftID":  oHead.draftId      || "",   // Bug 2 fixed
                             "compCode": oHead.compCode      || "",
@@ -299,10 +304,34 @@ sap.ui.define([
                         "state":{"draftID":"None","compCode":"None",
                     "docDate":"None","postDate":"None","refer":"None","headText":"None","bankID":"None","bankAcc":"None",
                     "bankGL":"None","curr":"None","payAmnt":"None","debit":"None","credit":"None","balance":"None"
-                    }, 
-                        "visSave": false, "visUpd": false, "visSub": false,
-                        "visAddR": true,  "visEditR": true
-                    }), "glData");
+                    },
+                    "edit":{
+                       "compCode":false, "bankID":false,"bankAcc":false,"bankGL":false 
+                    } ,
+                        "visSave": false, "visUpd": false, "visSub": false, "visReSub":false, "visPost":false,
+                        "visAddR": false,  "visEditR": false, "itemSel": "None"
+                    };
+                    if (oHead.draftSt === '1'){
+                        glData1.visUpd = true;
+                        glData1.visSub = true;
+                        glData1.visAddR = true;
+                        glData1.visEditR = true;
+                        glData1.itemSel = "SingleSelectMaster";
+                    }else{
+                        if (oHead.draftSt === '4'){
+                            glData1.visReSub = true;
+                            glData1.visUpd = true;
+                            glData1.visAddR = true;
+                            glData1.visEditR = true;
+                            glData1.itemSel = "SingleSelectMaster";
+                        }else{
+                            if (oHead.draftSt === '3' || oHead.draftSt === '6' ){
+                                glData1.visPost = true;
+                            }
+                        }
+                    }
+
+                    that.getView().setModel(new JSONModel( glData1 ), "glData");
  
                     that.getView().setModel(new JSONModel({ "items": lineItems }), "lineItems");
 
@@ -460,7 +489,7 @@ sap.ui.define([
             const bIsPosted     = sDraftSt === "5";
             const bIsPostErr    = sDraftSt === "6";
             const bDisplayForm  = bIsInApproval || bIsApproved || bIsPosted || bIsPostErr;
-            this._bLineItemsReadOnly = bDisplayForm;
+            // this._bLineItemsReadOnly = bDisplayForm;
 
             // Show/hide edit vs display form box
             const oEditFormBox    = this.byId("gl_editFormBox");
@@ -471,57 +500,57 @@ sap.ui.define([
             // Drive all button visibility via glData model flags
             const oGlData = this.getView().getModel("glData");
 
-            if (bIsInApproval) {
-                oGlData.setProperty("/visSave",  false);
-                oGlData.setProperty("/visUpd",   false);
-                oGlData.setProperty("/visSub",   false);
-                this._setPostingInfoVisible(false, false);
+            // if (bIsInApproval) {
+            //     oGlData.setProperty("/visSave",  false);
+            //     oGlData.setProperty("/visUpd",   false);
+            //     oGlData.setProperty("/visSub",   false);
+            //     this._setPostingInfoVisible(false, false);
 
-            } else if (bIsApproved) {
-                oGlData.setProperty("/visSave",  false);
-                oGlData.setProperty("/visUpd",   false);
-                oGlData.setProperty("/visSub",   false);
-                this._setPostingInfoVisible(false, false);
+            // } else if (bIsApproved) {
+            //     oGlData.setProperty("/visSave",  false);
+            //     oGlData.setProperty("/visUpd",   false);
+            //     oGlData.setProperty("/visSub",   false);
+            //     this._setPostingInfoVisible(false, false);
 
-            } else if (bIsCreated) {
-                oGlData.setProperty("/visSave",  false);
-                oGlData.setProperty("/visUpd",   true);
-                oGlData.setProperty("/visSub",   true);
+            // } else if (bIsCreated) {
+            //     oGlData.setProperty("/visSave",  false);
+            //     oGlData.setProperty("/visUpd",   true);
+            //     oGlData.setProperty("/visSub",   true);
 
-            } else if (bIsRejected) {
-                oGlData.setProperty("/visSave",  false);
-                oGlData.setProperty("/visUpd",   false);
-                oGlData.setProperty("/visSub",   false);
+            // } else if (bIsRejected) {
+            //     oGlData.setProperty("/visSave",  false);
+            //     oGlData.setProperty("/visUpd",   false);
+            //     oGlData.setProperty("/visSub",   false);
 
-            } else if (bIsPostErr) {
-                oGlData.setProperty("/visSave",  false);
-                oGlData.setProperty("/visUpd",   false);
-                oGlData.setProperty("/visSub",   false);
-                this._setPostingInfoVisible(false, true);
+            // } else if (bIsPostErr) {
+            //     oGlData.setProperty("/visSave",  false);
+            //     oGlData.setProperty("/visUpd",   false);
+            //     oGlData.setProperty("/visSub",   false);
+            //     this._setPostingInfoVisible(false, true);
 
-            } else if (bIsPosted) {
-                oGlData.setProperty("/visSave",  false);
-                oGlData.setProperty("/visUpd",   false);
-                oGlData.setProperty("/visSub",   false);
-                this._setPostingInfoVisible(true, false);
+            // } else if (bIsPosted) {
+            //     oGlData.setProperty("/visSave",  false);
+            //     oGlData.setProperty("/visUpd",   false);
+            //     oGlData.setProperty("/visSub",   false);
+            //     this._setPostingInfoVisible(true, false);
 
-            } else {
-                // Create mode
-                oGlData.setProperty("/visSave",  true);
-                oGlData.setProperty("/visUpd",   false);
-                oGlData.setProperty("/visSub",   true);
-            }
+            // } else {
+            //     // Create mode
+            //     oGlData.setProperty("/visSave",  true);
+            //     oGlData.setProperty("/visUpd",   false);
+            //     oGlData.setProperty("/visSub",   true);
+            // }
 
-            // Post and Resubmit buttons — still need byId since they have no glData binding in XML
-            const oPostButton     = this.byId("_IDGenButton2622gl");
-            const oResubmitButton = this.byId("resubmitButtongl");
+            // // Post and Resubmit buttons — still need byId since they have no glData binding in XML
+            // const oPostButton     = this.byId("_IDGenButton2622gl");
+            // const oResubmitButton = this.byId("resubmitButtongl");
 
-            if (oPostButton) {
-                oPostButton.setVisible(bIsApproved || bIsPostErr);
-            }
-            if (oResubmitButton) {
-                oResubmitButton.setVisible(bIsRejected);
-            }
+            // if (oPostButton) {
+            //     oPostButton.setVisible(bIsApproved || bIsPostErr);
+            // }
+            // if (oResubmitButton) {
+            //     oResubmitButton.setVisible(bIsRejected);
+            // }
 
             // Approver table visibility
             const oAprvrTable = this.byId("gl_aprvrTable");
@@ -532,37 +561,37 @@ sap.ui.define([
             }
 
             // Field editability — only relevant when edit form is shown
-            if (!bDisplayForm) {
-                const aAlwaysLocked = ["pgl_companyCodeInput","pgl_houseBankInput",
-                                    "pgl_houseBankAccountInput","pgl_glAccountInput"];
-                const aEditable     = ["pgl_referenceInput","pgl_headerTextInput",
-                                    "pgl_currencyInput","pgl_payAmountInput",
-                                    "pgl_documentDatePicker","pgl_postingDatePicker"];
+            // if (!bDisplayForm) {
+            //     const aAlwaysLocked = ["pgl_companyCodeInput","pgl_houseBankInput",
+            //                         "pgl_houseBankAccountInput","pgl_glAccountInput"];
+            //     const aEditable     = ["pgl_referenceInput","pgl_headerTextInput",
+            //                         "pgl_currencyInput","pgl_payAmountInput",
+            //                         "pgl_documentDatePicker","pgl_postingDatePicker"];
 
-                if (bIsCreated || bIsRejected) {
-                    aAlwaysLocked.forEach(function (sId) {
-                        const oCtrl = this.byId(sId);
-                        if (oCtrl) { oCtrl.setEditable(false); }
-                    }.bind(this));
-                    aEditable.forEach(function (sId) {
-                        const oCtrl = this.byId(sId);
-                        if (oCtrl) { oCtrl.setEditable(true); }
-                    }.bind(this));
-                } else {
-                    aAlwaysLocked.concat(aEditable).forEach(function (sId) {
-                        const oCtrl = this.byId(sId);
-                        if (oCtrl) { oCtrl.setEditable(true); }
-                    }.bind(this));
-                }
-            }
+            //     if (bIsCreated || bIsRejected) {
+            //         aAlwaysLocked.forEach(function (sId) {
+            //             const oCtrl = this.byId(sId);
+            //             if (oCtrl) { oCtrl.setEditable(false); }
+            //         }.bind(this));
+            //         aEditable.forEach(function (sId) {
+            //             const oCtrl = this.byId(sId);
+            //             if (oCtrl) { oCtrl.setEditable(true); }
+            //         }.bind(this));
+            //     } else {
+            //         aAlwaysLocked.concat(aEditable).forEach(function (sId) {
+            //             const oCtrl = this.byId(sId);
+            //             if (oCtrl) { oCtrl.setEditable(true); }
+            //         }.bind(this));
+            //     }
+            // }
  
-            const oAddBtn    = this.byId("pglItemsInfoBtn");
-            const oEditBtn   = this.byId("pglItemsInfoedit");
-            const oDeleteBtn = this.byId("pglItemsInfodelete");
+            // const oAddBtn    = this.byId("pglItemsInfoBtn");
+            // const oEditBtn   = this.byId("pglItemsInfoedit");
+            // const oDeleteBtn = this.byId("pglItemsInfodelete");
 
-            if (oAddBtn)    { oAddBtn.setEnabled(!bDisplayForm); }
-            if (oEditBtn)   { oEditBtn.setEnabled(!bDisplayForm && this._iSelectedLineItemIndex >= 0); }
-            if (oDeleteBtn) { oDeleteBtn.setEnabled(!bDisplayForm && this._iSelectedLineItemIndex >= 0); }
+            // if (oAddBtn)    { oAddBtn.setEnabled(!bDisplayForm); }
+            // if (oEditBtn)   { oEditBtn.setEnabled(!bDisplayForm && this._iSelectedLineItemIndex >= 0); }
+            // if (oDeleteBtn) { oDeleteBtn.setEnabled(!bDisplayForm && this._iSelectedLineItemIndex >= 0); }
         },
 
         _setPostingInfoVisible: function (bShowDoc, bShowMsg) {
@@ -1476,14 +1505,14 @@ sap.ui.define([
             const oDeleteButton = this.byId("pglItemsInfodelete");
             const aSelected     = oTable.getSelectedItems();
 
-                if (this._bLineItemsReadOnly) {
-                // Display-only draft — never enable Edit/Delete regardless of selection
-                this._iSelectedLineItemIndex = -1;
-                if (oEditButton)   { oEditButton.setEnabled(false);  }
-                if (oDeleteButton) { oDeleteButton.setEnabled(false); }
-                oTable.removeSelections(true);
-                return;
-            }
+            //     if (this._bLineItemsReadOnly) {
+            //     // Display-only draft — never enable Edit/Delete regardless of selection
+            //     this._iSelectedLineItemIndex = -1;
+            //     if (oEditButton)   { oEditButton.setEnabled(false);  }
+            //     if (oDeleteButton) { oDeleteButton.setEnabled(false); }
+            //     oTable.removeSelections(true);
+            //     return;
+            // }
 
 
             if (aSelected.length > 0) {
