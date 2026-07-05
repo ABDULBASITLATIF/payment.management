@@ -1443,7 +1443,6 @@ _normalizeDates: function(aItems) {
             // ── 7. POST to backend ────────────────────────────────────────────────
             const oDataModel = this.getOwnerComponent().getModel();
             delete oPayload.draftId;
-
             oDataModel.setUseBatch(false);
             this._setBusyDialog(true);
             oDataModel.create("/head", oPayload, {

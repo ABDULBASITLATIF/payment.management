@@ -6,7 +6,6 @@
     xmlns:core="sap.ui.core"
     xmlns:l="sap.ui.layout"
     height="100%">
-
     <Page id="postglpage"
         title="Post To GL Account"
         showNavButton="true"
@@ -54,7 +53,7 @@
                         <Table
                             id="pglitemtable"
                             items="{path: 'lineItems>/items'}"
-                            mode="SingleSelectMaster"
+                            mode="{glData>/itemSel}"
                             selectionChange="onLineItemSelectionChange"
                             width="auto"
                             fixedLayout="Strict"
@@ -163,8 +162,8 @@
                 <Button id="_IDGenButton25gl"  text="Save"      type="Emphasized" press="onSave" visible="{glData>/visSave}"/>
                 <Button id="_IDGenButton27gl"  text="Update"    type="Emphasized" press="onUpdate" visible="{glData>/visUpd}"/>
                 <Button id="_IDGenButton26gl"  text="Submit"    type="Emphasized" press="onSubmit" visible="{glData>/visSub}"/>
-                <Button id="_IDGenButton2622gl" text="Post"     type="Emphasized" press="onPost"      visible="false"/>
-                <Button id="resubmitButtongl"  text="Resubmit" type="Emphasized" press="onResubmit"  visible="false"/>
+                <Button id="_IDGenButton2622gl" text="Post"     type="Emphasized" press="onPost"      visible="{glData>/visPost}"/>
+                <Button id="resubmitButtongl"  text="Resubmit" type="Emphasized" press="onResubmit"  visible="{glData>/visReSub}"/>
             </Toolbar>
         </footer>
 
