@@ -3,7 +3,7 @@
     xmlns:l="sap.ui.layout"
     xmlns:f="sap.ui.layout.form"
     xmlns:core="sap.ui.core">
-    
+
     <f:SimpleForm id="pgl_paymentForm"
         editable="true"
         title="Post To GL Account"

@@ -6,7 +6,6 @@
     xmlns:core="sap.ui.core"
     xmlns:l="sap.ui.layout"
     height="100%">
-
     <Page id="postglpage"
         title="Post To GL Account"
         showNavButton="true"
