@@ -86,6 +86,9 @@
 
             <Label id="_IDGenLabel2" text="Total Invoice Sum" width="auto"/>
             <Input id="_IDGenInput1" value="" width="auto" editable="false"/>
+            
+            <Label id="_IDGenLabelPaySel" text="Total Payment Selected" width="auto"/>
+            <Input id="_IDGenInputPaySel" value="" width="auto" editable="false"/>
 
             <Label id="_IDGenLabel3" text="Balance" width="auto"/>
             <Input id="_IDGenInput2" value="" width="auto" editable="false"/>

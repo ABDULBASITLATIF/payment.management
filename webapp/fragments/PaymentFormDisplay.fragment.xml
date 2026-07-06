@@ -55,6 +55,9 @@
             <Label id="_IDGenLabelD2"     text="Total Invoice Sum"     width="auto"/>
             <Text id="invoiceSumText"     text="{pageModel>/invoiceSum}" width="auto"/>
 
+            <Label id="_IDGenLabelPaySelD" text="Total Payment Selected" width="auto"/>
+            <Text id="paymentSelectedText" text="{pageModel>/paymentSelected}" width="auto"/>
+
             <Label id="_IDGenLabelD3"     text="Balance"               width="auto"/>
             <Text id="balanceText"        text="{pageModel>/balance}"  width="auto"/>
 

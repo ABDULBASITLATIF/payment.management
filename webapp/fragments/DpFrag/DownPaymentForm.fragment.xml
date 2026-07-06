@@ -66,7 +66,8 @@
                 change=".InputHelpsDP.onSupplierInputChange"/>
             
             <Label id="dp_currencyLabel" text="Currency" required="true" width="auto"/>
-            <Input id="dp_currencyInput" value="" maxLength="5" width="auto" change="onCurrencyChange"/>
+            <Input id="dp_currencyInput" value="" maxLength="5" width="auto"/>
+             
             
             <Label id="dp_payAmountLabel" text="Total Pay. Amount" width="auto"/>
             <Input id="dp_payAmountInput" value="" width="auto" change="onPayAmountChange" liveChange="onPayAmountChange"/>
@@ -78,12 +79,16 @@
             <Input id="dp_balanceInput" value="" width="auto" editable="false"/>
             <Label id="dp_gllabel" text="Special GL" width="auto"/>
             <Input id="dp_glvh" value="" required="true" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsDP.onLoadSPGL"/>
-             <Label id="dp_glbox" text="Down Payment against Request" width="auto"/>
+             <Label id="dp_glbox" text="Down Payment without Request" width="auto"/>
             <CheckBox id="CheckBoxDPR" 
-            text="Down Payment against Request" 
+            text="Down Payment without Request" 
             selected="false"
             select="onDPRCheckBoxChange"/>
         </f:content>
     </f:SimpleForm>
     
 </core:FragmentDefinition>
+
+
+
+<!-- change="onCurrencyChange" -->

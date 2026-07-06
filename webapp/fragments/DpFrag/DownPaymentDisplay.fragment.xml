@@ -66,6 +66,14 @@
             <Label id="dp_spGLLabelD"  text="Special GL"  width="auto"/>
             <Text  id="dp_spGLText"    text="{pageModel>/spGL}" width="auto"/>
 
+            <Label id="dp_isDPRLabelD" text="Down Payment without Request" width="auto"/>
+            <CheckBox id="dp_isDPRCheckBoxD"
+                selected="{pageModel>/isDPR}"
+                editable="false"
+                valueState="Success"
+                enabled="false"
+                text=""/>
+
         </f:content>
     </f:SimpleForm>
 

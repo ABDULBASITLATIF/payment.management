@@ -92,6 +92,10 @@
                                     <Column id="_IDGenColumn15"     width="auto">
                                         <Text id="_IDGenText16" text="Document Type"/>
                                     </Column>
+
+                                    <Column id="_IDGenColumnType" width="auto">
+                                        <Text id="_IDGenTextType" text="Type"/>
+                                    </Column>
                                     <Column id="_IDGenColumn16"    width="auto" hAlign="End">
                                         <Text id="_IDGenText17" text="Amount (Local)"/>
                                     </Column>
@@ -142,6 +146,10 @@
                                 }"/>
 
                                     <Text id="_IDGenText31" text="{openItems>docType}"/>
+                                    <Text id="_IDGenTextTypeCell" text="{
+                                        path: 'openItems>itemType',
+                                        formatter: '.formatItemType'
+                                    }"/>
                                     <Text id="_IDGenText32" text="{openItems>amntLC}"/>
                                     <Text id="_IDGenText33" text="{openItems>amntDC}"/>
 
@@ -158,105 +166,121 @@
                                     <Text id="_IDGenText47" text="{openItems>spGl}"/>
                                     <Text id="_IDGenText48" text="{openItems>debCredInd}"/>
                                     <Text id="_IDGenText49" text="{openItems>postKey}"/>
-                                    <Button id="_IDGenButton4" icon="sap-icon://accept" type="Emphasized" press="onClearItem"/>
+                                    <Button id="_IDGenButton4" icon="sap-icon://accept" type="Emphasized" press="onClearItem" text="Clear"/>
                                 </cells>
                                 </ColumnListItem>
                             </items>
                         </Table>
                     </f:content>
                 </f:SimpleForm>
-<!-- Items to Be Cleared Table -->
-<f:SimpleForm id="itemsToClearForm"
-    editable="false"
-    layout="ResponsiveGridLayout"
-    width="auto"
-    columnsXL="1"
-    columnsL="1"
-    columnsM="1"
-    
-    class="sapUiSmallMarginTop">
-    <f:content>
-       <Table
-    id="itemsToClearTable"
-    items="{path: 'openItems>/itemsToBeCleared'}"
-    width="100%"
-    growing="true"
-    growingThreshold="100"
-    growingScrollToLoad="true"
-    >
-    <headerToolbar>
-        <OverflowToolbar id="_IDGenOverflowToolbar1">
-            <Title id="_IDGenTitle3" text="Items to Be Cleared" level="H5"/>
-            <Button id="_IDGenButton11" icon="sap-icon://information" type="Transparent"/>
-            <ToolbarSpacer id="_IDGenToolbarSpacer2"/>
-        </OverflowToolbar>
-    </headerToolbar>
-    <columns>
-        <Column id="_IDGenColumn19" width="4rem"><Text id="_IDGenText37" text="Remove"/></Column>
-        <Column id="_IDGenColumn21" width="7rem">
-            <Text id="_IDGenText" text="Document Number"/>
-        </Column>
-        <Column id="_IDGenColumn22" width="5rem">
-            <Text id="_IDGenText38" text="Fiscal Year"/>
-        </Column>
-        <Column id="_IDGenColumn23" width="4rem">
-            <Text id="_IDGenText39" text="Line Item"/>
-        </Column>
-        <Column id="_IDGenColumn24" width="6rem">
-            <Text id="_IDGenText40" text="Posting Date"/>
-        </Column>
-        <Column id="_IDGenColumn30" width="5rem">
-            <Text id="_IDGenText41" text="Document Type"/>
-        </Column>
-        <Column id="_IDGenColumn31" width="7rem">
-            <Text id="_IDGenText42" text="Amount (Local)"/>
-        </Column>
-        <Column id="_IDGenColumn32" width="7rem">
-            <Text id="_IDGenText43" text="Amount (Doc)"/>
-        </Column>
-        <Column id="_IDGenColumn33" width="6rem">
-            <Text id="_IDGenText44" text="Baseline Date"/>
-        </Column>
-        <Column id="_IDGenColumn34" width="7rem">
-            <Text id="_IDGenText45" text="Reference"/>
-        </Column>
-        <Column id="_IDGenColumn35" width="7rem">
-            <Text id="_IDGenText46" text="Assignment"/>
-        </Column>
-    </columns>
-    <items>
-        <ColumnListItem id="_IDGenColumnListItem4">
-            <cells>
-                <!-- CHANGE PRESS EVENT -->
-                <Button id="_IDGenButton15" icon="sap-icon://navigation-left-arrow" press="onRemoveItem"/>
-                <Link id="_IDGenLink1" text="{openItems>docNo}"/>
-                <Text id="_IDGenText51" text="{openItems>yearF}"/>
-                <Text id="_IDGenText52" text="{openItems>lineItem}"/>
-                <Text id="_IDGenText54" text="{
-                    path: 'openItems>postingDate',
-                    formatter: '.formatDate'
-                }"/>
-                <Text id="_IDGenText55" text="{openItems>docType}"/>
-                <Text id="_IDGenText56" text="{
-                    path: 'openItems>amntLC',
-                    formatter: '.formatAmount'
-                }"/>
-                <Text id="_IDGenText57" text="{
-                    path: 'openItems>amntDC',
-                    formatter: '.formatAmount'
-                }"/>
-                <Text id="_IDGenText58" text="{
-                    path: 'openItems>baseDate',
-                    formatter: '.formatDate'
-                }"/>
-                <Text id="_IDGenText59" text="{openItems>extRef}"/>
-                <Text id="_IDGenText60" text="{openItems>assignNo}"/>
-            </cells>
-        </ColumnListItem>
-    </items>
-</Table>
-    </f:content>
-</f:SimpleForm>
+        <!-- Items to Be Cleared Table -->
+        <f:SimpleForm id="itemsToClearForm"
+            editable="false"
+            layout="ResponsiveGridLayout"
+            width="auto"
+            columnsXL="1"
+            columnsL="1"
+            columnsM="1"
+            
+            class="sapUiSmallMarginTop">
+            <f:content>
+            <Table
+            id="itemsToClearTable"
+            items="{path: 'openItems>/itemsToBeCleared'}"
+            width="100%"
+            growing="true"
+            growingThreshold="100"
+            growingScrollToLoad="true"
+            >
+            <headerToolbar>
+                <OverflowToolbar id="_IDGenOverflowToolbar1">
+                    <Title id="_IDGenTitle3" text="Items to Be Cleared" level="H5"/>
+                    <Button id="_IDGenButton11" icon="sap-icon://information" type="Transparent"/>
+                    <ToolbarSpacer id="_IDGenToolbarSpacer2"/>
+                </OverflowToolbar>
+            </headerToolbar>
+            <columns>
+                <Column id="_IDGenColumn19" width="4rem"><Text id="_IDGenText37" text="Remove"/></Column>
+                <Column id="_IDGenColumn21" width="7rem">
+                    <Text id="_IDGenText" text="Document Number"/>
+                </Column>
+                <Column id="_IDGenColumn22" width="5rem">
+                    <Text id="_IDGenText38" text="Fiscal Year"/>
+                </Column>
+                <Column id="_IDGenColumn23" width="4rem">
+                    <Text id="_IDGenText39" text="Line Item"/>
+                </Column>
+                <Column id="_IDGenColumn24" width="6rem">
+                    <Text id="_IDGenText40" text="Posting Date"/>
+                </Column>
+                <Column id="_IDGenColumn30" width="5rem">
+                    <Text id="_IDGenText41" text="Document Type"/>
+                </Column>
+                <Column id="_IDGenColumnTypeClear" width="5rem">
+                    <Text id="_IDGenTextTypeClear" text="Type"/>
+                </Column>
+                <Column id="_IDGenColumn31" width="7rem">
+                    <Text id="_IDGenText42" text="Amount (Local)"/>
+                </Column>
+                <Column id="_IDGenColumn32" width="7rem">
+                    <Text id="_IDGenText43" text="Amount (Doc)"/>
+                </Column>
+                <Column id="_IDGenColumnAssignAmt" width="7rem">
+                    <Text id="_IDGenTextAssignAmt" text="Assign Amt."/>
+                </Column>
+                <Column id="_IDGenColumn33" width="6rem">
+                    <Text id="_IDGenText44" text="Baseline Date"/>
+                </Column>
+                <Column id="_IDGenColumn34" width="7rem">
+                    <Text id="_IDGenText45" text="Reference"/>
+                </Column>
+                <Column id="_IDGenColumn35" width="7rem">
+                    <Text id="_IDGenText46" text="Assignment"/>
+                </Column>
+            </columns>
+            <items>
+                <ColumnListItem id="_IDGenColumnListItem4">
+                    <cells>
+                        <!-- CHANGE PRESS EVENT -->
+                        <Button id="_IDGenButton15" icon="sap-icon://navigation-left-arrow" press="onRemoveItem"/>
+                        <Link id="_IDGenLink1" text="{openItems>docNo}"/>
+                        <Text id="_IDGenText51" text="{openItems>yearF}"/>
+                        <Text id="_IDGenText52" text="{openItems>lineItem}"/>
+                        <Text id="_IDGenText54" text="{
+                            path: 'openItems>postingDate',
+                            formatter: '.formatDate'
+                        }"/>
+                        <Text id="_IDGenText55" text="{openItems>docType}"/>
+                        <Text id="_IDGenTextTypeClearCell" text="{
+                            path: 'openItems>itemType',
+                            formatter: '.formatItemType'
+                        }"/>
+                        <Text id="_IDGenText56" text="{
+                            path: 'openItems>refAmntLC',
+                            formatter: '.formatAmount'
+                        }"/>
+                        <Text id="_IDGenText57" text="{
+                            path: 'openItems>refAmntDC',
+                            formatter: '.formatAmount'
+                        }"/>
+
+                        <Input id="_IDGenInputAssignAmt"
+                            value="{openItems>assignAmt}"
+                            type="Number"
+                            liveChange="onAssignAmtChange"
+                            change="onAssignAmtChange"/>
+                        <Text id="_IDGenText58" text="{
+                            path: 'openItems>baseDate',
+                            formatter: '.formatDate'
+                        }"/>
+                        <Text id="_IDGenText59" text="{openItems>extRef}"/>
+                        <Text id="_IDGenText60" text="{openItems>assignNo}"/>
+                    </cells>
+                </ColumnListItem>
+            </items>
+        </Table>
+            </f:content>
+        </f:SimpleForm>
             <Table id="aprvrTable"     items="{path: 'aprvrTab>/'}"
                         width="100%"
                         growing="true"

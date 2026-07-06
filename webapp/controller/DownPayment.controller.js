@@ -187,8 +187,10 @@ sap.ui.define([
             fnSet("dp_glAccountInput",         oHead.bankGL);
             fnSet("dp_payAmountInput",         oHead.payAmnt);
             fnSet("dp_currencyInput",          oHead.curr);
+            fnSet("dp_glvh",                   oHead.spGL); 
             fnSetDate("dp_documentDatePicker", oHead.docDate);
             fnSetDate("dp_postingDatePicker",  oHead.postingDate);
+        
 
             // ── Restore DPR checkbox from withRef field ───────────────────────────
             const bIsDPR = oHead.withRef === "X";
@@ -206,6 +208,7 @@ sap.ui.define([
             oPageModel.setProperty("/postDoc",  oHead.postDoc  || "");
             oPageModel.setProperty("/msg",      oHead.msg      || "");
             oPageModel.setProperty("/draftSt",  oHead.draftSt  || "");
+            oPageModel.setProperty("/fiscYear", oHead.fiscYear || "");
 
             const sVendor   = oHead.vendor;
             const sCompCode = oHead.compCode;
@@ -227,8 +230,12 @@ sap.ui.define([
                     error: function (oErr) {
                         console.warn("Could not fetch supplier name for vendor: " + sVendor, oErr);
                     }
+
+                    
                 });
             }
+              // ── Apply correct button/table visibility for this draft's status ──────
+              this._applyDisplayMode(oHead.draftSt);
         },
 
        _applyDisplayMode: function (sDraftSt) {
@@ -238,6 +245,7 @@ sap.ui.define([
             const bIsRejected   = sDraftSt === "4";
             const bIsPosted     = sDraftSt === "5";
             const bIsPostErr    = sDraftSt === "6";
+
 
             // ── Read DPR checkbox state ───────────────────────────────────────────
             const oCheckBox = this.byId("CheckBoxDPR");
@@ -265,7 +273,7 @@ sap.ui.define([
                 }.bind(this);
 
                 oPageModel.setProperty("/compCode",    fnGet("dp_companyCodeInput"));
-                oPageModel.setProperty("/fiscYear",    fnGet("dp_fiscalYearInput"));
+                // oPageModel.setProperty("/fiscYear",    fnGet("dp_fiscalYearInput"));
                 oPageModel.setProperty("/reference",   fnGet("dp_referenceInput"));
                 oPageModel.setProperty("/headText",    fnGet("dp_headerTextInput"));
                 oPageModel.setProperty("/bankKey",     fnGet("dp_houseBankInput"));
