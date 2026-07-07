@@ -677,7 +677,9 @@ sap.ui.define([
             });
 
             const oDialog = await this._pGLLineGLDialog;
-
+            const compCode = oView.getModel("glData").getData().values.compCode;
+            const oBinding = oDialog.getBinding("items");
+            oBinding.filter([new Filter("CompanyCode", FilterOperator.EQ, compCode )]);
   
             oDialog.open();
         },
