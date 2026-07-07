@@ -6,7 +6,7 @@
     
     <f:SimpleForm id="pgl_paymentFormDisplay"
         editable="false"
-        title="On Account Payment"
+        title=" Gl Payment"
         layout="ColumnLayout"
         columnsM="2"
         columnsL="3"
