@@ -16,6 +16,7 @@
                                     <core:Item id="_IDGenItem6" key="yearF" text="Fiscal Year"/>
                                     <core:Item id="_IDGenItem7" key="postingDate" text="Posting Date"/>
                                     <core:Item id="_IDGenItem8" key="docType" text="Document Type"/>
+                                    <core:Item id="_IDGenItemType" key="itemType" text="Type"/>
                                     <core:Item id="_IDGenItem9" key="amntLC" text="Amount (Local)"/>
                                     <core:Item id="_IDGenItem10" key="amntDC" text="Amount (Doc)"/>
                                     <core:Item id="_IDGenItem11" key="baseDate" text="Baseline Date"/>
@@ -42,6 +43,7 @@
                                     <core:Item id="_IDGenItem15" key="docNo" text="Document Number"/>
                                     <core:Item id="_IDGenItem16" key="yearF" text="Fiscal Year"/>
                                     <core:Item id="_IDGenItem17" key="docType" text="Document Type"/>
+                                    <core:Item id="_IDGenItemTypeF" key="itemType" text="Type"/>
                                     <core:Item id="_IDGenItem18" key="extRef" text="Reference"/>
                                     <core:Item id="_IDGenItem19" key="assignNo" text="Assignment"/>
                                     <core:Item id="_IDGenItem20" key="vendorCode" text="Supplier"/>

@@ -44,7 +44,27 @@ sap.ui.define([
                     supplierName: ""
                 });
                 this._resetPage();
+                this._setDefaultCompanyCode(); 
             }
+        },
+        _setDefaultCompanyCode: function () {
+            const oDataModel = this.getOwnerComponent().getModel();
+            const that = this;
+
+            oDataModel.read("/empOrg", {
+                success: function (oData) {
+                    const aResults = oData && oData.results ? oData.results : [];
+                    const oCompCodeInput = that.byId("oa_companyCodeInput");
+
+                    if (aResults.length > 0 && oCompCodeInput) {
+                        oCompCodeInput.setValue(aResults[0].compCode || "");
+                        oCompCodeInput.setEditable(false);
+                    }
+                },
+                error: function (oError) {
+                    console.warn("Could not fetch default Company Code:", oError);
+                }
+            });
         },
 
         // ─────────────────────────────────────────────────────────────────────

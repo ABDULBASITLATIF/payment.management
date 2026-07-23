@@ -73,10 +73,10 @@
                                     <Column id="_IDGenColumn10"   width="auto">
                                         <Text id="_IDGenText2" text="Document Number"/>
                                     </Column>
-                                    <Column id="_IDGenColumn11"    width="auto">
+                                    <Column id="_IDGenColumn11"    width="7%">
                                         <Text id="_IDGenText3" text="Fiscal Year"/>
                                     </Column>
-                                    <Column id="_IDGenColumn12"     width="auto">
+                                    <Column id="_IDGenColumn12"     width="7%">
                                         <Text id="_IDGenText4" text="Line Item"/>
                                     </Column>
                                     
@@ -93,7 +93,7 @@
                                         <Text id="_IDGenText16" text="Document Type"/>
                                     </Column>
 
-                                    <Column id="_IDGenColumnType" width="auto">
+                                    <Column id="_IDGenColumnType" width="5%">
                                         <Text id="_IDGenTextType" text="Type"/>
                                     </Column>
                                     <Column id="_IDGenColumn16"    width="auto" hAlign="End">

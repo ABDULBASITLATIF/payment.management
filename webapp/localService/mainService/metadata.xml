@@ -210,6 +210,14 @@
                 <Property Name="WBSElement" Type="Edm.String" Nullable="false" MaxLength="24" sap:display-format="UpperCase" sap:text="WBSDescription" sap:label="WBS Element" sap:quickinfo="Work Breakdown Structure Element (WBS Element)"/>
                 <Property Name="WBSDescription" Type="Edm.String" MaxLength="40" sap:label="WBS Element Name" sap:quickinfo="Work Breakdown Structure Element Name"/>
             </EntityType>
+            <EntityType Name="empOrgType" sap:label="CDS View to get Employee Orgnization Data" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="userId"/>
+                </Key>
+                <Property Name="userId" Type="Edm.String" Nullable="false" MaxLength="30" sap:display-format="UpperCase" sap:label="System ID" sap:quickinfo="Communication Identification/Number"/>
+                <Property Name="empNo" Type="Edm.String" MaxLength="8" sap:display-format="NonNegative" sap:label="Personnel Number"/>
+                <Property Name="compCode" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Company Code"/>
+            </EntityType>
             <EntityType Name="spGLVHType" sap:label="CDS View for Special GL Indicator Value Help" sap:content-version="1">
                 <Key>
                     <PropertyRef Name="accType"/>
@@ -277,15 +285,17 @@
                 <Property Name="extRef" Type="Edm.String" MaxLength="16" sap:display-format="UpperCase" sap:label="Reference" sap:quickinfo="Reference Document Number"/>
                 <Property Name="assignNo" Type="Edm.String" MaxLength="18" sap:label="Assignment" sap:quickinfo="Assignment Number"/>
                 <Property Name="spGl" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Special G/L Ind." sap:quickinfo="Special G/L Indicator"/>
+                <Property Name="debCredIndRef" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Debit/Credit Ind." sap:quickinfo="Debit/Credit Indicator"/>
                 <Property Name="debCredInd" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Debit/Credit Ind." sap:quickinfo="Debit/Credit Indicator"/>
                 <Property Name="postKey" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="Posting Key"/>
                 <Property Name="postingDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Posting Date" sap:quickinfo="Posting Date in the Document"/>
                 <Property Name="glAccount" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="G/L Account" sap:quickinfo="General Ledger Account"/>
                 <Property Name="costCntr" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Cost Center"/>
                 <Property Name="profitCntr" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Profit Center"/>
-                <Property Name="wbs" Type="Edm.String" MaxLength="24" sap:display-format="NonNegative" sap:label="WBS Element"/>
+                <Property Name="wbs" Type="Edm.String" MaxLength="24" sap:display-format="UpperCase" sap:label="WBS Element" sap:quickinfo="Work Breakdown Structure Element (WBS Element)"/>
                 <Property Name="itemText" Type="Edm.String" MaxLength="50" sap:label="Text" sap:quickinfo="Item Text"/>
                 <Property Name="taxCode" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="Tax Code" sap:quickinfo="Tax on sales/purchases code"/>
+                <Property Name="itemType1" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Character Length 1" sap:quickinfo="Character Field of Length 1"/>
             </EntityType>
             <EntityType Name="aprvrsType" sap:label="CDS View to get payment draft approvers" sap:content-version="1">
                 <Key>
@@ -364,6 +374,7 @@
                 <Property Name="spGl" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Special G/L Ind." sap:quickinfo="Special G/L Indicator"/>
                 <Property Name="debCredInd" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Debit/Credit Ind." sap:quickinfo="Debit/Credit Indicator"/>
                 <Property Name="postKey" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="Posting Key"/>
+                <Property Name="itemType" Type="Edm.String" MaxLength="1"/>
                 <Property Name="refdoc" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Document Number" sap:quickinfo="Document Number of an Accounting Document"/>
             </EntityType>
             <EntityType Name="bankGLSType" sap:label="Bank GL Accounts" sap:content-version="1">
@@ -429,9 +440,11 @@
                 <Property Name="TaxCode" Type="Edm.String" Nullable="false" MaxLength="2" sap:display-format="UpperCase" sap:text="TaxCodeDescription" sap:label="Tax Code" sap:quickinfo="Tax on sales/purchases code"/>
                 <Property Name="TaxCodeDescription" Type="Edm.String" MaxLength="50" sap:label="Tax Code Description" sap:quickinfo="Name for value-added tax"/>
                 <Property Name="TaxRate" Type="Edm.Decimal" Precision="12" Scale="3" sap:unit="RateUnit" sap:label="Tax Rate" sap:quickinfo="Condition amount or percentage where no scale exists"/>
-                <Property Name="RateUnit" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Rate Unit" sap:quickinfo="Condition Unit (Currency or Percentage)" sap:semantics="currency-code"/>
+                <Property Name="RateUnit" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Rate Unit" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
                 <Property Name="kmein" Type="Edm.String" MaxLength="3" sap:label="Unit of Measure" sap:quickinfo="Condition Unit" sap:semantics="unit-of-measure"/>
                 <Property Name="TaxProcedure" Type="Edm.String" MaxLength="6" sap:display-format="UpperCase" sap:label="Tax Calculation Procedure" sap:quickinfo="Procedure (Pricing, Output Control, Acct. Det., Costing,...)"/>
+                <Property Name="appType" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="Application"/>
+                <Property Name="condType" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Condition Type"/>
             </EntityType>
             <Association Name="assoc_C4F40A6ED515AE33D9A7FC47F73E499C" sap:content-version="1">
                 <End Type="ZFI_PAYMENT_MANAGEMENT_SRV.I_HousebankType" Multiplicity="1" Role="FromRole_assoc_C4F40A6ED515AE33D9A7FC47F73E499C"/>
@@ -468,6 +481,7 @@
                 <EntitySet Name="I_HouseBankAccountVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.I_HouseBankAccountVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:searchable="true" sap:content-version="1"/>
                 <EntitySet Name="I_Supplier_VH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.I_Supplier_VHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:searchable="true" sap:content-version="1"/>
                 <EntitySet Name="I_WBSElementStdVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.I_WBSElementStdVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:searchable="true" sap:content-version="1"/>
+                <EntitySet Name="empOrg" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.empOrgType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="spGLVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.spGLVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="head" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.headType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="item" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.itemType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
