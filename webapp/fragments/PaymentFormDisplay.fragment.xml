@@ -34,6 +34,9 @@
             <Label id="_IDGenLabelD1"     text="Header Text"           width="auto"/>
             <Text id="headTextText"       text="{pageModel>/headText}" width="auto"/>
 
+           <Label id="disdoctype"     text="Header Text"           width="auto"/>
+            <Text id="doctypeText"       text="{pageModel>/docType}" width="auto"/>
+
             <Label id="houseBankLabelD"   text="House Bank"            width="auto"/>
             <Text id="houseBankText"      text="{pageModel>/bankKey}"  width="auto"/>
 

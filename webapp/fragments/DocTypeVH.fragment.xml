@@ -1,0 +1,18 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+
+    <SelectDialog
+        id="doctypeVH"
+        title="Select DocType"
+        search=".InputHelps.onSearchDocType"
+        confirm=".InputHelps.onConfirmDocType"
+        cancel=".InputHelps.onCloseDocType"
+        items="{/docTypeVH}">
+        <StandardListItem id="_IDGenStandardListItemdt"
+            title="{docType}"
+            description="{docTypeText}"
+            type="Active"/>
+    </SelectDialog>
+
+</core:FragmentDefinition>

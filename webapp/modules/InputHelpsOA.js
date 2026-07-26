@@ -372,6 +372,64 @@ sap.ui.define([
                     oDialog.close();
                 });
             }
+        },
+
+        // ══════════════════════════════════════════════════════════════════
+        // DOCUMENT TYPE
+        // ══════════════════════════════════════════════════════════════════
+        onLoadDocTypeVH: async function (oEvent) {
+            const oView = this.getView();
+
+            this._pOADocTypeDialog ??= Fragment.load({
+                id: oView.getId(),
+                name: "zfi.payment.management.fragments.OaFrag.DocTypeVhOa",
+                controller: this
+            }).then(function (oDialog) {
+                oView.addDependent(oDialog);
+                return oDialog;
+            });
+
+            const oDialog = await this._pOADocTypeDialog;
+            oDialog.open();
+        },
+
+        onSearchDocType: function (oEvent) {
+            const sValue = oEvent.getParameter("value");
+            const aFilters = [];
+
+            if (sValue) {
+                aFilters.push(new Filter({
+                    filters: [
+                        new Filter("docType", FilterOperator.Contains, sValue),
+                        new Filter("docTypeText", FilterOperator.Contains, sValue)
+                    ],
+                    and: false
+                }));
+            }
+
+            oEvent.getSource().getBinding("items").filter(aFilters);
+        },
+
+        onConfirmDocType: function (oEvent) {
+            const oSelectedItem = oEvent.getParameter("selectedItem");
+            if (oSelectedItem) {
+                const oContext = oSelectedItem.getBindingContext();
+                const sDocType = oContext.getProperty("docType");
+                const sDocTypeText = oContext.getProperty("docTypeText");
+
+                this.byId("oa_doctypeInput").setValue(sDocType);
+                this.getView().getModel("pageModel").setProperty("/docTypeText", sDocTypeText || "");
+
+                MessageToast.show("Document Type selected: " + sDocType);
+            }
+        },
+
+        onCloseDocType: function () {
+            if (this._pOADocTypeDialog) {
+                this._pOADocTypeDialog.then(function (oDialog) {
+                    oDialog.close();
+                });
+            }
         }
     };
 });

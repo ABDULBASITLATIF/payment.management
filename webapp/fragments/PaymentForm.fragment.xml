@@ -47,8 +47,10 @@
             
             <Label id="_IDGenLabel1" text="Header Text" width="auto"/>
             <Input id="_IDGenInput" value="" maxLength="25" width="auto"/>
-            
-            <!-- Bank Information Section -->
+
+            <Label id="doctype" text="Doctype" width="auto"/>
+            <Input id="doctypeInput" value="" maxLength="2" width="auto" showValueHelp="true" valueHelpRequest=".InputHelps.onLoadDocTypeVH"/>
+                       
              
             <Label id="houseBankLabel" text="House Bank" required="true" width="auto"/>
             <Input id="houseBankInput" value="" maxLength="5" width="auto" showValueHelp="true" valueHelpRequest=".InputHelps.onLoadHouseBankVH"/>

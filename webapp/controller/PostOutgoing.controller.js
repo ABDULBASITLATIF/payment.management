@@ -300,7 +300,8 @@ sap.ui.define([
                 "draftidInput", "companyCodeInput", "fiscalYearInput",
                 "referenceInput", "_IDGenInput", "houseBankInput",
                 "houseBankAccountInput", "glAccountInput", "supplierAccountInput",
-                "currencyInput", "_IDGenInput3", "_IDGenInput1", "_IDGenInput2"
+                "currencyInput", "_IDGenInput3", "_IDGenInput1", "_IDGenInput2",
+                "doctypeInput"
             ];
             aInputIds.forEach(function (sId) {
                 const oControl = this.byId(sId);
@@ -318,6 +319,7 @@ sap.ui.define([
             if (oDocPicker)  { oDocPicker.setValue("");  }
             if (oPostPicker) { oPostPicker.setValue(""); }
             this.getView().getModel("pageModel").setProperty("/supplierName", "");
+            this.getView().getModel("pageModel").setProperty("/docTypeText", "");
 
             // Reset display mode flags before applying
             this._bDisplayMode = false;
@@ -469,6 +471,7 @@ sap.ui.define([
             fnSet("houseBankInput",       oHead.bankKey);
             fnSet("houseBankAccountInput",     oHead.bankAcc);
             fnSet("supplierAccountInput", oHead.vendor);
+            fnSet("doctypeInput",         oHead.docType);
             
             fnSet("glAccountInput", oHead.bankGL);
             fnSet("_IDGenInput3",         oHead.payAmnt);
@@ -558,6 +561,7 @@ sap.ui.define([
                 oPageModel.setProperty("/docDate",     fnGetDate("documentDatePicker"));
                 oPageModel.setProperty("/postingDate", fnGetDate("postingDatePicker"));
                 oPageModel.setProperty("/paymentSelected", fnGet("_IDGenInputPaySel"));
+                oPageModel.setProperty("/docType",     fnGet("doctypeInput"));
                 
 
             }
@@ -572,7 +576,8 @@ sap.ui.define([
             const aEditableIds = [
                 "fiscalYearInput", "referenceInput", "_IDGenInput",
                 "currencyInput", "_IDGenInput3",
-                "documentDatePicker", "postingDatePicker"
+                "documentDatePicker", "postingDatePicker",
+                "doctypeInput"
             ];
 
             if (bIsInApproval || bIsApproved) {
@@ -1224,6 +1229,7 @@ sap.ui.define([
 
             const sBankGL   = this.byId("glAccountInput")     ? this.byId("glAccountInput").getValue().trim()     : "";
             const sCurrency = this.byId("currencyInput")       ? this.byId("currencyInput").getValue().trim()       : "";
+            const sDocType  = this.byId("doctypeInput")        ? this.byId("doctypeInput").getValue().trim()        : "";
 
             // ── 2. Required field validation ──────────────────────────────────────
             if (!sCompCode || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
@@ -1337,6 +1343,7 @@ sap.ui.define([
             compCode:    sCompCode,
             
             draftType:   "1",
+            docType:     sDocType,
             docDate:     _toODataDate2(oDocDate),
             postingDate: _toODataDate2(oPostDate),
             reference:   sReference,
@@ -1418,6 +1425,7 @@ sap.ui.define([
 
             const sBankGL   = this.byId("glAccountInput")     ? this.byId("glAccountInput").getValue().trim()     : "";
             const sCurrency = this.byId("currencyInput")       ? this.byId("currencyInput").getValue().trim()       : "";
+            const sDocType  = this.byId("doctypeInput")        ? this.byId("doctypeInput").getValue().trim()        : "";
 
             // ── 2. Required field validation ──────────────────────────────────────
             if (!sCompCode || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
@@ -1533,6 +1541,7 @@ sap.ui.define([
                     draftId:     sSavedDraftId,
                     compCode:    sCompCode,
                     draftType:   "1",
+                    docType:     sDocType,
                     docDate: _toODataDate2(oDocDate),
                     postingDate: _toODataDate2(oPostDate),
                     reference:   sReference,

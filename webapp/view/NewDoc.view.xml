@@ -113,6 +113,7 @@
                 <core:Item id="_IDGenItem66w" key="1" text="Open Invoices Payment"/>
                 <core:Item id="_IDGenItem666w" key="2" text="Down Payment"/>
                 <core:Item id="_IDGenItem966tw" key="3" text="On Account Payment"/>
+                <core:Item id="_IDGenItem966twf" key="4" text="	GL Payment"/>
             </Select>
             </fb:control>
         </fb:FilterGroupItem>

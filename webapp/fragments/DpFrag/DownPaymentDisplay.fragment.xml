@@ -34,6 +34,9 @@
             <Label id="dp_headerTextLabelD"    text="Header Text"           width="auto"/>
             <Text  id="dp_headTextText"        text="{pageModel>/headText}" width="auto"/>
 
+            <Label id="dp_doctypeLabelD"       text="Doctype"                width="auto"/>
+            <Text  id="dp_doctypeText"         text="{pageModel>/docType}"  width="auto"/>
+
             <Label id="dp_houseBankLabelD"     text="House Bank"            width="auto"/>
             <Text  id="dp_houseBankText"       text="{pageModel>/bankKey}"  width="auto"/>
 

@@ -81,7 +81,7 @@ sap.ui.define([
             const aInputIds = [
                 "oa_draftidInput",
                 "oa_companyCodeInput",
-          
+                "oa_doctypeInput",
                 "oa_referenceInput",
                 "oa_headerTextInput",        // matches fragment: oa_headerTextInput
                 "oa_houseBankInput",
@@ -111,6 +111,7 @@ sap.ui.define([
             
               // ── Clear supplier name ───────────────────────────────────────────────
             this.getView().getModel("pageModel").setProperty("/supplierName", "");
+            this.getView().getModel("pageModel").setProperty("/docTypeText", "");
             this._applyDisplayMode("");
             this._updateSaveButton("create");
         },
@@ -207,6 +208,7 @@ sap.ui.define([
             // fnSet("oa_fiscalYearInput",        oHead.fiscYear);
             fnSet("oa_referenceInput",         oHead.reference);
             fnSet("oa_headerTextInput",        oHead.headText);   // oa_headerTextInput
+            fnSet("oa_doctypeInput",           oHead.docType);
             fnSet("oa_houseBankInput",         oHead.bankKey);
             fnSet("oa_houseBankAccountInput",  oHead.bankAcc);
             fnSet("oa_glAccountInput",         oHead.bankGL);
@@ -220,6 +222,7 @@ sap.ui.define([
             oPageModel.setProperty("/postDoc", oHead.postDoc || "");
             oPageModel.setProperty("/msg",     oHead.msg     || "");
             oPageModel.setProperty("/draftSt", oHead.draftSt || "");
+            oPageModel.setProperty("/fiscYear", oHead.fiscYear || "");
 
             // ── Fetch supplier name ───────────────────────────────────────────────
             const sVendor   = oHead.vendor;
@@ -285,9 +288,10 @@ sap.ui.define([
                 }.bind(this);
 
                 oPageModel.setProperty("/compCode",    fnGet("oa_companyCodeInput"));
-                oPageModel.setProperty("/fiscYear",    fnGet("oa_fiscalYearInput"));
+                // oPageModel.setProperty("/fiscYear",    fnGet("oa_fiscalYearInput"));
                 oPageModel.setProperty("/reference",   fnGet("oa_referenceInput"));
                 oPageModel.setProperty("/headText",    fnGet("oa_headerTextInput"));
+                oPageModel.setProperty("/docType",     fnGet("oa_doctypeInput"));
                 oPageModel.setProperty("/bankKey",     fnGet("oa_houseBankInput"));
                 oPageModel.setProperty("/bankAcc",     fnGet("oa_houseBankAccountInput"));
                 oPageModel.setProperty("/bankGL",      fnGet("oa_glAccountInput"));
@@ -308,7 +312,7 @@ sap.ui.define([
             const aEditableIds = [
                 "oa_fiscalYearInput", "oa_referenceInput", "oa_headerTextInput",
                 "oa_currencyInput", "oa_payAmountInput",
-                "oa_documentDatePicker", "oa_postingDatePicker"
+                "oa_documentDatePicker", "oa_postingDatePicker", "oa_doctypeInput"
             ];
 
             if (!bDisplayForm) {
@@ -426,6 +430,7 @@ sap.ui.define([
                 sFiscYear:  fnVal("oa_fiscalYearInput"),
                 sReference: fnVal("oa_referenceInput"),
                 sHeadText:  fnVal("oa_headerTextInput"),      // oa_headerTextInput
+                sDocType:   fnVal("oa_doctypeInput"),
                 sBankKey:   fnVal("oa_houseBankInput"),
                 sBankAcc:   fnVal("oa_houseBankAccountInput"),
                 sBankGL:    fnVal("oa_glAccountInput"),
@@ -564,6 +569,7 @@ sap.ui.define([
                 compCode:    oVals.sCompCode,
                 fiscYear:    oVals.sFiscYear,
                 draftType:   "3",
+                docType:     oVals.sDocType,
                 docDate:     this._toODataDate2(oVals.oDocDate),
                 postingDate: this._toODataDate2(oVals.oPostDate),
                 reference:   oVals.sReference,
@@ -618,6 +624,7 @@ sap.ui.define([
                 compCode:    oVals.sCompCode,
                 fiscYear:    oVals.sFiscYear,
                 draftType:   "3",
+                docType:     oVals.sDocType,
                 docDate:     this._toODataDate2(oVals.oDocDate),
                 postingDate: this._toODataDate2(oVals.oPostDate),
                 reference:   oVals.sReference,

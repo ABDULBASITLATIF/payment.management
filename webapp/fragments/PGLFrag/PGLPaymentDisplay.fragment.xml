@@ -34,6 +34,9 @@
             <Label id="pgl_headerTextLabelD"    text="Header Text"           width="auto"/>
             <Text  id="pgl_headTextText"        text="{pageModel>/headText}" width="auto"/>
 
+            <Label id="pgl_doctypeLabelD"       text="Doctype"                width="auto"/>
+            <Text  id="pgl_doctypeText"         text="{pageModel>/docType}"  width="auto"/>
+
             <Label id="pgl_houseBankLabelD"     text="House Bank"            width="auto"/>
             <Text  id="pgl_houseBankText"       text="{pageModel>/bankKey}"  width="auto"/>
 

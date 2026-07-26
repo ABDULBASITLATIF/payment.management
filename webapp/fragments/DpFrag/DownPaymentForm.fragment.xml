@@ -45,6 +45,9 @@
             
             <Label id="dp_headerTextLabel" text="Header Text" width="auto"/>
             <Input id="dp_headerTextInput" value="" maxLength="25" width="auto"/>
+
+            <Label id="dp_doctypeLabel" text="Doctype" width="auto"/>
+            <Input id="dp_doctypeInput" value="" maxLength="2" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsDP.onLoadDocTypeVH"/>
             
             <Label id="dp_houseBankLabel" text="House Bank" required="true" width="auto"/>
             <Input id="dp_houseBankInput" value="" maxLength="5" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsDP.onLoadHouseBankVH"/>

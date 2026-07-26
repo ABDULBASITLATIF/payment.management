@@ -236,6 +236,7 @@
                 <Property Name="compCode" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Company Code"/>
                 <Property Name="fiscYear" Type="Edm.String" MaxLength="4" sap:display-format="NonNegative" sap:label="Fiscal Year"/>
                 <Property Name="draftType" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Draft Type"/>
+                <Property Name="docType" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="Document Type"/>
                 <Property Name="draftTypeTxt" Type="Edm.String" MaxLength="21"/>
                 <Property Name="docDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Document Date" sap:quickinfo="Document Date in Document"/>
                 <Property Name="postingDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Posting Date" sap:quickinfo="Posting Date in the Document"/>
@@ -401,6 +402,13 @@
                 <Property Name="CostCenterName" Type="Edm.String" MaxLength="20" sap:label="Name" sap:quickinfo="General Name"/>
                 <Property Name="CostCenterDesc" Type="Edm.String" MaxLength="40" sap:label="Description"/>
             </EntityType>
+            <EntityType Name="docTypeVHType" sap:label="CDS View for FI Document Types" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="docType"/>
+                </Key>
+                <Property Name="docType" Type="Edm.String" Nullable="false" MaxLength="2" sap:display-format="UpperCase" sap:label="Document Type"/>
+                <Property Name="docTypeText" Type="Edm.String" MaxLength="20" sap:label="Description" sap:quickinfo="Document Type Description"/>
+            </EntityType>
             <EntityType Name="GLAccVHType" sap:label="CDS View for GL account Search Help" sap:content-version="1">
                 <Key>
                     <PropertyRef Name="CompanyCode"/>
@@ -410,6 +418,15 @@
                 <Property Name="GLAccount" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="G/L Account" sap:quickinfo="G/L Account Number"/>
                 <Property Name="shortText" Type="Edm.String" MaxLength="20" sap:label="Short Text" sap:quickinfo="G/L Account Short Text"/>
                 <Property Name="longText" Type="Edm.String" MaxLength="50" sap:label="G/L Acct Long Text" sap:quickinfo="G/L Account Long Text"/>
+            </EntityType>
+            <EntityType Name="HBVHType" sap:label="CDS View for House Bank Value Help" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="CompanyCode"/>
+                    <PropertyRef Name="HouseBank"/>
+                </Key>
+                <Property Name="CompanyCode" Type="Edm.String" Nullable="false" MaxLength="4" sap:display-format="UpperCase" sap:label="Company Code"/>
+                <Property Name="HouseBank" Type="Edm.String" Nullable="false" MaxLength="5" sap:display-format="UpperCase" sap:label="House Bank" sap:quickinfo="Short Key for a House Bank"/>
+                <Property Name="BankName" Type="Edm.String" MaxLength="60" sap:label="Bank Name" sap:quickinfo="Name of Financial Institution"/>
             </EntityType>
             <EntityType Name="profitCenterVHType" sap:label="CDS View for Profit Center Value Help" sap:content-version="1">
                 <Key>
@@ -491,7 +508,9 @@
                 <EntitySet Name="openItems" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.openItemsType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="bankGLS" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.bankGLSType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="costCenterVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.costCenterVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+                <EntitySet Name="docTypeVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.docTypeVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="GLAccVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.GLAccVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+                <EntitySet Name="HBVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.HBVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="profitCenterVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.profitCenterVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="suppVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.suppVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
                 <EntitySet Name="taxCodeVH" EntityType="ZFI_PAYMENT_MANAGEMENT_SRV.taxCodeVHType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>

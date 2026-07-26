@@ -101,7 +101,7 @@ sap.ui.define([
                 "dp_draftidInput", "dp_companyCodeInput", "dp_fiscalYearInput",
                 "dp_referenceInput", "dp_headerTextInput", "dp_houseBankInput",
                 "dp_houseBankAccountInput", "dp_glAccountInput", "dp_supplierAccountInput",
-                "dp_currencyInput", "dp_payAmountInput", "dp_invoiceSumInput", "dp_balanceInput"
+                "dp_currencyInput", "dp_payAmountInput", "dp_invoiceSumInput", "dp_balanceInput", "dp_doctypeInput"
             ];
             aInputIds.forEach(function (sId) {
                 const oCtrl = this.byId(sId);
@@ -117,6 +117,7 @@ sap.ui.define([
             if (oPostPicker) { oPostPicker.setValue(""); }
             // ── Clear supplier name ───────────────────────────────────────────────
             this.getView().getModel("pageModel").setProperty("/supplierName", "");
+            this.getView().getModel("pageModel").setProperty("/docTypeText", "");
             // ── Reset checkbox ────────────────────────────────────────────────────
             const oCheckBox = this.byId("CheckBoxDPR");
             if (oCheckBox) { oCheckBox.setSelected(false); }
@@ -210,6 +211,7 @@ sap.ui.define([
             fnSet("dp_glvh",                   oHead.spGL); 
             fnSetDate("dp_documentDatePicker", oHead.docDate);
             fnSetDate("dp_postingDatePicker",  oHead.postingDate);
+            fnSet("dp_doctypeInput",           oHead.docType);
         
 
             // ── Restore DPR checkbox from withRef field ───────────────────────────
@@ -307,6 +309,7 @@ sap.ui.define([
                 oPageModel.setProperty("/spGL",        fnGet("dp_glvh"));
                 oPageModel.setProperty("/docDate",     fnGetDate("dp_documentDatePicker"));
                 oPageModel.setProperty("/postingDate", fnGetDate("dp_postingDatePicker"));
+                oPageModel.setProperty("/docType",     fnGet("dp_doctypeInput"));
             }
 
             const aAlwaysLockedIds = [
@@ -316,7 +319,7 @@ sap.ui.define([
             const aEditableIds = [
                 "dp_fiscalYearInput", "dp_referenceInput", "dp_headerTextInput",
                 "dp_currencyInput", "dp_payAmountInput",
-                "dp_documentDatePicker", "dp_postingDatePicker"
+                "dp_documentDatePicker", "dp_postingDatePicker", "dp_doctypeInput"
             ];
 
             if (bIsInApproval || bIsApproved) {
@@ -1005,7 +1008,8 @@ sap.ui.define([
                 sCurrency:  g("dp_currencyInput"),
                 sSpGL:      g("dp_glvh"),  
                 oDocDate:   this.byId("dp_documentDatePicker")  ? this.byId("dp_documentDatePicker").getDateValue()  : null,
-                oPostDate:  this.byId("dp_postingDatePicker")   ? this.byId("dp_postingDatePicker").getDateValue()   : null
+                oPostDate:  this.byId("dp_postingDatePicker")   ? this.byId("dp_postingDatePicker").getDateValue()   : null,
+                sDocType:   g("dp_doctypeInput"),
             };
         },
 
@@ -1096,6 +1100,7 @@ sap.ui.define([
                 compCode:    f.sCompCode,
                 fiscYear:    f.sFiscYear,
                 draftType:   "2",
+                docType:     f.sDocType,
                 docDate:     this._toODataDate2(f.oDocDate),
                 postingDate: this._toODataDate2(f.oPostDate),
                 reference:   f.sReference,

@@ -83,7 +83,7 @@ sap.ui.define([
                 this.getView().setModel(new JSONModel({
                     "values": {
                         "draftID":  "", "compCode": "",
-                        "docDate":  "", "postDate": "", "refer": "", "headText": "",
+                        "docDate":  "", "postDate": "", "refer": "", "headText": "", "docType": "",
                         "bankID":   "", "bankAcc":  "", "bankGL": "", "curr": "",
                         "payAmnt":  parseFloat(0), "debit": parseFloat(0),
                         "credit":   parseFloat(0), "balance": parseFloat(0)
@@ -92,7 +92,7 @@ sap.ui.define([
                        "compCode":true, "bankID":true,"bankAcc":true,"bankGL":true 
                     } ,
                     "state":{"draftID":"None","compCode":"None",
-                    "docDate":"None","postDate":"None","refer":"None","headText":"None","bankID":"None","bankAcc":"None",
+                    "docDate":"None","postDate":"None","refer":"None","headText":"None","bankID":"None","bankAcc":"None", "docType":"None",
                     "bankGL":"None","curr":"None","payAmnt":"None","debit":"None","credit":"None","balance":"None"
                     }, "visSave":true,"visUpd":false,"visSub":true,"visAddR":true,"visEditR":true,"visReSub":false,"visPost":false,
                     "itemSel":"SingleSelectMaster"
@@ -104,6 +104,7 @@ sap.ui.define([
                     draftId:      null,
                     supplierName: ""
                 });
+                this.getView().getModel("pageModel").setProperty("/docTypeText", "");
 
                 this._iSelectedLineItemIndex = -1;
                 this._sLineItemMode          = "add";
@@ -177,14 +178,14 @@ sap.ui.define([
         _resetPage: function () {
             this.getView().setModel(new JSONModel({
                 "values": {
-                    "draftID": "", "compCode": "",
+                    "draftID": "", "compCode": "", "docType": "",
                     "docDate": "", "postDate": "", "refer": "", "headText": "",
                     "bankID": "", "bankAcc": "", "bankGL": "", "curr": "",
                     "payAmnt": parseFloat(0), "debit": parseFloat(0),
                     "credit": parseFloat(0), "balance": parseFloat(0)
                 },
                 "state": {
-                    "draftID": "None", "compCode": "",
+                    "draftID": "None", "compCode": "", "docType": "",
                     "docDate": "", "postDate": "", "refer": "", "headText": "",
                     "bankID": "", "bankAcc": "", "bankGL": "", "curr": "",
                     "payAmnt": "", "debit": "", "credit": "", "balance": ""
@@ -309,6 +310,7 @@ sap.ui.define([
                             "draftID":  oHead.draftId      || "",   // Bug 2 fixed
                             "compCode": oHead.compCode      || "",
                             "docDate":  oHead.docDate,
+                            "docType":  oHead.docType       || "",
                             "postDate": oHead.postingDate,
                             "refer":    oHead.reference     || "",
                             "headText": oHead.headText      || "",
@@ -364,6 +366,7 @@ sap.ui.define([
                     oPageModel.setProperty("/draftSt",     oHead.draftSt     || "");
                     oPageModel.setProperty("/compCode",    oHead.compCode    || "");
                     oPageModel.setProperty("/fiscYear",    oHead.fiscYear    || "");
+                    oPageModel.setProperty("/docType",     oHead.docType     || "");
                     oPageModel.setProperty("/reference",   oHead.reference   || "");
                     oPageModel.setProperty("/headText",    oHead.headText    || "");
                     oPageModel.setProperty("/bankKey",     oHead.bankKey     || "");
@@ -431,6 +434,7 @@ sap.ui.define([
                     "draftID":  oHead.draftId      || "",
                     "compCode": oHead.compCode     || "",
                     "docDate":  fnFormatDate(oHead.docDate),
+                    "docType":  oHead.docType      || "",
                     "postDate": fnFormatDate(oHead.postingDate),
                     "refer":    oHead.reference    || "",
                     "headText": oHead.headText     || "",
@@ -458,6 +462,7 @@ sap.ui.define([
             oPageModel.setProperty("/msg",         oHead.msg         || "");
             oPageModel.setProperty("/draftSt",     oHead.draftSt     || "");
             oPageModel.setProperty("/draftId",     oHead.draftId     || "");
+            oPageModel.setProperty("/docType",     oHead.docType     || "");
             oPageModel.setProperty("/compCode",    oHead.compCode    || "");
             oPageModel.setProperty("/fiscYear",    oHead.fiscYear    || "");
             oPageModel.setProperty("/reference",   oHead.reference   || "");
@@ -741,6 +746,7 @@ sap.ui.define([
                 draftType:   "4",
                 docDate:     this._toODataDate2(glValues.docDate),
                 postingDate: this._toODataDate2(glValues.postDate),
+                docType:     glValues.docType,
                 reference:   glValues.refer,
                 headText:    glValues.headText,
                 bankKey:     glValues.bankID,
@@ -836,6 +842,7 @@ sap.ui.define([
                 draftId:     sSavedDraftId,
                 compCode:    glData.values.compCode,
                 draftType:   "4",
+                docType:     glData.values.docType,
                 docDate:     this._toODataDate2(glData.values.docDate),
                 postingDate: this._toODataDate2(glData.values.postDate),
                 reference:   glData.values.refer,
@@ -954,6 +961,7 @@ sap.ui.define([
                     draftId:     sSavedDraftId,
                     compCode:    glData.values.compCode,
                     draftType:   "4",
+                    docType:     glData.values.docType,
                     docDate:     this._toODataDate2(glData.values.docDate),
                     postingDate: this._toODataDate2(glData.values.postDate),
                     reference:   glData.values.refer,
@@ -1010,6 +1018,7 @@ sap.ui.define([
                 var oPayload = {
                     compCode:    glData.values.compCode,
                     draftType:   "4",
+                    docType:     glData.values.docType,
                     docDate:     this._toODataDate2(glData.values.docDate),
                     postingDate: this._toODataDate2(glData.values.postDate),
                     reference:   glData.values.refer,
