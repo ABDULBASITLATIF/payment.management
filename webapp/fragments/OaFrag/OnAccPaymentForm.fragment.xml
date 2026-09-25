@@ -70,6 +70,48 @@
 
             <Label id="oa_balanceLabel" text="Balance" width="auto" visible="false"/>
             <Input id="oa_balanceInput" value="" width="auto" editable="false" visible="false"/>
+
+          <!-- New Fields added -->
+
+            <Label id="oa_drawerNameLabel" text="Drawer Name" width="auto" visible="false"/>
+            <Input id="oa_drawerNameInput" value="" width="auto"   visible="false"/>
+
+           <Label id="oa_drawerCityLabel" text="Drawer City" width="auto" visible="false"/>
+            <Input id="oa_drawerCityInput" value="" width="auto"  visible="false"/>
+
+            <Label id="oa_draweeNameLabel" text="Drawee Name" width="auto" visible="false"/>
+            <Input id="oa_draweeNameInput" value="" width="auto"   visible="false"/>
+
+
+            <Label id="oa_draweeCityLabel" text="Drawee City" width="auto" visible="false"/>
+            <Input id="oa_draweeCityInput" value="" width="auto"   visible="false"/>
+
+            <Label id="oa_checkNumberLabel" text="Check Number" width="auto" visible="false"/>
+            <Input id="oa_checkNumberInput" value="" width="auto"   visible="false"/>
+
+            <Label id="oa_bankLabel" text="Bank" width="auto" visible="false"/>
+            <Input id="oa_bankInput" value="" width="auto"  visible="false"/>
+
+
+             <Label id="oa_accountLabel" text="Account Number" width="auto" visible="false"/>
+            <Input id="oa_accountInput" value="" width="auto"   visible="false"/>
+
+            <Label id="oa_dueDateLabel" text="Due Date" width="auto" visible="false"/>
+            <DatePicker id="oa_dueDateInput" value="" displayFormat="dd/MM/yyyy"  width="auto" visible="false"/>
+
+
+            <Label id="oa_assignNoLabel" text="Assignment Number" width="auto" visible="false"/>
+            <Input id="oa_assignNoInput" value="" width="auto"   visible="false"/>
+
+            <Label id="oa_itemTextLabel" text="Item Text" width="auto" visible="false"/>
+            <Input id="oa_itemTextInput" value="" width="auto"   visible="false"/>
+
+            <Label id="oa_pdcpayLabel" text="PDC Payment" width="auto"/>
+            <CheckBox id="oa_pdcPaymentCheckBox" select="onPdcPaymentChange"/>
+
+            
+
+
         </f:content>
     </f:SimpleForm>
     

@@ -94,6 +94,40 @@
 
             <Label id="_IDGenLabel3" text="Balance" width="auto"/>
             <Input id="_IDGenInput2" value="" width="auto" editable="false"/>
+
+
+            <Label id="drawerNameLabel" text="Drawer Name" width="auto" visible="false"/>
+            <Input id="drawerNameInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="drawerCityLabel" text="Drawer City" width="auto" visible="false"/>
+            <Input id="drawerCityInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="draweeNameLabel" text="Drawee Name" width="auto" visible="false"/>
+            <Input id="draweeNameInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="draweeCityLabel" text="Drawee City" width="auto" visible="false"/>
+            <Input id="draweeCityInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="checkNumberLabel" text="Check Number" width="auto" visible="false"/>
+            <Input id="checkNumberInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="bankLabel" text="Bank" width="auto" visible="false"/>
+            <Input id="bankInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="accountLabel" text="Account Number" width="auto" visible="false"/>
+            <Input id="accountInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="dueDateLabel" text="Due Date" width="auto" visible="false"/>
+            <DatePicker id="dueDateInput" value="" valueFormat="yyyy-MM-dd" displayFormat="dd/MM/yyyy" editable="true" width="auto" visible="false" change="onDueDateChange"/>
+
+            <Label id="assignNoLabel" text="Assignment Number" width="auto" visible="false"/>
+            <Input id="assignNoInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="itemTextLabel" text="Item Text" width="auto" visible="false"/>
+            <Input id="itemTextInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="pdcPaymentLabel" text="PDC Payment" width="auto"/>
+            <CheckBox id="pdcPaymentCheckBox" select="onPdcPaymentChange"/>
         </f:content>
     </f:SimpleForm>
     

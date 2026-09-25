@@ -58,7 +58,7 @@ sap.ui.define([
 
                     if (aResults.length > 0 && oCompCodeInput) {
                         oCompCodeInput.setValue(aResults[0].compCode || "");
-                        oCompCodeInput.setEditable(false);
+                        // oCompCodeInput.setEditable(false);
                     }
                 },
                 error: function (oError) {
@@ -112,6 +112,12 @@ sap.ui.define([
               // ── Clear supplier name ───────────────────────────────────────────────
             this.getView().getModel("pageModel").setProperty("/supplierName", "");
             this.getView().getModel("pageModel").setProperty("/docTypeText", "");
+            const oPdcCheckBox = this.byId("oa_pdcPaymentCheckBox");
+            if (oPdcCheckBox) {
+                oPdcCheckBox.setSelected(false);
+                oPdcCheckBox.setEnabled(true);
+            }
+            this._togglePdcFields(false);
             this._applyDisplayMode("");
             this._updateSaveButton("create");
         },
@@ -217,12 +223,23 @@ sap.ui.define([
             fnSet("oa_payAmountInput",         oHead.payAmnt);    // oa_payAmountInput
             fnSetDate("oa_documentDatePicker", oHead.docDate);
             fnSetDate("oa_postingDatePicker",  oHead.postingDate);
+            fnSet("oa_drawerNameInput",  oHead.drawerName);
+            fnSet("oa_drawerCityInput",  oHead.drawerCity);
+            fnSet("oa_draweeNameInput",  oHead.draweeName);
+            fnSet("oa_draweeCityInput",  oHead.draweeCity);
+            fnSet("oa_checkNumberInput", oHead.checkNumber);
+            fnSet("oa_bankInput",        oHead.bank);
+            fnSet("oa_accountInput",     oHead.account);
+            fnSet("oa_assignNoInput",    oHead.assignNo);
+            fnSet("oa_itemTextInput",    oHead.itemText);
+            fnSetDate("oa_dueDateInput", oHead.dueDate);
 
             const oPageModel = this.getView().getModel("pageModel");
             oPageModel.setProperty("/postDoc", oHead.postDoc || "");
             oPageModel.setProperty("/msg",     oHead.msg     || "");
             oPageModel.setProperty("/draftSt", oHead.draftSt || "");
             oPageModel.setProperty("/fiscYear", oHead.fiscYear || "");
+            oPageModel.setProperty("/pdcFlg", oHead.pdcFlg || "");
 
             // ── Fetch supplier name ───────────────────────────────────────────────
             const sVendor   = oHead.vendor;
@@ -247,6 +264,13 @@ sap.ui.define([
                     }
                 });
             }
+            const bPdcSelected = oHead.pdcFlg === "X";
+            const oPdcCheckBox = this.byId("oa_pdcPaymentCheckBox");
+            if (oPdcCheckBox) { oPdcCheckBox.setSelected(bPdcSelected); }
+            this._togglePdcFields(bPdcSelected);
+
+            // Once a draft exists, PDC flag is fixed — don't let it be toggled
+            if (oPdcCheckBox) { oPdcCheckBox.setEnabled(false); }
 
             this._applyDisplayMode(oHead.draftSt);
         },
@@ -262,6 +286,7 @@ sap.ui.define([
             const bIsPosted     = sDraftSt === "5";
             const bIsPostErr    = sDraftSt === "6";
             const bDisplayForm  = bIsInApproval || bIsApproved || bIsPosted || bIsPostErr;
+            const bPdcSelected = this.getView().getModel("pageModel").getProperty("/pdcFlg") === "X";
 
             // Toggle edit / display form boxes
             const oEditFormBox    = this.byId("oa_editFormBox");
@@ -300,6 +325,19 @@ sap.ui.define([
                 oPageModel.setProperty("/payAmnt",     fnGet("oa_payAmountInput"));
                 oPageModel.setProperty("/docDate",     fnGetDate("oa_documentDatePicker"));
                 oPageModel.setProperty("/postingDate", fnGetDate("oa_postingDatePicker"));
+
+                oPageModel.setProperty("/drawerName",  fnGet("oa_drawerNameInput"));
+                oPageModel.setProperty("/drawerCity",  fnGet("oa_drawerCityInput"));
+                oPageModel.setProperty("/draweeName",  fnGet("oa_draweeNameInput"));
+                oPageModel.setProperty("/draweeCity",  fnGet("oa_draweeCityInput"));
+                oPageModel.setProperty("/checkNumber", fnGet("oa_checkNumberInput"));
+                oPageModel.setProperty("/bank",        fnGet("oa_bankInput"));
+                oPageModel.setProperty("/account",     fnGet("oa_accountInput"));
+                oPageModel.setProperty("/dueDate", fnGetDate("oa_dueDateInput"));
+                oPageModel.setProperty("/assignNo",    fnGet("oa_assignNoInput"));
+                oPageModel.setProperty("/itemText",    fnGet("oa_itemTextInput"));
+
+                this._toggleDisplayPdcFields(bPdcSelected);
             }
 
             // Fields always locked
@@ -440,20 +478,52 @@ sap.ui.define([
                 oDocDate:   this.byId("oa_documentDatePicker")
                                 ? this.byId("oa_documentDatePicker").getDateValue()  : null,
                 oPostDate:  this.byId("oa_postingDatePicker")
-                                ? this.byId("oa_postingDatePicker").getDateValue()   : null
+                                ? this.byId("oa_postingDatePicker").getDateValue()   : null,
+
+                sDrawerName:  fnVal("oa_drawerNameInput"),
+                sDrawerCity:  fnVal("oa_drawerCityInput"),
+                sDraweeName:  fnVal("oa_draweeNameInput"),
+                sDraweeCity:  fnVal("oa_draweeCityInput"),
+                sCheckNumber: fnVal("oa_checkNumberInput"),
+                sBank:        fnVal("oa_bankInput"),
+                sAccount:     fnVal("oa_accountInput"),
+                oDueDate:     this.byId("oa_dueDateInput")
+                                ? this.byId("oa_dueDateInput").getDateValue()   : null,
+                sAssignNo:    fnVal("oa_assignNoInput"),
+                sItemText:    fnVal("oa_itemTextInput"),
+                bPdcFlg:      this.byId("oa_pdcPaymentCheckBox") ? this.byId("oa_pdcPaymentCheckBox").getSelected() : false                 
             };
         },
 
+        // _validateForm: function (oVals) {
+        //     if (!oVals.sCompCode || !oVals.sVendor ||
+        //         !oVals.sBankKey  || !oVals.sBankAcc  ||
+        //         !oVals.oDocDate  || !oVals.oPostDate) {
+        //         MessageBox.error("Please fill all required fields before saving.");
+        //         return false;
+        //     }
+        //     return true;
+        // },
         _validateForm: function (oVals) {
-            if (!oVals.sCompCode || !oVals.sVendor ||
-                !oVals.sBankKey  || !oVals.sBankAcc  ||
-                !oVals.oDocDate  || !oVals.oPostDate) {
+            if (!oVals.sCompCode || !oVals.sVendor || !oVals.oDocDate || !oVals.oPostDate) {
                 MessageBox.error("Please fill all required fields before saving.");
                 return false;
             }
+
+            if (oVals.bPdcFlg) {
+                if (!oVals.sCheckNumber || !oVals.sBank || !oVals.sAccount) {
+                    MessageBox.error("Please fill Check Number, Bank, and Account for PDC payment.");
+                    return false;
+                }
+            } else {
+                if (!oVals.sBankKey || !oVals.sBankAcc) {
+                    MessageBox.error("Please fill all required fields before saving.");
+                    return false;
+                }
+            }
+
             return true;
         },
-
         // ─────────────────────────────────────────────────────────────────────
         // Build 4 static to_item entries
         //   amntLC  → Total Payment Amount from oa_payAmountInput
@@ -581,6 +651,17 @@ sap.ui.define([
                 curr:        oVals.sCurrency,
                 payAmnt:     parseFloat(oVals.sPayAmnt || "0").toFixed(3),
                 action:      "I",
+                pdcFlg:      oVals.bPdcFlg ? "X" : "",
+                drawerName:  oVals.sDrawerName,
+                drawerCity:  oVals.sDrawerCity,
+                draweeName:  oVals.sDraweeName,
+                draweeCity:  oVals.sDraweeCity,
+                checkNumber: oVals.sCheckNumber,
+                bank:        oVals.sBank,
+                account:     oVals.sAccount,
+                dueDate: this._toODataDate2(oVals.oDueDate),
+                assignNo:    oVals.sAssignNo,
+                itemText:    oVals.sItemText,
                 to_item:     this._buildToItems(oVals.sCompCode, oVals.sPayAmnt,oVals.sCurrency)
             };
 
@@ -599,6 +680,11 @@ sap.ui.define([
 
                     that.getView().getModel("pageModel").setData({ mode: "edit", draftId: sDraftId });
                     that._updateSaveButton("edit");
+
+                     // Lock PDC checkbox once the doc is saved
+                    const oPdcCheckBox = that.byId("oa_pdcPaymentCheckBox");
+                    if (oPdcCheckBox) { oPdcCheckBox.setEnabled(false); }
+
                     MessageToast.show("Saved successfully. Draft ID: " + sDraftId);
                 },
                 error: function (oError) {
@@ -636,6 +722,17 @@ sap.ui.define([
                 curr:        oVals.sCurrency,
                 payAmnt:     parseFloat(oVals.sPayAmnt || "0").toFixed(3),
                 action:      "U",
+                pdcFlg:      oVals.bPdcFlg ? "X" : "",
+                drawerName:  oVals.sDrawerName,
+                drawerCity:  oVals.sDrawerCity,
+                draweeName:  oVals.sDraweeName,
+                draweeCity:  oVals.sDraweeCity,
+                checkNumber: oVals.sCheckNumber,
+                bank:        oVals.sBank,
+                account:     oVals.sAccount,
+                dueDate: this._toODataDate2(oVals.oDueDate),
+                assignNo:    oVals.sAssignNo,
+                itemText:    oVals.sItemText,
                 to_item:     this._buildToItems(oVals.sCompCode, oVals.sPayAmnt, oVals.sCurrency)
             };
 
@@ -647,6 +744,9 @@ sap.ui.define([
                 success: function () {
                     that._setBusyDialog(false);
                     oDataModel.setUseBatch(true);
+
+                    const oPdcCheckBox = that.byId("oa_pdcPaymentCheckBox");
+                    if (oPdcCheckBox) { oPdcCheckBox.setEnabled(false); }
                     MessageToast.show("Updated successfully. Draft ID: " + sSavedDraftId);
                 },
                 error: function (oError) {
@@ -812,6 +912,183 @@ sap.ui.define([
                     }
                 }, 500);
             }
+        },
+
+
+
+        // ─────────────────────────────────────────────────────────────────────
+        // PDC Payment checkbox toggle
+        // ─────────────────────────────────────────────────────────────────────
+        onPdcPaymentChange: function (oEvent) {
+            const bSelected = oEvent.getParameter("selected");
+            this._togglePdcFields(bSelected);
+
+            if (bSelected) {
+                const sVendor   = this.byId("oa_supplierAccountInput") ? this.byId("oa_supplierAccountInput").getValue().trim() : "";
+                const sCompCode = this.byId("oa_companyCodeInput") ? this.byId("oa_companyCodeInput").getValue().trim() : "";
+                this._fetchDrawerInfo(sVendor, sCompCode);
+                this._fetchDraweeInfo(sCompCode);
+            } else {
+                this._clearDrawerDraweeFields();
+            }
+        },
+
+        _togglePdcFields: function (bPdcSelected) {
+            const aBankFieldIds = [
+                "oa_houseBankLabel", "oa_houseBankInput",
+                "oa_houseBankAccountLabel", "oa_houseBankAccountInput",
+                "oa_glAccountLabel", "oa_glAccountInput"
+            ];
+            const aPdcFieldIds = [
+                "oa_drawerNameLabel", "oa_drawerNameInput",
+                "oa_drawerCityLabel", "oa_drawerCityInput",
+                "oa_draweeNameLabel", "oa_draweeNameInput",
+                "oa_draweeCityLabel", "oa_draweeCityInput",
+                "oa_checkNumberLabel", "oa_checkNumberInput",
+                "oa_bankLabel", "oa_bankInput",
+                "oa_accountLabel", "oa_accountInput",
+                "oa_dueDateLabel", "oa_dueDateInput",
+                "oa_assignNoLabel", "oa_assignNoInput",
+                "oa_itemTextLabel", "oa_itemTextInput"
+            ];
+
+            aBankFieldIds.forEach(function (sId) {
+                const oCtrl = this.byId(sId);
+                if (oCtrl) { oCtrl.setVisible(!bPdcSelected); }
+            }.bind(this));
+
+            aPdcFieldIds.forEach(function (sId) {
+                const oCtrl = this.byId(sId);
+                if (oCtrl) { oCtrl.setVisible(bPdcSelected); }
+            }.bind(this));
+        },
+
+        // ─────────────────────────────────────────────────────────────────────
+        // PDC Payment toggle — Display form equivalent
+        // ─────────────────────────────────────────────────────────────────────
+        _toggleDisplayPdcFields: function (bPdcSelected) {
+            const aBankDisplayIds = [
+                "oa_houseBankLabelD", "oa_houseBankText",
+                "oa_houseBankAccLabelD", "oa_houseBankAccText",
+                "oa_glAccountLabelD", "oa_glAccountText"
+            ];
+            const aPdcDisplayIds = [
+                "oa_drawerNameLabelD", "oa_drawerNameTextD",
+                "oa_drawerCityLabelD", "oa_drawerCityTextD",
+                "oa_draweeNameLabelD", "oa_draweeNameTextD",
+                "oa_draweeCityLabelD", "oa_draweeCityTextD",
+                "oa_checkNumberLabelD", "oa_checkNumberTextD",
+                "oa_bankLabelD", "oa_bankTextD",
+                "oa_accountLabelD", "oa_accountTextD",
+                "oa_dueDateLabelD", "oa_dueDateTextD",
+                "oa_assignNoLabelD", "oa_assignNoTextD",
+                "oa_itemTextLabelD", "oa_itemTextTextD"
+            ];
+
+            aBankDisplayIds.forEach(function (sId) {
+                const oCtrl = this.byId(sId);
+                if (oCtrl) { oCtrl.setVisible(!bPdcSelected); }
+            }.bind(this));
+
+            aPdcDisplayIds.forEach(function (sId) {
+                const oCtrl = this.byId(sId);
+                if (oCtrl) { oCtrl.setVisible(bPdcSelected); }
+            }.bind(this));
+        },
+
+        // ─────────────────────────────────────────────────────────────────────
+        // Format an OData date into dd/MM/yyyy for plain Input fields (dueDate)
+        // ─────────────────────────────────────────────────────────────────────
+        _setFormattedDateValue: function (sId, value) {
+            const oCtrl = this.byId(sId);
+            if (!oCtrl || !value) { return; }
+
+            let oDate = null;
+            if (value instanceof Date) {
+                oDate = value;
+            } else if (typeof value === "string" && value.indexOf("/Date(") === 0) {
+                const sTs = value.replace("/Date(", "").replace(")/", "").split("+")[0];
+                oDate = new Date(parseInt(sTs));
+            }
+
+            if (oDate && !isNaN(oDate.getTime())) {
+                oCtrl.setValue(
+                    String(oDate.getDate()).padStart(2, "0") + "/" +
+                    String(oDate.getMonth() + 1).padStart(2, "0") + "/" +
+                    oDate.getFullYear()
+                );
+            }
+        },
+        // ─────────────────────────────────────────────────────────────────────
+        // Auto-fill Drawer (Name/City) from suppVH — only when PDC is checked
+        // ─────────────────────────────────────────────────────────────────────
+        _fetchDrawerInfo: function (sVendor, sCompCode) {
+            if (!sVendor || !sCompCode) { return; }
+
+            const oPdcCheckBox = this.byId("oa_pdcPaymentCheckBox");
+            if (!oPdcCheckBox || !oPdcCheckBox.getSelected()) { return; }
+
+            const oDataModel = this.getOwnerComponent().getModel();
+            const that = this;
+
+            oDataModel.read("/suppVH", {
+                filters: [
+                    new Filter("Supplier", FilterOperator.EQ, sVendor),
+                    new Filter("compCode", FilterOperator.EQ, sCompCode)
+                ],
+                success: function (oData) {
+                    const aResults = oData.results || [];
+                    if (aResults.length > 0) {
+                        const oDrawerNameInput = that.byId("oa_drawerNameInput");
+                        const oDrawerCityInput = that.byId("oa_drawerCityInput");
+                        if (oDrawerNameInput) { oDrawerNameInput.setValue(aResults[0].SupplierName || ""); }
+                        if (oDrawerCityInput) { oDrawerCityInput.setValue(aResults[0].city || ""); }
+                    }
+                },
+                error: function () {
+                    console.warn("Could not fetch drawer info for vendor: " + sVendor);
+                }
+            });
+        },
+
+        // ─────────────────────────────────────────────────────────────────────
+        // Auto-fill Drawee (Name/City) from I_CompanyCode — only when PDC is checked
+        // ─────────────────────────────────────────────────────────────────────
+        _fetchDraweeInfo: function (sCompCode) {
+            if (!sCompCode) { return; }
+
+            const oPdcCheckBox = this.byId("oa_pdcPaymentCheckBox");
+            if (!oPdcCheckBox || !oPdcCheckBox.getSelected()) { return; }
+
+            const oDataModel = this.getOwnerComponent().getModel();
+            const that = this;
+
+            oDataModel.read("/I_CompanyCode('" + sCompCode + "')", {
+                success: function (oData) {
+                    const oDraweeNameInput = that.byId("oa_draweeNameInput");
+                    const oDraweeCityInput = that.byId("oa_draweeCityInput");
+                    if (oDraweeNameInput) { oDraweeNameInput.setValue(oData.CompanyCodeName || ""); }
+                    if (oDraweeCityInput) { oDraweeCityInput.setValue(oData.CityName || ""); }
+                },
+                error: function () {
+                    console.warn("Could not fetch drawee info for company code: " + sCompCode);
+                }
+            });
+        },
+
+        // ─────────────────────────────────────────────────────────────────────
+        // Clear Drawer/Drawee fields when PDC Payment is unchecked
+        // ─────────────────────────────────────────────────────────────────────
+        _clearDrawerDraweeFields: function () {
+            const aFieldIds = [
+                "oa_drawerNameInput", "oa_drawerCityInput",
+                "oa_draweeNameInput", "oa_draweeCityInput"
+            ];
+
+            aFieldIds.forEach(function (sId) {
+                const oCtrl = this.byId(sId);
+                if (oCtrl) { oCtrl.setValue(""); }
+            }.bind(this));
         }
 
     });

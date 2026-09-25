@@ -24,7 +24,7 @@
                 />
                 <ComboBox id="_IDGenComboBox1" selectedKey="{/selectedView}" placeholder="Not Selected">
                     <items>
-                        <core:Item id="_IDGenItem1" key="v1" text="Post Outgoing Payment"/>
+                        <core:Item id="_IDGenItem1" key="v1" text="Post Open Invoice Payment"/>
                         <core:Item id="_IDGenItem3" key="v2" text="Down Payment"/>
                         <core:Item id="_IDGenItem4" key="v3" text="On Account Payment"/>
                         <core:Item id="_IDGenItm54" key="v4" text="Post To GL Account"/>

@@ -69,7 +69,7 @@ sap.ui.define([
 
                     if (aResults.length > 0 && oCompCodeInput) {
                         oCompCodeInput.setValue(aResults[0].compCode || "");
-                        oCompCodeInput.setEditable(false);
+                        // oCompCodeInput.setEditable(false);
                     }
                 },
                 error: function (oError) {
@@ -294,6 +294,7 @@ sap.ui.define([
                 openItems: [],
                 itemsToBeCleared: []
             });
+            
 
             // Clear form fields
             const aInputIds = [
@@ -301,7 +302,10 @@ sap.ui.define([
                 "referenceInput", "_IDGenInput", "houseBankInput",
                 "houseBankAccountInput", "glAccountInput", "supplierAccountInput",
                 "currencyInput", "_IDGenInput3", "_IDGenInput1", "_IDGenInput2",
-                "doctypeInput"
+                "doctypeInput",    "doctypeInput",
+                "drawerNameInput", "drawerCityInput", "draweeNameInput", "draweeCityInput",
+                "checkNumberInput", "bankInput", "accountInput",
+                "assignNoInput", "itemTextInput"
             ];
             aInputIds.forEach(function (sId) {
                 const oControl = this.byId(sId);
@@ -313,6 +317,8 @@ sap.ui.define([
                 }
             }.bind(this));
 
+            
+
             // Clear date pickers
             const oDocPicker  = this.byId("documentDatePicker");
             const oPostPicker = this.byId("postingDatePicker");
@@ -320,6 +326,17 @@ sap.ui.define([
             if (oPostPicker) { oPostPicker.setValue(""); }
             this.getView().getModel("pageModel").setProperty("/supplierName", "");
             this.getView().getModel("pageModel").setProperty("/docTypeText", "");
+
+            const oDueDateInput = this.byId("dueDateInput");
+            if (oDueDateInput) { oDueDateInput.setValue(""); }
+            this.getView().getModel("pageModel").setProperty("/dueDateISO", "");
+
+        const oPdcCheckBox = this.byId("pdcPaymentCheckBox");
+        if (oPdcCheckBox) {
+            oPdcCheckBox.setSelected(false);
+            oPdcCheckBox.setEnabled(true);
+        }
+        this._togglePdcFields(false);
 
             // Reset display mode flags before applying
             this._bDisplayMode = false;
@@ -479,6 +496,37 @@ sap.ui.define([
             fnSetDate("documentDatePicker", oHead.docDate);
             fnSetDate("postingDatePicker",  oHead.postingDate);
             fnSet("currencyInput",  oHead.curr);
+
+            fnSet("drawerNameInput",  oHead.drawerName);
+            fnSet("drawerCityInput",  oHead.drawerCity);
+            fnSet("draweeNameInput",  oHead.draweeName);
+            fnSet("draweeCityInput",  oHead.draweeCity);
+            fnSet("checkNumberInput", oHead.checkNumber);
+            fnSet("bankInput",        oHead.bank);
+            fnSet("accountInput",     oHead.account);
+            fnSet("assignNoInput",    oHead.assignNo);
+            fnSet("itemTextInput",    oHead.itemText);
+            fnSetDate("dueDateInput", oHead.dueDate);
+
+            this.getView().getModel("pageModel").setProperty("/pdcFlg", oHead.pdcFlg || "");
+
+            const oCtrlDue = this.byId("dueDateInput");
+            if (oCtrlDue && oCtrlDue.getDateValue()) {
+                const oFormatIso = sap.ui.core.format.DateFormat.getDateInstance({ pattern: "yyyy-MM-dd" });
+                this.getView().getModel("pageModel").setProperty("/dueDateISO", oFormatIso.format(oCtrlDue.getDateValue()));
+            } else {
+                this.getView().getModel("pageModel").setProperty("/dueDateISO", "");
+            }
+
+            const bPdcSelected = oHead.pdcFlg === "X";
+            const oPdcCheckBox = this.byId("pdcPaymentCheckBox");
+            if (oPdcCheckBox) { oPdcCheckBox.setSelected(bPdcSelected); }
+            this._togglePdcFields(bPdcSelected);
+
+            // Once a draft exists, PDC flag is fixed — don't let it be toggled
+            
+            if (oPdcCheckBox) { oPdcCheckBox.setEnabled(false); }
+
             this.getView().getModel("pageModel").setProperty("/postDoc", oHead.postDoc || "");
             this.getView().getModel("pageModel").setProperty("/msg",     oHead.msg     || "");
             this.getView().getModel("pageModel").setProperty("/draftSt", oHead.draftSt || "");
@@ -514,6 +562,7 @@ sap.ui.define([
         },
 
         _applyDisplayMode: function (sDraftSt) {
+            const bPdcSelected = this.getView().getModel("pageModel").getProperty("/pdcFlg") === "X";
             const bIsInApproval = sDraftSt === "2"; // In Approval — full display mode
             const bIsCreated    = sDraftSt === "1"; // Created — some fields locked
             const bIsApproved   = sDraftSt === "3"; // Approved — display mode + Post button
@@ -562,6 +611,18 @@ sap.ui.define([
                 oPageModel.setProperty("/postingDate", fnGetDate("postingDatePicker"));
                 oPageModel.setProperty("/paymentSelected", fnGet("_IDGenInputPaySel"));
                 oPageModel.setProperty("/docType",     fnGet("doctypeInput"));
+                oPageModel.setProperty("/drawerName",  fnGet("drawerNameInput"));
+                oPageModel.setProperty("/drawerCity",  fnGet("drawerCityInput"));
+                oPageModel.setProperty("/draweeName",  fnGet("draweeNameInput"));
+                oPageModel.setProperty("/draweeCity",  fnGet("draweeCityInput"));
+                oPageModel.setProperty("/checkNumber", fnGet("checkNumberInput"));
+                oPageModel.setProperty("/bank",        fnGet("bankInput"));
+                oPageModel.setProperty("/account",     fnGet("accountInput"));
+                oPageModel.setProperty("/dueDate",     fnGetDate("dueDateInput"));
+                oPageModel.setProperty("/assignNo",    fnGet("assignNoInput"));
+                oPageModel.setProperty("/itemText",    fnGet("itemTextInput"));
+
+                this._toggleDisplayPdcFields(bPdcSelected);
                 
 
             }
@@ -1231,10 +1292,35 @@ sap.ui.define([
             const sCurrency = this.byId("currencyInput")       ? this.byId("currencyInput").getValue().trim()       : "";
             const sDocType  = this.byId("doctypeInput")        ? this.byId("doctypeInput").getValue().trim()        : "";
 
+            const oPdcCheckBox   = this.byId("pdcPaymentCheckBox");
+            const bPdcFlg         = oPdcCheckBox ? oPdcCheckBox.getSelected() : false;
+            const sDrawerName     = this.byId("drawerNameInput")  ? this.byId("drawerNameInput").getValue().trim()  : "";
+            const sDrawerCity     = this.byId("drawerCityInput")  ? this.byId("drawerCityInput").getValue().trim()  : "";
+            const sDraweeName     = this.byId("draweeNameInput")  ? this.byId("draweeNameInput").getValue().trim()  : "";
+            const sDraweeCity     = this.byId("draweeCityInput")  ? this.byId("draweeCityInput").getValue().trim()  : "";
+            const sCheckNumber    = this.byId("checkNumberInput") ? this.byId("checkNumberInput").getValue().trim() : "";
+            const sBank           = this.byId("bankInput")        ? this.byId("bankInput").getValue().trim()        : "";
+            const sAccount        = this.byId("accountInput")     ? this.byId("accountInput").getValue().trim()     : "";
+            const sAssignNo       = this.byId("assignNoInput")    ? this.byId("assignNoInput").getValue().trim()    : "";
+            const sItemText       = this.byId("itemTextInput")    ? this.byId("itemTextInput").getValue().trim()    : "";
+            const oDueDate        = this._getPickerDate("dueDateInput");
+
             // ── 2. Required field validation ──────────────────────────────────────
-            if (!sCompCode || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
+            if (!sCompCode || !sVendor || !oDocDate || !oPostDate) {
                 MessageBox.error("Please fill all required fields before saving.");
                 return;
+            }
+
+            if (bPdcFlg) {
+                if (!sCheckNumber || !sBank || !sAccount) {
+                    MessageBox.error("Please fill Check Number, Bank, and Account for PDC payment.");
+                    return;
+                }
+            } else {
+                if (!sBankKey || !sBankAcc) {
+                    MessageBox.error("Please fill all required fields before saving.");
+                    return;
+                }
             }
 
             // ── 3. Balance validation ─────────────────────────────────────────────
@@ -1333,7 +1419,8 @@ sap.ui.define([
                     postKey:     oItem.postKey     || "",
                     docCurr:     oItem.docCurr     || "",
                     compCurr:    oItem.compCurr    || "",
-                    postingDate: toODataDate(oItem.postingDate)
+                    postingDate: toODataDate(oItem.postingDate),
+                    
                 };
             });
 
@@ -1355,7 +1442,18 @@ sap.ui.define([
             curr:        sCurrency,
             payAmnt:     parseFloat(sPayAmnt).toFixed(3),
             action:      "I",
-            to_item:     aToItems
+            pdcFlg:      bPdcFlg ? "X" : "",
+            drawerName:  sDrawerName,
+            drawerCity:  sDrawerCity,
+            draweeName:  sDraweeName,
+            draweeCity:  sDraweeCity,
+            checkNumber: sCheckNumber,
+            bank:        sBank,
+            account:     sAccount,
+            dueDate:     _toODataDate2(oDueDate),
+            assignNo:    sAssignNo,
+            itemText:    sItemText,
+            to_item:     aToItems,
         };
 
             // ── 7. POST to backend ────────────────────────────────────────────────
@@ -1378,6 +1476,11 @@ sap.ui.define([
                         draftId: sDraftId
                     });
                     that._updateSaveButton("edit");
+
+                    // Lock PDC checkbox once the doc is saved
+                    const oPdcCheckBox = that.byId("pdcPaymentCheckBox");
+                    if (oPdcCheckBox) { oPdcCheckBox.setEnabled(false); }
+
 
                     oDataModel.setUseBatch(true);
 
@@ -1426,11 +1529,35 @@ sap.ui.define([
             const sBankGL   = this.byId("glAccountInput")     ? this.byId("glAccountInput").getValue().trim()     : "";
             const sCurrency = this.byId("currencyInput")       ? this.byId("currencyInput").getValue().trim()       : "";
             const sDocType  = this.byId("doctypeInput")        ? this.byId("doctypeInput").getValue().trim()        : "";
+            const oPdcCheckBox   = this.byId("pdcPaymentCheckBox");
+            const bPdcFlg         = oPdcCheckBox ? oPdcCheckBox.getSelected() : false;
+            const sDrawerName     = this.byId("drawerNameInput")  ? this.byId("drawerNameInput").getValue().trim()  : "";
+            const sDrawerCity     = this.byId("drawerCityInput")  ? this.byId("drawerCityInput").getValue().trim()  : "";
+            const sDraweeName     = this.byId("draweeNameInput")  ? this.byId("draweeNameInput").getValue().trim()  : "";
+            const sDraweeCity     = this.byId("draweeCityInput")  ? this.byId("draweeCityInput").getValue().trim()  : "";
+            const sCheckNumber    = this.byId("checkNumberInput") ? this.byId("checkNumberInput").getValue().trim() : "";
+            const sBank           = this.byId("bankInput")        ? this.byId("bankInput").getValue().trim()        : "";
+            const sAccount        = this.byId("accountInput")     ? this.byId("accountInput").getValue().trim()     : "";
+            const sAssignNo       = this.byId("assignNoInput")    ? this.byId("assignNoInput").getValue().trim()    : "";
+            const sItemText       = this.byId("itemTextInput")    ? this.byId("itemTextInput").getValue().trim()    : "";
+            const oDueDate        = this._getPickerDate("dueDateInput");
 
             // ── 2. Required field validation ──────────────────────────────────────
-            if (!sCompCode || !sVendor || !sBankKey || !sBankAcc || !oDocDate || !oPostDate) {
-                MessageBox.error("Please fill all required fields before updating.");
+            if (!sCompCode || !sVendor || !oDocDate || !oPostDate) {
+                MessageBox.error("Please fill all required fields before saving.");
                 return;
+            }
+
+            if (bPdcFlg) {
+                if (!sCheckNumber || !sBank || !sAccount) {
+                    MessageBox.error("Please fill Check Number, Bank, and Account for PDC payment.");
+                    return;
+                }
+            } else {
+                if (!sBankKey || !sBankAcc) {
+                    MessageBox.error("Please fill all required fields before saving.");
+                    return;
+                }
             }
 
             // ── 3. Balance validation ─────────────────────────────────────────────
@@ -1553,6 +1680,17 @@ sap.ui.define([
                     curr:        sCurrency,
                     payAmnt:     parseFloat(sPayAmnt).toFixed(3),
                     action:      "U",
+                    pdcFlg:      bPdcFlg ? "X" : "",
+                    drawerName:  sDrawerName,
+                    drawerCity:  sDrawerCity,
+                    draweeName:  sDraweeName,
+                    draweeCity:  sDraweeCity,
+                    checkNumber: sCheckNumber,
+                    bank:        sBank,
+                    account:     sAccount,
+                    dueDate:     _toODataDate2(oDueDate),
+                    assignNo:    sAssignNo,
+                    itemText:    sItemText,
                     to_item:     aToItems
                 };
 
@@ -1565,7 +1703,8 @@ sap.ui.define([
                 success: function(oUpdatedData) {
                     that._setBusyDialog(false);
                     oDataModel.setUseBatch(true);
-
+                    const oPdcCheckBox = that.byId("pdcPaymentCheckBox");
+                    if (oPdcCheckBox) { oPdcCheckBox.setEnabled(false); }
                     MessageToast.show("Updated successfully. Draft ID: " + sSavedDraftId);
                 },
                 error: function(oError) {
@@ -1857,6 +1996,176 @@ sap.ui.define([
                 }, 500);
             }
         },
+        // ─────────────────────────────────────────────────────────────────────
+        // PDC Payment checkbox toggle
+        // ─────────────────────────────────────────────────────────────────────
+        onPdcPaymentChange: function (oEvent) {
+            const bSelected = oEvent.getParameter("selected");
+            this._togglePdcFields(bSelected);
+
+            if (bSelected) {
+                const sVendor   = this.byId("supplierAccountInput") ? this.byId("supplierAccountInput").getValue().trim() : "";
+                const sCompCode = this.byId("companyCodeInput") ? this.byId("companyCodeInput").getValue().trim() : "";
+                this._fetchDrawerInfo(sVendor, sCompCode);
+                this._fetchDraweeInfo(sCompCode);
+            } else {
+                this._clearDrawerDraweeFields();
+            }
+        },
+
+        _togglePdcFields: function (bPdcSelected) {
+            const aBankFieldIds = [
+                "houseBankLabel", "houseBankInput",
+                "houseBankAccountLabel", "houseBankAccountInput",
+                "glAccountLabel", "glAccountInput"
+            ];
+            const aPdcFieldIds = [
+                "drawerNameLabel", "drawerNameInput",
+                "drawerCityLabel", "drawerCityInput",
+                "draweeNameLabel", "draweeNameInput",
+                "draweeCityLabel", "draweeCityInput",
+                "checkNumberLabel", "checkNumberInput",
+                "bankLabel", "bankInput",
+                "accountLabel", "accountInput",
+                "dueDateLabel", "dueDateInput",
+                "assignNoLabel", "assignNoInput",
+                "itemTextLabel", "itemTextInput"
+            ];
+
+            aBankFieldIds.forEach(function (sId) {
+                const oCtrl = this.byId(sId);
+                if (oCtrl) { oCtrl.setVisible(!bPdcSelected); }
+            }.bind(this));
+
+            aPdcFieldIds.forEach(function (sId) {
+                const oCtrl = this.byId(sId);
+                if (oCtrl) { oCtrl.setVisible(bPdcSelected); }
+            }.bind(this));
+        },
+
+        _toggleDisplayPdcFields: function (bPdcSelected) {
+            const aBankDisplayIds = [
+                "houseBankLabelD", "houseBankText",
+                "houseBankAccLabelD", "houseBankAccText",
+                "glAccountLabelD", "glAccountText"
+            ];
+            const aPdcDisplayIds = [
+                "drawerNameLabelD", "drawerNameTextD",
+                "drawerCityLabelD", "drawerCityTextD",
+                "draweeNameLabelD", "draweeNameTextD",
+                "draweeCityLabelD", "draweeCityTextD",
+                "checkNumberLabelD", "checkNumberTextD",
+                "bankLabelD", "bankTextD",
+                "accountLabelD", "accountTextD",
+                "dueDateLabelD", "dueDateTextD",
+                "assignNoLabelD", "assignNoTextD",
+                "itemTextLabelD", "itemTextTextD"
+            ];
+
+            aBankDisplayIds.forEach(function (sId) {
+                const oCtrl = this.byId(sId);
+                if (oCtrl) { oCtrl.setVisible(!bPdcSelected); }
+            }.bind(this));
+
+            aPdcDisplayIds.forEach(function (sId) {
+                const oCtrl = this.byId(sId);
+                if (oCtrl) { oCtrl.setVisible(bPdcSelected); }
+            }.bind(this));
+        },
+
+        _clearDrawerDraweeFields: function () {
+            const aFieldIds = [
+                "drawerNameInput", "drawerCityInput",
+                "draweeNameInput", "draweeCityInput"
+            ];
+
+            aFieldIds.forEach(function (sId) {
+                const oCtrl = this.byId(sId);
+                if (oCtrl) { oCtrl.setValue(""); }
+            }.bind(this));
+        },
+
+        _fetchDrawerInfo: function (sVendor, sCompCode) {
+            if (!sVendor || !sCompCode) { return; }
+
+            const oPdcCheckBox = this.byId("pdcPaymentCheckBox");
+            if (!oPdcCheckBox || !oPdcCheckBox.getSelected()) { return; }
+
+            const oDataModel = this.getOwnerComponent().getModel();
+            const that = this;
+
+            oDataModel.read("/suppVH", {
+                filters: [
+                    new Filter("Supplier", FilterOperator.EQ, sVendor),
+                    new Filter("compCode", FilterOperator.EQ, sCompCode)
+                ],
+                success: function (oData) {
+                    const aResults = oData.results || [];
+                    if (aResults.length > 0) {
+                        const oDrawerNameInput = that.byId("drawerNameInput");
+                        const oDrawerCityInput = that.byId("drawerCityInput");
+                        if (oDrawerNameInput) { oDrawerNameInput.setValue(aResults[0].SupplierName || ""); }
+                        if (oDrawerCityInput) { oDrawerCityInput.setValue(aResults[0].city || ""); }
+                    }
+                },
+                error: function () {
+                    console.warn("Could not fetch drawer info for vendor: " + sVendor);
+                }
+            });
+        },
+
+        _fetchDraweeInfo: function (sCompCode) {
+            if (!sCompCode) { return; }
+
+            const oPdcCheckBox = this.byId("pdcPaymentCheckBox");
+            if (!oPdcCheckBox || !oPdcCheckBox.getSelected()) { return; }
+
+            const oDataModel = this.getOwnerComponent().getModel();
+            const that = this;
+
+            oDataModel.read("/I_CompanyCode('" + sCompCode + "')", {
+                success: function (oData) {
+                    const oDraweeNameInput = that.byId("draweeNameInput");
+                    const oDraweeCityInput = that.byId("draweeCityInput");
+                    if (oDraweeNameInput) { oDraweeNameInput.setValue(oData.CompanyCodeName || ""); }
+                    if (oDraweeCityInput) { oDraweeCityInput.setValue(oData.CityName || ""); }
+                },
+                error: function () {
+                    console.warn("Could not fetch drawee info for company code: " + sCompCode);
+                }
+            });
+        },
+
+        onDueDateChange: function (oEvent) {
+            const bValid = oEvent.getParameter("valid");
+            const sValue = oEvent.getParameter("value"); // yyyy-MM-dd, per valueFormat
+
+            this.getView().getModel("pageModel").setProperty("/dueDateISO", bValid ? sValue : "");
+
+            if (!bValid && sValue) {
+                MessageBox.warning("Invalid Due Date format.");
+            }
+        },
+
+        _getPickerDate: function (sId) {
+            if (sId === "dueDateInput") {
+                const sIso = this.getView().getModel("pageModel").getProperty("/dueDateISO");
+                if (sIso) { return new Date(sIso); }
+            }
+
+            const oCtrl = this.byId(sId);
+            if (!oCtrl) { return null; }
+
+            let oDate = oCtrl.getDateValue();
+            if (oDate) { return oDate; }
+
+            const sRaw = oCtrl.getValue();
+            if (!sRaw) { return null; }
+
+            const oFormat = sap.ui.core.format.DateFormat.getDateInstance({ pattern: "dd/MM/yyyy" });
+            oDate = oFormat.parse(sRaw);
+            return oDate || null;
+        }
 
 
     });

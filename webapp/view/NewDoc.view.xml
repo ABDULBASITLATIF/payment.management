@@ -160,7 +160,7 @@
                     growing="true"
                     growingThreshold="100"
                     width="auto"
-                    mode="MultiSelect"
+                    mode="None"
                     items="{headModel>/}"
                     selectionChange=".onSelectionChange"
                 >

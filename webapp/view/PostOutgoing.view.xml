@@ -18,7 +18,7 @@
                     <Button id="_IDGenButton" icon="sap-icon://nav-back" press="onNavBack"/>
                 </contentLeft>
                 <contentMiddle>
-                    <Title id="_IDGenTitle1" text="Post Outgoing Payments"/>
+                    <Title id="_IDGenTitle1" text="Post Open Invoice Payments"/>
                 </contentMiddle>
             </Bar>
         </customHeader>

@@ -21,6 +21,9 @@
     <edmx:Reference Uri="../../catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_HTML5',Version='0001',SAP__Origin='')/$value">
         <edmx:Include Namespace="com.sap.vocabularies.HTML5.v1" Alias="HTML5"/>
     </edmx:Reference>
+    <edmx:Reference Uri="../../catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_ODM',Version='0001',SAP__Origin='')/$value">
+        <edmx:Include Namespace="com.sap.vocabularies.ODM.v1" Alias="SAP__ODM"/>
+    </edmx:Reference>
     <edmx:Reference Uri="../../../sap/zfi_payment_management_srv/$metadata">
         <edmx:Include Namespace="ZFI_PAYMENT_MANAGEMENT_SRV" Alias="SAP"/>
     </edmx:Reference>
@@ -270,6 +273,7 @@
                     </Record>
                 </Annotation>
             </Annotations>
+            <Annotations Target="_Entities"/>
         </Schema>
     </edmx:DataServices>
 </edmx:Edmx>

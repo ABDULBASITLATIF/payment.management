@@ -1,33 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
-    <edmx:Reference Uri="https://VHFQMWD1WD01.SAP.SAROOJ.COM:44380/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_AGGREGATION',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_AGGREGATION',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
         <edmx:Include Namespace="Org.OData.Aggregation.V1" Alias="Aggregation"/>
     </edmx:Reference>
-    <edmx:Reference Uri="https://VHFQMWD1WD01.SAP.SAROOJ.COM:44380/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_ANALYTICS',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_ANALYTICS',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
         <edmx:Include Namespace="com.sap.vocabularies.Analytics.v1" Alias="Analytics"/>
     </edmx:Reference>
-    <edmx:Reference Uri="https://VHFQMWD1WD01.SAP.SAROOJ.COM:44380/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CAPABILITIES',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CAPABILITIES',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
         <edmx:Include Namespace="Org.OData.Capabilities.V1" Alias="Capabilities"/>
     </edmx:Reference>
-    <edmx:Reference Uri="https://VHFQMWD1WD01.SAP.SAROOJ.COM:44380/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CODELIST',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CODELIST',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
         <edmx:Include Namespace="com.sap.vocabularies.CodeList.v1" Alias="SAP__CodeList"/>
     </edmx:Reference>
-    <edmx:Reference Uri="https://VHFQMWD1WD01.SAP.SAROOJ.COM:44380/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMON',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMON',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
         <edmx:Include Namespace="com.sap.vocabularies.Common.v1" Alias="Common"/>
     </edmx:Reference>
-    <edmx:Reference Uri="https://VHFQMWD1WD01.SAP.SAROOJ.COM:44380/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMUNICATION',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMUNICATION',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
         <edmx:Include Namespace="com.sap.vocabularies.Communication.v1" Alias="Communication"/>
     </edmx:Reference>
-    <edmx:Reference Uri="https://VHFQMWD1WD01.SAP.SAROOJ.COM:44380/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_MEASURES',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_MEASURES',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
         <edmx:Include Namespace="Org.OData.Measures.V1" Alias="Measures"/>
     </edmx:Reference>
-    <edmx:Reference Uri="https://VHFQMWD1WD01.SAP.SAROOJ.COM:44380/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_PERSONALDATA',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_ODM',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.ODM.v1" Alias="SAP__ODM"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_PERSONALDATA',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
         <edmx:Include Namespace="com.sap.vocabularies.PersonalData.v1" Alias="PersonalData"/>
     </edmx:Reference>
-    <edmx:Reference Uri="https://VHFQMWD1WD01.SAP.SAROOJ.COM:44380/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_UI',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_UI',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
         <edmx:Include Namespace="com.sap.vocabularies.UI.v1" Alias="UI"/>
     </edmx:Reference>
-    <edmx:Reference Uri="https://VHFQMWD1WD01.SAP.SAROOJ.COM:44380/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_VALIDATION',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_VALIDATION',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
         <edmx:Include Namespace="Org.OData.Validation.V1" Alias="Validation"/>
     </edmx:Reference>
     <edmx:DataServices m:DataServiceVersion="2.0">
@@ -52,7 +55,7 @@
                 <Property Name="BankCountry" Type="Edm.String" Nullable="false" MaxLength="3" sap:display-format="UpperCase" sap:label="Bank Country/Region" sap:quickinfo="Bank Country/Region Key"/>
                 <Property Name="BankInternalID" Type="Edm.String" Nullable="false" MaxLength="15" sap:display-format="UpperCase" sap:text="BankName" sap:label="Bank Key" sap:quickinfo="Bank Keys"/>
                 <Property Name="CreationDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Created On" sap:quickinfo="Record Created On"/>
-                <Property Name="CreatedByUser" Type="Edm.String" MaxLength="12" sap:display-format="UpperCase" sap:label="Created By" sap:quickinfo="Name of Accounting Clerk Responsible for Adding the Object"/>
+                <Property Name="CreatedByUser" Type="Edm.String" MaxLength="12" sap:display-format="UpperCase" sap:label="Created by" sap:quickinfo="Name of person who created the object"/>
                 <Property Name="BankName" Type="Edm.String" MaxLength="60" sap:label="Bank Name" sap:quickinfo="Name of Financial Institution"/>
                 <Property Name="Region" Type="Edm.String" MaxLength="3" sap:display-format="UpperCase" sap:label="Region" sap:quickinfo="Region (State, Province, County)"/>
                 <Property Name="StreetName" Type="Edm.String" MaxLength="35" sap:label="Street" sap:quickinfo="Street and House Number"/>
@@ -92,7 +95,7 @@
                 <Property Name="AddressID" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Address"/>
                 <Property Name="TaxableEntity" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Taxes on Sls/Purc." sap:quickinfo="Taxes on Sales/Purchases Group"/>
                 <Property Name="VATRegistration" Type="Edm.String" MaxLength="20" sap:display-format="UpperCase" sap:label="VAT Registration No." sap:quickinfo="VAT Registration Number"/>
-                <Property Name="ExtendedWhldgTaxIsActive" Type="Edm.Boolean" sap:label="Extended WTax Active" sap:quickinfo="Indicator: Extended Withholding Tax Active"/>
+                <Property Name="ExtendedWhldgTaxIsActive" Type="Edm.Boolean" sap:label="Ext. Withholding Tax" sap:quickinfo="Indicator: Extended Withholding Tax Active"/>
                 <Property Name="ControllingArea" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:text="ControllingArea_Text" sap:label="Controlling Area" sap:value-list="standard"/>
                 <Property Name="ControllingArea_Text" Type="Edm.String" MaxLength="25" sap:label="Controlling Area Name" sap:creatable="false" sap:updatable="false"/>
                 <Property Name="FieldStatusVariant" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Field status variant" sap:quickinfo="Field Status Variant"/>
@@ -100,6 +103,7 @@
                 <Property Name="DocDateIsUsedForTaxDetn" Type="Edm.Boolean" sap:label="Tax Determ.with Doc.Date" sap:quickinfo="Indicator: Document Date As the Basis for Tax Determination"/>
                 <Property Name="TaxRptgDateIsActive" Type="Edm.Boolean" sap:label="Tax Date" sap:quickinfo="Tax Reporting Date Active in Documents"/>
                 <Property Name="CashDiscountBaseAmtIsNetAmt" Type="Edm.Boolean" sap:label="Net Discount Base" sap:quickinfo="Indicator: Discount base amount is the net value"/>
+                <Property Name="TransitPlant" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Transit Plant"/>
             </EntityType>
             <EntityType Name="I_CompanyCodeStdVHType" sap:label="Company Code" sap:value-list="true" sap:content-version="1">
                 <Key>
@@ -246,7 +250,7 @@
                 <Property Name="bankAcc" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Account ID" sap:quickinfo="ID for Account Details"/>
                 <Property Name="bankGL" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="G/L Account" sap:quickinfo="General Ledger Account"/>
                 <Property Name="vendor" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Supplier" sap:quickinfo="Account Number of Supplier"/>
-                <Property Name="name1" Type="Edm.String" MaxLength="35" sap:label="Supplier's Name"/>
+                <Property Name="name1" Type="Edm.String" MaxLength="35" sap:label="Name"/>
                 <Property Name="payAmnt" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="curr" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
                 <Property Name="curr" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Currency" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
                 <Property Name="payMethod" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Payment Method"/>
@@ -259,6 +263,16 @@
                 <Property Name="postDoc" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Clearing Document" sap:quickinfo="Document Number of the Clearing Document"/>
                 <Property Name="withRef" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="With Reference"/>
                 <Property Name="pdcFlg" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="PDC Flag"/>
+                <Property Name="drawerName" Type="Edm.String" MaxLength="30" sap:label="Drawer" sap:quickinfo="Name of Bill of Exchange Drawer"/>
+                <Property Name="drawerCity" Type="Edm.String" MaxLength="30" sap:label="City of Drawer" sap:quickinfo="City of Bill of Exchange Drawer"/>
+                <Property Name="draweeName" Type="Edm.String" MaxLength="30" sap:label="Drawee" sap:quickinfo="Bill of Exchange Drawee"/>
+                <Property Name="draweeCity" Type="Edm.String" MaxLength="30" sap:label="City of Drawee" sap:quickinfo="City of Bill of Exchange Drawee"/>
+                <Property Name="checkNumber" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Check Number"/>
+                <Property Name="bank" Type="Edm.String" MaxLength="15" sap:display-format="UpperCase" sap:label="Bank Key" sap:quickinfo="Bank Keys"/>
+                <Property Name="account" Type="Edm.String" MaxLength="18" sap:display-format="UpperCase" sap:label="Bank Account" sap:quickinfo="Bank Account Number"/>
+                <Property Name="dueDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Net Due Date"/>
+                <Property Name="assignNo" Type="Edm.String" MaxLength="18" sap:label="Assignment" sap:quickinfo="Assignment number"/>
+                <Property Name="itemText" Type="Edm.String" MaxLength="50" sap:label="Text" sap:quickinfo="Item Text"/>
                 <NavigationProperty Name="to_item" Relationship="ZFI_PAYMENT_MANAGEMENT_SRV.assoc_B8016EAB107248EC709ECEAA8E01519B" FromRole="FromRole_assoc_B8016EAB107248EC709ECEAA8E01519B" ToRole="ToRole_assoc_B8016EAB107248EC709ECEAA8E01519B"/>
             </EntityType>
             <EntityType Name="itemType" sap:label="CDS View for Payment Draft Items" sap:content-version="1">
@@ -284,7 +298,7 @@
                 <Property Name="docType" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="Document Type"/>
                 <Property Name="baseDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Baseline Payment Dte" sap:quickinfo="Baseline Date for Due Date Calculation"/>
                 <Property Name="extRef" Type="Edm.String" MaxLength="16" sap:display-format="UpperCase" sap:label="Reference" sap:quickinfo="Reference Document Number"/>
-                <Property Name="assignNo" Type="Edm.String" MaxLength="18" sap:label="Assignment" sap:quickinfo="Assignment Number"/>
+                <Property Name="assignNo" Type="Edm.String" MaxLength="18" sap:label="Assignment" sap:quickinfo="Assignment number"/>
                 <Property Name="spGl" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Special G/L Ind." sap:quickinfo="Special G/L Indicator"/>
                 <Property Name="debCredIndRef" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Debit/Credit Ind." sap:quickinfo="Debit/Credit Indicator"/>
                 <Property Name="debCredInd" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Debit/Credit Ind." sap:quickinfo="Debit/Credit Indicator"/>
@@ -325,7 +339,7 @@
                 <Property Name="bankAcc" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Account ID" sap:quickinfo="ID for Account Details"/>
                 <Property Name="bankGL" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="G/L Account" sap:quickinfo="General Ledger Account"/>
                 <Property Name="vendor" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Supplier" sap:quickinfo="Account Number of Supplier"/>
-                <Property Name="name1" Type="Edm.String" MaxLength="35" sap:label="Supplier's Name"/>
+                <Property Name="name1" Type="Edm.String" MaxLength="35" sap:label="Name"/>
                 <Property Name="curr" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="Currency" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
                 <Property Name="payAmnt" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="curr" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
                 <NavigationProperty Name="to_item" Relationship="ZFI_PAYMENT_MANAGEMENT_SRV.assoc_E602B8A74B4D5B24C6231CC77718C3E8" FromRole="FromRole_assoc_E602B8A74B4D5B24C6231CC77718C3E8" ToRole="ToRole_assoc_E602B8A74B4D5B24C6231CC77718C3E8"/>
@@ -342,7 +356,7 @@
                 <Property Name="year1" Type="Edm.String" Nullable="false" MaxLength="4" sap:display-format="NonNegative" sap:label="Fiscal Year"/>
                 <Property Name="lineItem" Type="Edm.String" Nullable="false" MaxLength="3" sap:display-format="NonNegative" sap:label="Item" sap:quickinfo="Number of Line Item Within Accounting Document"/>
                 <Property Name="refNo" Type="Edm.String" MaxLength="16" sap:display-format="UpperCase" sap:label="Reference" sap:quickinfo="Reference Document Number"/>
-                <Property Name="assignNo" Type="Edm.String" MaxLength="18" sap:label="Assignment" sap:quickinfo="Assignment Number"/>
+                <Property Name="assignNo" Type="Edm.String" MaxLength="18" sap:label="Assignment" sap:quickinfo="Assignment number"/>
                 <Property Name="vendor" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Supplier" sap:quickinfo="Account Number of Supplier"/>
                 <Property Name="purchDoc" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Purchasing Document" sap:quickinfo="Purchasing Document Number"/>
                 <Property Name="amntLC" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="compCurr" sap:label="Amount in Loc. Curr." sap:quickinfo="Amount in local currency"/>
@@ -371,7 +385,7 @@
                 <Property Name="amntDC" Type="Edm.Decimal" Precision="24" Scale="3" sap:unit="docCurr" sap:label="Amount" sap:quickinfo="Amount in document currency"/>
                 <Property Name="baseDate" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="Baseline Payment Dte" sap:quickinfo="Baseline Date for Due Date Calculation"/>
                 <Property Name="extRef" Type="Edm.String" MaxLength="16" sap:display-format="UpperCase" sap:label="Reference" sap:quickinfo="Reference Document Number"/>
-                <Property Name="assignNo" Type="Edm.String" MaxLength="18" sap:label="Assignment" sap:quickinfo="Assignment Number"/>
+                <Property Name="assignNo" Type="Edm.String" MaxLength="18" sap:label="Assignment" sap:quickinfo="Assignment number"/>
                 <Property Name="spGl" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Special G/L Ind." sap:quickinfo="Special G/L Indicator"/>
                 <Property Name="debCredInd" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Debit/Credit Ind." sap:quickinfo="Debit/Credit Indicator"/>
                 <Property Name="postKey" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="Posting Key"/>
@@ -446,9 +460,10 @@
                 </Key>
                 <Property Name="Supplier" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="Supplier" sap:quickinfo="Account Number of Supplier"/>
                 <Property Name="compCode" Type="Edm.String" Nullable="false" MaxLength="4" sap:display-format="UpperCase" sap:label="Company Code"/>
-                <Property Name="SupplierName" Type="Edm.String" MaxLength="35" sap:label="Supplier's Name"/>
+                <Property Name="SupplierName" Type="Edm.String" MaxLength="35" sap:label="Name"/>
                 <Property Name="BusinessPartnerName1" Type="Edm.String" MaxLength="40" sap:label="Name" sap:quickinfo="Name 1"/>
                 <Property Name="BusinessPartner" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Business Partner" sap:quickinfo="Business Partner Number"/>
+                <Property Name="city" Type="Edm.String" MaxLength="35" sap:label="City"/>
             </EntityType>
             <EntityType Name="taxCodeVHType" sap:label="CDS View for Tax Code Value Help" sap:content-version="1">
                 <Key>
@@ -657,6 +672,14 @@
                     </Record>
                 </Annotation>
             </Annotations>
+            <Annotations Target="ZFI_PAYMENT_MANAGEMENT_SRV.I_BankType" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.SAPObjectNodeType">
+                    <Record>
+                        <PropertyValue Property="Name" String="Bank"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="SAP__ODM.entityName" String="Bank"/>
+            </Annotations>
             <Annotations Target="ZFI_PAYMENT_MANAGEMENT_SRV.I_CompanyCodeType" xmlns="http://docs.oasis-open.org/odata/ns/edm">
                 <Annotation Term="Common.SAPObjectNodeType">
                     <Record>
@@ -707,8 +730,9 @@
                     </Collection>
                 </Annotation>
             </Annotations>
-            <atom:link rel="self" href="https://VHFQMWD1WD01.SAP.SAROOJ.COM:44380/sap/opu/odata/sap/ZFI_PAYMENT_MANAGEMENT_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
-            <atom:link rel="latest-version" href="https://VHFQMWD1WD01.SAP.SAROOJ.COM:44380/sap/opu/odata/sap/ZFI_PAYMENT_MANAGEMENT_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
+            <Annotations Target="ZFI_PAYMENT_MANAGEMENT_SRV.ZFI_PAYMENT_MANAGEMENT_SRV_Entities" xmlns="http://docs.oasis-open.org/odata/ns/edm"/>
+            <atom:link rel="self" href="/sap/opu/odata/sap/ZFI_PAYMENT_MANAGEMENT_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
+            <atom:link rel="latest-version" href="/sap/opu/odata/sap/ZFI_PAYMENT_MANAGEMENT_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
         </Schema>
     </edmx:DataServices>
 </edmx:Edmx>

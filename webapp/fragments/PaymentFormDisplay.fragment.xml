@@ -69,6 +69,41 @@
             <Label id="postmsglabel"     text="Posting Message"         width="auto" visible="false"/>
             <TextArea id="postmsgText" value="{pageModel>/msg}"  width="auto" visible="false" editable="false"/> 
 
+            <Label id="drawerNameLabelD" text="Drawer Name" width="auto" visible="false"/>
+            <Text  id="drawerNameTextD"  text="{pageModel>/drawerName}" width="auto" visible="false"/>
+
+            <Label id="drawerCityLabelD" text="Drawer City" width="auto" visible="false"/>
+            <Text  id="drawerCityTextD"  text="{pageModel>/drawerCity}" width="auto" visible="false"/>
+
+            <Label id="draweeNameLabelD" text="Drawee Name" width="auto" visible="false"/>
+            <Text  id="draweeNameTextD"  text="{pageModel>/draweeName}" width="auto" visible="false"/>
+
+            <Label id="draweeCityLabelD" text="Drawee City" width="auto" visible="false"/>
+            <Text  id="draweeCityTextD"  text="{pageModel>/draweeCity}" width="auto" visible="false"/>
+
+            <Label id="checkNumberLabelD" text="Check Number" width="auto" visible="false"/>
+            <Text  id="checkNumberTextD"  text="{pageModel>/checkNumber}" width="auto" visible="false"/>
+
+            <Label id="bankLabelD" text="Bank" width="auto" visible="false"/>
+            <Text  id="bankTextD"  text="{pageModel>/bank}" width="auto" visible="false"/>
+
+            <Label id="accountLabelD" text="Account Number" width="auto" visible="false"/>
+            <Text  id="accountTextD"  text="{pageModel>/account}" width="auto" visible="false"/>
+
+            <Label id="dueDateLabelD" text="Due Date" width="auto" visible="false"/>
+            <Text  id="dueDateTextD"  text="{pageModel>/dueDate}" width="auto" visible="false"/>
+
+            <Label id="assignNoLabelD" text="Assignment Number" width="auto" visible="false"/>
+            <Text  id="assignNoTextD"  text="{pageModel>/assignNo}" width="auto" visible="false"/>
+
+            <Label id="itemTextLabelD" text="Item Text" width="auto" visible="false"/>
+            <Text  id="itemTextTextD"  text="{pageModel>/itemText}" width="auto" visible="false"/>
+
+            <Label id="pdcpayLabelD" text="PDC Payment" width="auto"/>
+            <CheckBox id="pdcPaymentCheckBoxD"
+                enabled="false"
+                selected="{= ${pageModel>/pdcFlg} === 'X' }"/>
+
         </f:content>
     </f:SimpleForm>
 

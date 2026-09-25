@@ -67,6 +67,43 @@
             <Label id="oa_postmsglabel"        text="Posting Message"       width="auto" visible="false"/>
             <TextArea id="oa_postmsgText"      value="{pageModel>/msg}"     width="auto" visible="false" editable="false"/>
 
+            <!-- new fields for drawee details -->
+
+            <Label id="oa_drawerNameLabelD" text="Drawer Name" width="auto" visible="false"/>
+            <Text  id="oa_drawerNameTextD"  text="{pageModel>/drawerName}" width="auto" visible="false"/>
+
+            <Label id="oa_drawerCityLabelD" text="Drawer City" width="auto" visible="false"/>
+            <Text  id="oa_drawerCityTextD"  text="{pageModel>/drawerCity}" width="auto" visible="false"/>
+
+            <Label id="oa_draweeNameLabelD" text="Drawee Name" width="auto" visible="false"/>
+            <Text  id="oa_draweeNameTextD"  text="{pageModel>/draweeName}" width="auto" visible="false"/>
+
+            <Label id="oa_draweeCityLabelD" text="Drawee City" width="auto" visible="false"/>
+            <Text  id="oa_draweeCityTextD"  text="{pageModel>/draweeCity}" width="auto" visible="false"/>
+
+            <Label id="oa_checkNumberLabelD" text="Check Number" width="auto" visible="false"/>
+            <Text  id="oa_checkNumberTextD"  text="{pageModel>/checkNumber}" width="auto" visible="false"/>
+
+            <Label id="oa_bankLabelD" text="Bank" width="auto" visible="false"/>
+            <Text  id="oa_bankTextD"  text="{pageModel>/bank}" width="auto" visible="false"/>
+
+            <Label id="oa_accountLabelD" text="Account Number" width="auto" visible="false"/>
+            <Text  id="oa_accountTextD"  text="{pageModel>/account}" width="auto" visible="false"/>
+
+            <Label id="oa_dueDateLabelD" text="Due Date" width="auto" visible="false"/>
+            <Text  id="oa_dueDateTextD"  text="{pageModel>/dueDate}" width="auto" visible="false"/>
+
+            <Label id="oa_assignNoLabelD" text="Assignment Number" width="auto" visible="false"/>
+            <Text  id="oa_assignNoTextD"  text="{pageModel>/assignNo}" width="auto" visible="false"/>
+
+            <Label id="oa_itemTextLabelD" text="Item Text" width="auto" visible="false"/>
+            <Text  id="oa_itemTextTextD"  text="{pageModel>/itemText}" width="auto" visible="false"/>
+
+            <Label id="oa_pdcpayLabelD" text="PDC Payment" width="auto"/>
+            <CheckBox id="oa_pdcPaymentCheckBoxD"
+                enabled="false"
+                selected="{= ${pageModel>/pdcFlg} === 'X' }"/>
+
         </f:content>
     </f:SimpleForm>
 

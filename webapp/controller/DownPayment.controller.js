@@ -64,7 +64,7 @@ sap.ui.define([
 
                     if (aResults.length > 0 && oCompCodeInput) {
                         oCompCodeInput.setValue(aResults[0].compCode || "");
-                        oCompCodeInput.setEditable(false);
+                        // oCompCodeInput.setEditable(false);
                     }
                 },
                 error: function (oError) {
@@ -101,7 +101,10 @@ sap.ui.define([
                 "dp_draftidInput", "dp_companyCodeInput", "dp_fiscalYearInput",
                 "dp_referenceInput", "dp_headerTextInput", "dp_houseBankInput",
                 "dp_houseBankAccountInput", "dp_glAccountInput", "dp_supplierAccountInput",
-                "dp_currencyInput", "dp_payAmountInput", "dp_invoiceSumInput", "dp_balanceInput", "dp_doctypeInput"
+                "dp_currencyInput", "dp_payAmountInput", "dp_invoiceSumInput", "dp_balanceInput", "dp_doctypeInput",
+                "dp_drawerNameInput", "dp_drawerCityInput", "dp_draweeNameInput", "dp_draweeCityInput",
+                "dp_checkNumberInput", "dp_bankInput", "dp_accountInput",
+                "dp_assignNoInput", "dp_itemTextInput"
             ];
             aInputIds.forEach(function (sId) {
                 const oCtrl = this.byId(sId);
@@ -115,6 +118,8 @@ sap.ui.define([
             const oPostPicker = this.byId("dp_postingDatePicker");
             if (oDocPicker)  { oDocPicker.setValue("");  }
             if (oPostPicker) { oPostPicker.setValue(""); }
+            const oDueDateInput = this.byId("dp_dueDateInput");
+            if (oDueDateInput) { oDueDateInput.setValue(""); }
             // ── Clear supplier name ───────────────────────────────────────────────
             this.getView().getModel("pageModel").setProperty("/supplierName", "");
             this.getView().getModel("pageModel").setProperty("/docTypeText", "");
@@ -122,6 +127,12 @@ sap.ui.define([
             const oCheckBox = this.byId("CheckBoxDPR");
             if (oCheckBox) { oCheckBox.setSelected(false); }
             this.getView().getModel("pageModel").setProperty("/isDPR", false);
+            const oPdcCheckBox = this.byId("dp_pdcPaymentCheckBox");
+            if (oPdcCheckBox) {
+                oPdcCheckBox.setSelected(false);
+                oPdcCheckBox.setEnabled(true);
+            }
+            this._togglePdcFields(false);
 
 
             this._bDisplayMode = false;
@@ -212,6 +223,25 @@ sap.ui.define([
             fnSetDate("dp_documentDatePicker", oHead.docDate);
             fnSetDate("dp_postingDatePicker",  oHead.postingDate);
             fnSet("dp_doctypeInput",           oHead.docType);
+            fnSet("dp_drawerNameInput",  oHead.drawerName);
+            fnSet("dp_drawerCityInput",  oHead.drawerCity);
+            fnSet("dp_draweeNameInput",  oHead.draweeName);
+            fnSet("dp_draweeCityInput",  oHead.draweeCity);
+            fnSet("dp_checkNumberInput", oHead.checkNumber);
+            fnSet("dp_bankInput",        oHead.bank);
+            fnSet("dp_accountInput",     oHead.account);
+            fnSet("dp_assignNoInput",    oHead.assignNo);
+            fnSet("dp_itemTextInput",    oHead.itemText);
+            fnSetDate("dp_dueDateInput", oHead.dueDate);
+
+            this.getView().getModel("pageModel").setProperty("/pdcFlg", oHead.pdcFlg || "");
+
+            const bPdcSelected = oHead.pdcFlg === "X";
+            const oPdcCheckBox = this.byId("dp_pdcPaymentCheckBox");
+            if (oPdcCheckBox) { oPdcCheckBox.setSelected(bPdcSelected); }
+            this._togglePdcFields(bPdcSelected);
+            // Once a draft exists, PDC flag is fixed — don't let it be toggled
+            if (oPdcCheckBox) { oPdcCheckBox.setEnabled(false); }
         
 
             // ── Restore DPR checkbox from withRef field ───────────────────────────
@@ -267,7 +297,7 @@ sap.ui.define([
             const bIsRejected   = sDraftSt === "4";
             const bIsPosted     = sDraftSt === "5";
             const bIsPostErr    = sDraftSt === "6";
-
+            const bPdcSelected = this.getView().getModel("pageModel").getProperty("/pdcFlg") === "X";
 
             // ── Read DPR checkbox state ───────────────────────────────────────────
             const oCheckBox = this.byId("CheckBoxDPR");
@@ -310,6 +340,18 @@ sap.ui.define([
                 oPageModel.setProperty("/docDate",     fnGetDate("dp_documentDatePicker"));
                 oPageModel.setProperty("/postingDate", fnGetDate("dp_postingDatePicker"));
                 oPageModel.setProperty("/docType",     fnGet("dp_doctypeInput"));
+                oPageModel.setProperty("/drawerName",  fnGet("dp_drawerNameInput"));
+                oPageModel.setProperty("/drawerCity",  fnGet("dp_drawerCityInput"));
+                oPageModel.setProperty("/draweeName",  fnGet("dp_draweeNameInput"));
+                oPageModel.setProperty("/draweeCity",  fnGet("dp_draweeCityInput"));
+                oPageModel.setProperty("/checkNumber", fnGet("dp_checkNumberInput"));
+                oPageModel.setProperty("/bank",        fnGet("dp_bankInput"));
+                oPageModel.setProperty("/account",     fnGet("dp_accountInput"));
+                oPageModel.setProperty("/dueDate",     fnGetDate("dp_dueDateInput"));
+                oPageModel.setProperty("/assignNo",    fnGet("dp_assignNoInput"));
+                oPageModel.setProperty("/itemText",    fnGet("dp_itemTextInput"));
+
+                this._toggleDisplayPdcFields(bPdcSelected);
             }
 
             const aAlwaysLockedIds = [
@@ -1010,6 +1052,17 @@ sap.ui.define([
                 oDocDate:   this.byId("dp_documentDatePicker")  ? this.byId("dp_documentDatePicker").getDateValue()  : null,
                 oPostDate:  this.byId("dp_postingDatePicker")   ? this.byId("dp_postingDatePicker").getDateValue()   : null,
                 sDocType:   g("dp_doctypeInput"),
+                sDrawerName:  g("dp_drawerNameInput"),
+                sDrawerCity:  g("dp_drawerCityInput"),
+                sDraweeName:  g("dp_draweeNameInput"),
+                sDraweeCity:  g("dp_draweeCityInput"),
+                sCheckNumber: g("dp_checkNumberInput"),
+                sBank:        g("dp_bankInput"),
+                sAccount:     g("dp_accountInput"),
+                sAssignNo:    g("dp_assignNoInput"),
+                sItemText:    g("dp_itemTextInput"),
+                oDueDate:     this.byId("dp_dueDateInput") ? this.byId("dp_dueDateInput").getDateValue() : null,
+                bPdcFlg:      this.byId("dp_pdcPaymentCheckBox") ? this.byId("dp_pdcPaymentCheckBox").getSelected() : false
             };
         },
 
@@ -1045,9 +1098,21 @@ sap.ui.define([
             const oCheckBox = this.byId("CheckBoxDPR");
             const bIsDPR    = oCheckBox ? oCheckBox.getSelected() : false;
 
-            if (!f.sCompCode || !f.sVendor || !f.sBankKey || !f.sBankAcc || !f.oDocDate || !f.oPostDate) {
+          if (!f.sCompCode || !f.sVendor || !f.oDocDate || !f.oPostDate) {
                 MessageBox.error("Please fill all required fields.");
                 return null;
+            }
+
+            if (f.bPdcFlg) {
+                if (!f.sCheckNumber || !f.sBank || !f.sAccount) {
+                    MessageBox.error("Please fill Check Number, Bank, and Account for PDC payment.");
+                    return null;
+                }
+            } else {
+                if (!f.sBankKey || !f.sBankAcc) {
+                    MessageBox.error("Please fill all required fields.");
+                    return null;
+                }
             }
 
             if (!bIsDPR) {
@@ -1116,6 +1181,17 @@ sap.ui.define([
                 // ── withRef: X if DPR checked, blank if not ───────────────────────
                 withRef:     bIsDPR ? "X" : "",
                 // ── to_item: dummy if DPR, real items if not ──────────────────────
+                pdcFlg:      f.bPdcFlg ? "X" : "",
+                drawerName:  f.sDrawerName,
+                drawerCity:  f.sDrawerCity,
+                draweeName:  f.sDraweeName,
+                draweeCity:  f.sDraweeCity,
+                checkNumber: f.sCheckNumber,
+                bank:        f.sBank,
+                account:     f.sAccount,
+                dueDate:     this._toODataDate(f.oDueDate),
+                assignNo:    f.sAssignNo,
+                itemText:    f.sItemText,
                 to_item:     bIsDPR ? aDummyToItems : this._buildToItems(aItems, f.sCompCode)
             };
              
@@ -1149,6 +1225,11 @@ sap.ui.define([
                     const oUpdate = that.byId("dp_updateButton");
                     if (oSave)   { oSave.setVisible(false);  }
                     if (oUpdate) { oUpdate.setVisible(true); }
+
+                    // Lock PDC checkbox once the doc is saved
+                    const oPdcCheckBox = that.byId("dp_pdcPaymentCheckBox");
+                    if (oPdcCheckBox) { oPdcCheckBox.setEnabled(false); }
+
                     MessageToast.show("Saved successfully. Draft ID: " + sDraftId);
                 },
                 error: function (oError) {
@@ -1176,6 +1257,8 @@ sap.ui.define([
                 success: function () {
                     that._setBusyDialog(false);
                     oDataModel.setUseBatch(true);
+                     const oPdcCheckBox = that.byId("dp_pdcPaymentCheckBox");
+                    if (oPdcCheckBox) { oPdcCheckBox.setEnabled(false); }
                     MessageToast.show("Updated successfully. Draft ID: " + sDraftId);
                 },
                 error: function (oError) {
@@ -1308,5 +1391,145 @@ sap.ui.define([
                 if (oItemsToClearForm) { oItemsToClearForm.setVisible(true); }
             }
         },
+
+        // ─────────────────────────────────────────────────────────────────────
+        // PDC Payment checkbox toggle
+        // ─────────────────────────────────────────────────────────────────────
+        onPdcPaymentChange: function (oEvent) {
+            const bSelected = oEvent.getParameter("selected");
+            this._togglePdcFields(bSelected);
+
+            if (bSelected) {
+                const sVendor   = this.byId("dp_supplierAccountInput") ? this.byId("dp_supplierAccountInput").getValue().trim() : "";
+                const sCompCode = this.byId("dp_companyCodeInput") ? this.byId("dp_companyCodeInput").getValue().trim() : "";
+                this._fetchDrawerInfo(sVendor, sCompCode);
+                this._fetchDraweeInfo(sCompCode);
+            } else {
+                this._clearDrawerDraweeFields();
+            }
+        },
+
+        _togglePdcFields: function (bPdcSelected) {
+            const aBankFieldIds = [
+                "dp_houseBankLabel", "dp_houseBankInput",
+                "dp_houseBankAccountLabel", "dp_houseBankAccountInput",
+                "dp_glAccountLabel", "dp_glAccountInput"
+            ];
+            const aPdcFieldIds = [
+                "dp_drawerNameLabel", "dp_drawerNameInput",
+                "dp_drawerCityLabel", "dp_drawerCityInput",
+                "dp_draweeNameLabel", "dp_draweeNameInput",
+                "dp_draweeCityLabel", "dp_draweeCityInput",
+                "dp_checkNumberLabel", "dp_checkNumberInput",
+                "dp_bankLabel", "dp_bankInput",
+                "dp_accountLabel", "dp_accountInput",
+                "dp_dueDateLabel", "dp_dueDateInput",
+                "dp_assignNoLabel", "dp_assignNoInput",
+                "dp_itemTextLabel", "dp_itemTextInput"
+            ];
+
+            aBankFieldIds.forEach(function (sId) {
+                const oCtrl = this.byId(sId);
+                if (oCtrl) { oCtrl.setVisible(!bPdcSelected); }
+            }.bind(this));
+
+            aPdcFieldIds.forEach(function (sId) {
+                const oCtrl = this.byId(sId);
+                if (oCtrl) { oCtrl.setVisible(bPdcSelected); }
+            }.bind(this));
+        },
+
+        _toggleDisplayPdcFields: function (bPdcSelected) {
+            const aBankDisplayIds = [
+                "dp_houseBankLabelD", "dp_houseBankText",
+                "dp_houseBankAccLabelD", "dp_houseBankAccText",
+                "dp_glAccountLabelD", "dp_glAccountText"
+            ];
+            const aPdcDisplayIds = [
+                "dp_drawerNameLabelD", "dp_drawerNameTextD",
+                "dp_drawerCityLabelD", "dp_drawerCityTextD",
+                "dp_draweeNameLabelD", "dp_draweeNameTextD",
+                "dp_draweeCityLabelD", "dp_draweeCityTextD",
+                "dp_checkNumberLabelD", "dp_checkNumberTextD",
+                "dp_bankLabelD", "dp_bankTextD",
+                "dp_accountLabelD", "dp_accountTextD",
+                "dp_dueDateLabelD", "dp_dueDateTextD",
+                "dp_assignNoLabelD", "dp_assignNoTextD",
+                "dp_itemTextLabelD", "dp_itemTextTextD"
+            ];
+
+            aBankDisplayIds.forEach(function (sId) {
+                const oCtrl = this.byId(sId);
+                if (oCtrl) { oCtrl.setVisible(!bPdcSelected); }
+            }.bind(this));
+
+            aPdcDisplayIds.forEach(function (sId) {
+                const oCtrl = this.byId(sId);
+                if (oCtrl) { oCtrl.setVisible(bPdcSelected); }
+            }.bind(this));
+        },
+
+        _clearDrawerDraweeFields: function () {
+            const aFieldIds = [
+                "dp_drawerNameInput", "dp_drawerCityInput",
+                "dp_draweeNameInput", "dp_draweeCityInput"
+            ];
+
+            aFieldIds.forEach(function (sId) {
+                const oCtrl = this.byId(sId);
+                if (oCtrl) { oCtrl.setValue(""); }
+            }.bind(this));
+        },
+
+        _fetchDrawerInfo: function (sVendor, sCompCode) {
+            if (!sVendor || !sCompCode) { return; }
+
+            const oPdcCheckBox = this.byId("dp_pdcPaymentCheckBox");
+            if (!oPdcCheckBox || !oPdcCheckBox.getSelected()) { return; }
+
+            const oDataModel = this.getOwnerComponent().getModel();
+            const that = this;
+
+            oDataModel.read("/suppVH", {
+                filters: [
+                    new Filter("Supplier", FilterOperator.EQ, sVendor),
+                    new Filter("compCode", FilterOperator.EQ, sCompCode)
+                ],
+                success: function (oData) {
+                    const aResults = oData.results || [];
+                    if (aResults.length > 0) {
+                        const oDrawerNameInput = that.byId("dp_drawerNameInput");
+                        const oDrawerCityInput = that.byId("dp_drawerCityInput");
+                        if (oDrawerNameInput) { oDrawerNameInput.setValue(aResults[0].SupplierName || ""); }
+                        if (oDrawerCityInput) { oDrawerCityInput.setValue(aResults[0].city || ""); }
+                    }
+                },
+                error: function () {
+                    console.warn("Could not fetch drawer info for vendor: " + sVendor);
+                }
+            });
+        },
+
+        _fetchDraweeInfo: function (sCompCode) {
+            if (!sCompCode) { return; }
+
+            const oPdcCheckBox = this.byId("dp_pdcPaymentCheckBox");
+            if (!oPdcCheckBox || !oPdcCheckBox.getSelected()) { return; }
+
+            const oDataModel = this.getOwnerComponent().getModel();
+            const that = this;
+
+            oDataModel.read("/I_CompanyCode('" + sCompCode + "')", {
+                success: function (oData) {
+                    const oDraweeNameInput = that.byId("dp_draweeNameInput");
+                    const oDraweeCityInput = that.byId("dp_draweeCityInput");
+                    if (oDraweeNameInput) { oDraweeNameInput.setValue(oData.CompanyCodeName || ""); }
+                    if (oDraweeCityInput) { oDraweeCityInput.setValue(oData.CityName || ""); }
+                },
+                error: function () {
+                    console.warn("Could not fetch drawee info for company code: " + sCompCode);
+                }
+            });
+        }
     });
 });

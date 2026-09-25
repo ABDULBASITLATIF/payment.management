@@ -82,11 +82,45 @@
             <Input id="dp_balanceInput" value="" width="auto" editable="false"/>
             <Label id="dp_gllabel" text="Special GL" width="auto"/>
             <Input id="dp_glvh" value="" required="true" width="auto" showValueHelp="true" valueHelpRequest=".InputHelpsDP.onLoadSPGL"/>
-             <Label id="dp_glbox" text="Down Payment without Request" width="auto"/>
+
+            <Label id="dp_drawerNameLabel" text="Drawer Name" width="auto" visible="false"/>
+            <Input id="dp_drawerNameInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="dp_drawerCityLabel" text="Drawer City" width="auto" visible="false"/>
+            <Input id="dp_drawerCityInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="dp_draweeNameLabel" text="Drawee Name" width="auto" visible="false"/>
+            <Input id="dp_draweeNameInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="dp_draweeCityLabel" text="Drawee City" width="auto" visible="false"/>
+            <Input id="dp_draweeCityInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="dp_checkNumberLabel" text="Check Number" width="auto" visible="false"/>
+            <Input id="dp_checkNumberInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="dp_bankLabel" text="Bank" width="auto" visible="false"/>
+            <Input id="dp_bankInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="dp_accountLabel" text="Account Number" width="auto" visible="false"/>
+            <Input id="dp_accountInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="dp_dueDateLabel" text="Due Date" width="auto" visible="false"/>
+            <DatePicker id="dp_dueDateInput" value="" displayFormat="dd/MM/yyyy" editable="true" width="auto" visible="false"/>
+
+            <Label id="dp_assignNoLabel" text="Assignment Number" width="auto" visible="false"/>
+            <Input id="dp_assignNoInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="dp_itemTextLabel" text="Item Text" width="auto" visible="false"/>
+            <Input id="dp_itemTextInput" value="" width="auto" editable="true" visible="false"/>
+
+            <Label id="dp_glbox" text="Down Payment without Request" width="auto"/>
             <CheckBox id="CheckBoxDPR" 
             text="Down Payment without Request" 
             selected="false"
             select="onDPRCheckBoxChange"/>
+
+            <Label id="dp_pdcPaymentLabel" text="PDC Payment" width="auto"/>
+            <CheckBox id="dp_pdcPaymentCheckBox" select="onPdcPaymentChange"/>
         </f:content>
     </f:SimpleForm>
     

@@ -77,6 +77,40 @@
                 enabled="false"
                 text=""/>
 
+            <Label id="dp_drawerNameLabelD" text="Drawer Name" width="auto" visible="false"/>
+            <Text  id="dp_drawerNameTextD"  text="{pageModel>/drawerName}" width="auto" visible="false"/>
+
+            <Label id="dp_drawerCityLabelD" text="Drawer City" width="auto" visible="false"/>
+            <Text  id="dp_drawerCityTextD"  text="{pageModel>/drawerCity}" width="auto" visible="false"/>
+
+            <Label id="dp_draweeNameLabelD" text="Drawee Name" width="auto" visible="false"/>
+            <Text  id="dp_draweeNameTextD"  text="{pageModel>/draweeName}" width="auto" visible="false"/>
+
+            <Label id="dp_draweeCityLabelD" text="Drawee City" width="auto" visible="false"/>
+            <Text  id="dp_draweeCityTextD"  text="{pageModel>/draweeCity}" width="auto" visible="false"/>
+
+            <Label id="dp_checkNumberLabelD" text="Check Number" width="auto" visible="false"/>
+            <Text  id="dp_checkNumberTextD"  text="{pageModel>/checkNumber}" width="auto" visible="false"/>
+
+            <Label id="dp_bankLabelD" text="Bank" width="auto" visible="false"/>
+            <Text  id="dp_bankTextD"  text="{pageModel>/bank}" width="auto" visible="false"/>
+
+            <Label id="dp_accountLabelD" text="Account Number" width="auto" visible="false"/>
+            <Text  id="dp_accountTextD"  text="{pageModel>/account}" width="auto" visible="false"/>
+
+            <Label id="dp_dueDateLabelD" text="Due Date" width="auto" visible="false"/>
+            <Text  id="dp_dueDateTextD"  text="{pageModel>/dueDate}" width="auto" visible="false"/>
+
+            <Label id="dp_assignNoLabelD" text="Assignment Number" width="auto" visible="false"/>
+            <Text  id="dp_assignNoTextD"  text="{pageModel>/assignNo}" width="auto" visible="false"/>
+
+            <Label id="dp_itemTextLabelD" text="Item Text" width="auto" visible="false"/>
+            <Text  id="dp_itemTextTextD"  text="{pageModel>/itemText}" width="auto" visible="false"/>   
+            <Label id="dp_pdcpayLabelD" text="PDC Payment" width="auto"/>
+            <CheckBox id="dp_pdcPaymentCheckBoxD"
+                enabled="false"
+                selected="{= ${pageModel>/pdcFlg} === 'X' }"/>
+
         </f:content>
     </f:SimpleForm>
 

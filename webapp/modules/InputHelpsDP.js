@@ -48,6 +48,7 @@ sap.ui.define([
             if (oSelectedItem) {
                 const sCompCode = oSelectedItem.getTitle();
                 this.byId("dp_companyCodeInput").setValue(sCompCode);
+                this._fetchDraweeInfo(sCompCode);
                 MessageToast.show("Company Code selected: " + sCompCode);
             }
         },
@@ -118,11 +119,14 @@ sap.ui.define([
                 const oContext      = oSelectedItem.getBindingContext();
                 const sSupplier     = oContext.getProperty("Supplier");
                 const sSupplierName = oContext.getProperty("SupplierName");
+                const sCompCode     = this.byId("dp_companyCodeInput").getValue().trim();
 
                 this.byId("dp_supplierAccountInput").setValue(sSupplier);
 
                 this.getView().getModel("pageModel")
                     .setProperty("/supplierName", sSupplierName || "");
+                
+                this._fetchDrawerInfo(sSupplier, sCompCode);    
 
                 MessageToast.show("Supplier selected: " + sSupplier);
             }
@@ -161,6 +165,7 @@ sap.ui.define([
                         that.getView().getModel("pageModel")
                             .setProperty("/supplierName", "");
                     }
+                    that._fetchDrawerInfo(sValue, sCompCode)
                 },
                 error: function () {
                     that.getView().getModel("pageModel")
